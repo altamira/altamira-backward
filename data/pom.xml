@@ -55,6 +55,11 @@
 			<artifactId>hibernate-validator-annotation-processor</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.jboss.spec.javax.transaction</groupId>
+			<artifactId>jboss-transaction-api_1.1_spec</artifactId>
+		</dependency>
 
 	</dependencies>
 </project>

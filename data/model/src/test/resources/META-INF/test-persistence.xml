@@ -26,14 +26,12 @@
          database. Production applications should use a managed datasource. -->
       <!-- The datasource is deployed as WEB-INF/test-ds.xml, 
          you can find it in the source at src/test/resources/test-ds.xml -->
-      <jta-data-source>java:jboss/datasources/serviceTestDS</jta-data-source>
-	  <jar-file>lib/model-0.0.1-SNAPSHOT.jar</jar-file>
-	  <class>br.com.altamira.data.model.Request</class>
-      <class>br.com.altamira.data.model.RequestItem</class>
+      <jta-data-source>java:jboss/datasources/ExampleDS</jta-data-source>
       <properties>
          <!-- Properties for Hibernate -->
          <property name="hibernate.hbm2ddl.auto" value="create-drop" />
-         <property name="hibernate.show_sql" value="false" />
+         <property name="hibernate.show_sql" value="true" />
+         <property name="hibernate.format_sql" value="true"/>
       </properties>
    </persistence-unit>
 </persistence>

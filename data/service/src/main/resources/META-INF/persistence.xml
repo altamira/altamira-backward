@@ -26,11 +26,13 @@
       <!-- The datasource is deployed as WEB-INF/service-ds.xml, you
          can find it in the source at src/main/webapp/WEB-INF/service-ds.xml -->
       <jta-data-source>java:jboss/datasources/serviceDS</jta-data-source>
-	  <jar-file>lib/dao-0.0.1-SNAPSHOT.jar</jar-file>
-	  <jar-file>lib/model-0.0.1-SNAPSHOT.jar</jar-file>
+      <jar-file>model-0.0.1-SNAPSHOT.jar</jar-file>
+      <class>br.com.altamira.data.model.Request</class>
+      <class>br.com.altamira.data.model.RequestItem</class>
+
       <properties>
          <!-- Properties for Hibernate -->
-         <property name="hibernate.hbm2ddl.auto" value="create-drop" />
+         <property name="hibernate.hbm2ddl.auto" value="create" />
          <property name="hibernate.show_sql" value="false" />
       </properties>
    </persistence-unit>

@@ -16,15 +16,17 @@
  */
 package br.com.altamira.data.dao.test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit.InSequence;
 
 import br.com.altamira.data.dao.RequestDao;
 import br.com.altamira.data.model.Request;
@@ -33,8 +35,8 @@ import br.com.altamira.data.util.Resources;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -54,19 +56,79 @@ public class RequestDaoTest {
 
     @Inject
     RequestDao requestDao;
+    
+    @Inject
+    Request entity;
 
     @Inject
     Logger log;
 
+    @Before
+    public void before() {
+    	entity = new Request();
+    	entity.setCreated(new Date());
+    	entity.setCreator("Jane Doe");
+    	entity.setSent(null);
+    }
+    
     @Test
-    public void testCreate() throws Exception {
-        Request request = new Request();
-        request.setCreated(new Date());
-        request.setCreator("Jane Doe");
-        request.setSent(null);
-        requestDao.create(request);
-        assertNotNull(request.getId());
-        log.info(request.getCreator() + " was persisted with id " + request.getId());
+    @InSequence(1)
+    public void createTest() throws Exception {
+
+        requestDao.create(entity);
+        
+        assertNotNull(entity.getId());
+        assertNotEquals(0l, entity.getId().longValue());
+        log.info(entity.getCreator() + " was persisted with id " + entity.getId());
     }
 
+    @Test
+    @InSequence(2)
+    public void listTest() throws Exception {
+    	List<Request> list = requestDao.getAll(0, 1);
+    	
+    	assertNotNull(list);
+    	assertFalse(list.isEmpty());
+    	assertEquals(1, list.size());
+    	assertEquals(entity.getCreator(), list.get(0).getCreator());
+    }
+    
+    @Test
+    @InSequence(3)
+    public void findTest() throws Exception {
+    	
+    	Request find = requestDao.find(entity.getId());
+    	
+    	assertNotNull(find);
+    	assertNotNull(find.getId());
+    	assertEquals(entity.getId(), find.getId());
+    }
+    
+    @Test
+    @InSequence(4)
+    public void updateTest() throws Exception {
+    	
+    	entity.setCreated(new Date());
+    	entity.setCreator("John Doe");
+    	entity.setSent(new Date());
+        
+    	requestDao.update(entity);
+    	
+    	Request find = requestDao.find(entity.getId());
+    	
+    	assertNotNull(find);
+    	assertNotNull(find.getId());
+    	assertEquals(entity.getId(), find.getId());
+    	assertEquals(entity.getCreator(), find.getCreator());
+    }
+    
+    @Test
+    @InSequence(5)
+    public void deleteTest() throws Exception {
+    	
+    	requestDao.remove(entity.getId());
+    	
+    	assertNull(entity.getId());
+    	
+    }
 }

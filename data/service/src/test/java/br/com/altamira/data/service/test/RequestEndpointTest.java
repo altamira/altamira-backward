@@ -35,7 +35,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
-public class MemberRegistrationTest {
+public class RequestEndpointTest {
 	
     @Deployment
     public static Archive<?> createTestArchive() {

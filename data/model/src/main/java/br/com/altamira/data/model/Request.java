@@ -26,7 +26,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 
 /**
@@ -64,7 +63,6 @@ public class Request implements Serializable {
     @Column(name = "CREATOR", columnDefinition = "nvarchar2(255)")
     private String creator;
     
-    @Null
     @Column(name = "SENT")
     @Temporal(TemporalType.TIMESTAMP)
     private Date sent;
@@ -79,9 +77,9 @@ public class Request implements Serializable {
     public Request() {
     }
 
-    public Request(Long id) {
+    /*public Request(Long id) {
         this.id = id;
-    }
+    }*/
 
     public Request(Long id, Date created, String creator) {
         this.id = id;
@@ -93,9 +91,9 @@ public class Request implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    /*public void setId(Long id) {
         this.id = id;
-    }
+    }*/
 
     public Date getCreated() {
         return created;

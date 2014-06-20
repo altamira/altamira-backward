@@ -21,10 +21,10 @@ import javax.ws.rs.core.UriBuilderException;
 
 import br.com.altamira.data.dao.RequestDao;
 import br.com.altamira.data.model.Request;
-import br.com.altamira.data.serialize.NullValueSerializer;
+//import br.com.altamira.data.serialize.NullValueSerializer;
 import br.com.altamira.data.serialize.RequestListSerializer;
 import br.com.altamira.data.serialize.JSonViews.JsonEntityView;
-import br.com.altamira.data.serialize.JSonViews.JsonListView;
+//import br.com.altamira.data.serialize.JSonViews.JsonListView;
 
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;

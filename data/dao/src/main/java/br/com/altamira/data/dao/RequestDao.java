@@ -34,7 +34,8 @@ public class RequestDao {
 		return entity;
 	}
 	
-	public Request find(Long id) {
+	public Request find(long id) {
+
 		TypedQuery<Request> findByIdQuery = entityManager.createNamedQuery("Request.findById", Request.class);
         findByIdQuery.setParameter("id", id);
         Request entity;
@@ -51,6 +52,9 @@ public class RequestDao {
 	}
 	
 	public Request update(Request entity) {
+		if (entity == null) {
+			throw new IllegalArgumentException();
+		}
 		if (entity.getId() == null && entity.getId() == 0l) {
 			return null;
 		}
@@ -58,6 +62,9 @@ public class RequestDao {
 	}
 	
 	public Request remove(Request entity) {
+		if (entity == null) {
+			throw new IllegalArgumentException();
+		}
 		entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
 		entity.setId(null);
 		return entity;
