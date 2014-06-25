@@ -20,8 +20,6 @@ import static org.junit.Assert.*;
 
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
-
 import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -29,10 +27,12 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
 
 import br.com.altamira.data.dao.RequestDao;
+import br.com.altamira.data.model.Material;
 import br.com.altamira.data.model.Request;
-import br.com.altamira.data.util.Resources;
+import br.com.altamira.data.model.RequestItem;
 
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -45,23 +45,23 @@ public class RequestDaoTest {
     @Deployment
     public static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class, "RequestDaoTest.war")
-                .addPackage("br.com.altamira.data.model")
-                .addPackage("br.com.altamira.data.dao")
-                .addClasses(Resources.class)
+                .addClasses(Request.class, RequestItem.class, Material.class)
+                .addClasses(RequestDao.class)
+                //.addClasses(Resources.class)
                 .addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml")
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
+                .addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"));
+                //.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
                 // Deploy our test datasource
-                .addAsWebInfResource("test-ds.xml");
+                //.addAsWebInfResource("test-ds.xml");
     }
 
     @Inject
     RequestDao requestDao;
     
-    @Inject
     Request entity;
 
-    @Inject
-    Logger log;
+//    @Inject
+//    Logger log;
 
     @Before
     public void before() {
@@ -79,7 +79,7 @@ public class RequestDaoTest {
         
         assertNotNull(entity.getId());
         assertNotEquals(0l, entity.getId().longValue());
-        log.info(entity.getCreator() + " was persisted with id " + entity.getId());
+//        log.info(entity.getCreator() + " was persisted with id " + entity.getId());
     }
 
     @Test

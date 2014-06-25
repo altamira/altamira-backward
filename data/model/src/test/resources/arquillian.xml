@@ -26,18 +26,21 @@
 <!--    </engine> -->
 
    <!-- Force the use of the Servlet 3.0 protocol with all containers, as it is the most mature -->
-   <defaultProtocol type="Servlet 3.0" />
-
-     <!-- Example configuration for a remote JBoss Enterprise Application Platform 6 or AS 7 instance -->
-   <container qualifier="jboss" default="true">
-        <!-- By default, arquillian will use the JBOSS_HOME environment variable.  Alternatively, the configuration below can be uncommented. -->
-        <!--<configuration> -->
-        <!--<property name="jbossHome">/path/to/jboss/as</property> -->
-        <!--</configuration> -->
+	<defaultProtocol type="Servlet 3.0" /> <!--  Remove this to use weld container as defaul -->
+	<container qualifier="arquillian-jbossas-managed">
+		<protocol type="Servlet 3.0"/> <!-- Doesn't work, see https://issues.jboss.org/browse/ARQ-579 -->
         <configuration>
             <property name="jbossHome">/jboss-as-7.1.1.Final</property>
-            <property name="allowConnectingToRunningServer">true</property>
+            <!-- <property name="javaVmArguments">-Xmx512m -XX:MaxPermSize=128m
+                -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y
+            </property> -->
         </configuration>
-   </container>
+    </container>
+	<container qualifier="arquillian-weld-ee-embedded" default="true">
+		<configuration>
+			<!-- <property name="managementAddress">localhost</property>
+			<property name="managementPort">9999</property> -->
+		</configuration>
+	</container>
 
 </arquillian>

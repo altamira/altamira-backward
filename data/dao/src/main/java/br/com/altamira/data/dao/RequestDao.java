@@ -29,7 +29,9 @@ public class RequestDao {
 	}
 	
 	public Request create(Request entity) {
-		entity.setId(null);
+		if (entity.getId() != null) {
+			throw new IllegalArgumentException("To create this entity id must be null.");
+		}
 		entityManager.persist(entity);
 		return entity;
 	}
@@ -66,7 +68,7 @@ public class RequestDao {
 			throw new IllegalArgumentException();
 		}
 		entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
-		entity.setId(null);
+
 		return entity;
 	}
 	
@@ -74,7 +76,6 @@ public class RequestDao {
 		Request entity = entityManager.find(Request.class, id);
         if (entity != null) {
 	        entityManager.remove(entity);
-	        entity.setId(null);
         }
 		return entity;
 	}

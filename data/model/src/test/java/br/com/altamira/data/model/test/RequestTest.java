@@ -21,14 +21,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import br.com.altamira.data.model.Material;
 import br.com.altamira.data.model.Request;
+import br.com.altamira.data.model.RequestItem;
 
 @RunWith(Arquillian.class)
 public class RequestTest {
     @Deployment
     public static Archive<?> createDeployment() {
         return ShrinkWrap.create(WebArchive.class, "RequestTest.war")
-            .addPackage(Request.class.getPackage())
+            .addClasses(Request.class, RequestItem.class, Material.class)
             .addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml")
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
