@@ -7,6 +7,14 @@
   </parent>
   <artifactId>bpm</artifactId>
   <packaging>pom</packaging>
+  
+  <properties>
+    <camunda.version>7.1.0-Final</camunda.version>
+    <arquillian.version>1.1.2.Final</arquillian.version>
+    <jboss.version>7.2.0.Final</jboss.version>
+  </properties>
+  
+  
   <modules>
   	<module>sales</module>
   	<module>purchase</module>

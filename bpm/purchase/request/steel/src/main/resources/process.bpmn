@@ -1,0 +1,681 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://activiti.org/bpmn" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:fox="http://www.camunda.com/fox" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" id="Definitions_1" exporter="camunda modeler" exporterVersion="2.6.0" targetNamespace="http://www.example.org/bpmn">
+  <bpmn2:collaboration id="Collaboration" name="Default Collaboration">
+    <bpmn2:participant id="MRP" name="PCP" processRef="br.com.altamira.bpm.purchase.request.steel"/>
+    <bpmn2:participant id="Purchasing" name="Compras" processRef="br.com.altamira.bpm.purchasing.request.ProcessPurchaseRequest"/>
+    <bpmn2:participant id="SupplyerParticipant" name="Fornecedor" processRef="Process_1"/>
+    <bpmn2:participant id="Purchasin" name="Compras" processRef="br.com.altamira.bpm.purchasing.request.ProcessPurchaseOrders"/>
+    <bpmn2:messageFlow id="MessageFlow_1" name="" sourceRef="SendRequestIntermediateThrowEvent" targetRef="PurchaseStartEvent"/>
+    <bpmn2:messageFlow id="MessageFlow_4" name="" sourceRef="SendPurchaseOrderSendTask" targetRef="StartEvent_4"/>
+    <bpmn2:messageFlow id="MessageFlow_6" name="" sourceRef="EndEvent_6" targetRef="IntermediateCatchEvent"/>
+  </bpmn2:collaboration>
+  <bpmn2:process id="br.com.altamira.bpm.purchase.request.steel" name="Requisição de Compra de Aço" isExecutable="true">
+    <bpmn2:laneSet id="LaneSet_2" name="Lane Set 2">
+      <bpmn2:lane id="PurchaseRequestLane" name="Requisição de Compra de Aço">
+        <bpmn2:flowNodeRef>RequestStartEvent</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>SendRequestIntermediateThrowEvent</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>RequestMessageEndEvent</bpmn2:flowNodeRef>
+      </bpmn2:lane>
+    </bpmn2:laneSet>
+    <bpmn2:startEvent id="RequestStartEvent" camunda:formKey="app:request.html" name="Requisição&#xD;&#xA;de Compra de Aço">
+      <bpmn2:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="REQUEST_ID" label="Requisicao" type="string"/>
+        </camunda:formData>
+      </bpmn2:extensionElements>
+      <bpmn2:outgoing>SequenceFlow_1</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:sequenceFlow id="SequenceFlow_1" name="" sourceRef="RequestStartEvent" targetRef="SendRequestIntermediateThrowEvent"/>
+    <bpmn2:intermediateThrowEvent id="SendRequestIntermediateThrowEvent" name="Enviar&#xD;&#xA;Requisição">
+      <bpmn2:incoming>SequenceFlow_1</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_16</bpmn2:outgoing>
+      <bpmn2:messageEventDefinition id="_MessageEventDefinition_2" camunda:delegateExpression="#{SendRequest}"/>
+    </bpmn2:intermediateThrowEvent>
+    <bpmn2:sequenceFlow id="SequenceFlow_16" name="" sourceRef="SendRequestIntermediateThrowEvent" targetRef="RequestMessageEndEvent"/>
+    <bpmn2:endEvent id="RequestMessageEndEvent">
+      <bpmn2:incoming>SequenceFlow_16</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:textAnnotation id="TextAnnotation_1">
+      <bpmn2:text>Inicia um novo processo de compra, caso não haja nenhum processo de compra em andamento.</bpmn2:text>
+    </bpmn2:textAnnotation>
+    <bpmn2:association id="Association_7" sourceRef="TextAnnotation_1" targetRef="PurchaseStartEvent"/>
+  </bpmn2:process>
+  <bpmn2:process id="br.com.altamira.bpm.purchasing.request.ProcessPurchaseRequest" name="Processar Requisições de Compra de Aço" isExecutable="true">
+    <bpmn2:laneSet id="LaneSet_1" name="Lane Set 1">
+      <bpmn2:lane id="ProcessRequestLane" name="Processar Requisições de Compra de Aço">
+        <bpmn2:flowNodeRef>PurchaseStartEvent</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>IncludeRequestBoundaryEvent</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>PurchasingPlanningSubProcess</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>GeneratePurchaseOrdersServiceTask</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>SteelPurchaseEndEvent</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>ProcessPurchaseOrdersCallActivity</bpmn2:flowNodeRef>
+      </bpmn2:lane>
+    </bpmn2:laneSet>
+    <bpmn2:startEvent id="PurchaseStartEvent" name="Requisição&#xD;&#xA;Recebida&#xD;&#xA;">
+      <bpmn2:outgoing>SequenceFlow_10</bpmn2:outgoing>
+      <bpmn2:messageEventDefinition id="_MessageEventDefinition_3" messageRef="Message_1"/>
+    </bpmn2:startEvent>
+    <bpmn2:sequenceFlow id="SequenceFlow_10" name="" sourceRef="PurchaseStartEvent" targetRef="PurchasingPlanningSubProcess"/>
+    <bpmn2:boundaryEvent id="IncludeRequestBoundaryEvent" name="Requisição recebida&#xD;&#xA;incluir no processo atual" attachedToRef="PurchasingPlanningSubProcess">
+      <bpmn2:outgoing>SequenceFlow_7</bpmn2:outgoing>
+      <bpmn2:messageEventDefinition id="_MessageEventDefinition_4" messageRef="Message_2"/>
+    </bpmn2:boundaryEvent>
+    <bpmn2:sequenceFlow id="SequenceFlow_7" name="" sourceRef="IncludeRequestBoundaryEvent" targetRef="PurchasingPlanningSubProcess"/>
+    <bpmn2:subProcess id="PurchasingPlanningSubProcess" name="Processar Requisição de Compra">
+      <bpmn2:extensionElements>
+        <camunda:executionListener delegateExpression="#{MergeRequest}" event="start"/>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>SequenceFlow_7</bpmn2:incoming>
+      <bpmn2:incoming>SequenceFlow_10</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_9</bpmn2:outgoing>
+      <bpmn2:startEvent id="StartEvent_1">
+        <bpmn2:outgoing>SequenceFlow_3</bpmn2:outgoing>
+      </bpmn2:startEvent>
+      <bpmn2:sequenceFlow id="SequenceFlow_3" name="" sourceRef="StartEvent_1" targetRef="QuotationUserTask"/>
+      <bpmn2:userTask id="QuotationUserTask" camunda:assignee="demo" camunda:formKey="app:quotation.html" name="Cotação">
+        <bpmn2:incoming>SequenceFlow_3</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_11</bpmn2:outgoing>
+      </bpmn2:userTask>
+      <bpmn2:sequenceFlow id="SequenceFlow_11" name="" sourceRef="QuotationUserTask" targetRef="PurchasePlanningUserTask"/>
+      <bpmn2:userTask id="PurchasePlanningUserTask" camunda:assignee="demo" camunda:formKey="app:planning.html" name="Planejamento&#xD;&#xA;Compra">
+        <bpmn2:incoming>SequenceFlow_11</bpmn2:incoming>
+        <bpmn2:outgoing>SequenceFlow_4</bpmn2:outgoing>
+      </bpmn2:userTask>
+      <bpmn2:sequenceFlow id="SequenceFlow_4" name="" sourceRef="PurchasePlanningUserTask" targetRef="EndEvent_1"/>
+      <bpmn2:endEvent id="EndEvent_1">
+        <bpmn2:incoming>SequenceFlow_4</bpmn2:incoming>
+      </bpmn2:endEvent>
+    </bpmn2:subProcess>
+    <bpmn2:sequenceFlow id="SequenceFlow_9" name="" sourceRef="PurchasingPlanningSubProcess" targetRef="GeneratePurchaseOrdersServiceTask"/>
+    <bpmn2:serviceTask id="GeneratePurchaseOrdersServiceTask" camunda:delegateExpression="${Logger}" camunda:async="true" name="Gerar&#xD;&#xA;Pedidos de &#xD;&#xA;Compra">
+      <bpmn2:extensionElements>
+        <camunda:executionListener delegateExpression="${GenerateOrders}" event="start"/>
+        <fox:failedJobRetryTimeCycle>R3/PT10M</fox:failedJobRetryTimeCycle>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>SequenceFlow_9</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_5</bpmn2:outgoing>
+    </bpmn2:serviceTask>
+    <bpmn2:sequenceFlow id="SequenceFlow_5" name="" sourceRef="GeneratePurchaseOrdersServiceTask" targetRef="ProcessPurchaseOrdersCallActivity"/>
+    <bpmn2:endEvent id="SteelPurchaseEndEvent" name="Requisições Processadas&#xD;&#xA;Pedidos Efetivados">
+      <bpmn2:incoming>SequenceFlow_6</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:callActivity id="ProcessPurchaseOrdersCallActivity" name="Processar &#xD;&#xA;Pedidos" calledElement="br.com.altamira.bpm.purchasing.request.ProcessPurchaseOrders">
+      <bpmn2:extensionElements>
+        <camunda:in source="orderId" target="orderId"/>
+        <camunda:in source="loopCounter" target="loopCounter"/>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>SequenceFlow_5</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_6</bpmn2:outgoing>
+      <bpmn2:multiInstanceLoopCharacteristics camunda:collection="ordersList" camunda:elementVariable="orderId"/>
+    </bpmn2:callActivity>
+    <bpmn2:sequenceFlow id="SequenceFlow_6" name="" sourceRef="ProcessPurchaseOrdersCallActivity" targetRef="SteelPurchaseEndEvent"/>
+    <bpmn2:textAnnotation id="TextAnnotation_2">
+      <bpmn2:text>Caso exista um processo de compra em andamento, acrescenta a nova requisição de compra ao processo atual</bpmn2:text>
+    </bpmn2:textAnnotation>
+    <bpmn2:association id="Association_6" sourceRef="TextAnnotation_2" targetRef="IncludeRequestBoundaryEvent"/>
+  </bpmn2:process>
+  <bpmn2:signal id="Signal_1" name="NewRequestSignal"/>
+  <bpmn2:message id="Message_1" name="REQUEST_CREATED_MESSAGE"/>
+  <bpmn2:message id="Message_2" name="REQUEST_INCLUDE_MESSAGE"/>
+  <bpmn2:signal id="Signal_2" name="OrderNegeratedSignal"/>
+  <bpmn2:process id="Process_1" isExecutable="false">
+    <bpmn2:startEvent id="StartEvent_4">
+      <bpmn2:outgoing>SequenceFlow_21</bpmn2:outgoing>
+      <bpmn2:messageEventDefinition id="_MessageEventDefinition_7"/>
+    </bpmn2:startEvent>
+    <bpmn2:manualTask id="UserTask_3" name="Analisar&#xD;&#xA;Pedido">
+      <bpmn2:incoming>SequenceFlow_21</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_27</bpmn2:outgoing>
+    </bpmn2:manualTask>
+    <bpmn2:sequenceFlow id="SequenceFlow_21" name="" sourceRef="StartEvent_4" targetRef="UserTask_3"/>
+    <bpmn2:userTask id="UserTask_4" name="Confirmar ou Declinar Pedido Total ou Parcial">
+      <bpmn2:incoming>SequenceFlow_27</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_32</bpmn2:outgoing>
+    </bpmn2:userTask>
+    <bpmn2:sequenceFlow id="SequenceFlow_27" name="" sourceRef="UserTask_3" targetRef="UserTask_4"/>
+    <bpmn2:endEvent id="EndEvent_6" name="Informar o&#xD;&#xA;Cliente">
+      <bpmn2:incoming>SequenceFlow_32</bpmn2:incoming>
+      <bpmn2:messageEventDefinition id="_MessageEventDefinition_8"/>
+    </bpmn2:endEvent>
+    <bpmn2:sequenceFlow id="SequenceFlow_32" name="" sourceRef="UserTask_4" targetRef="EndEvent_6"/>
+  </bpmn2:process>
+  <bpmn2:message id="Message_4" name="ORDER_RECEIVED_MESSAGE"/>
+  <bpmn2:process id="br.com.altamira.bpm.purchasing.request.ProcessPurchaseOrders" name="Processar Pedidos" isExecutable="true">
+    <bpmn2:laneSet id="LaneSet_5" name="Lane Set 5">
+      <bpmn2:lane id="ProcessPurchaseOrdersLane" name="Processar Pedidos">
+        <bpmn2:flowNodeRef>StartEvent_3</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>CheckOutPurchaseOrderUserTask</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>SendPurchaseOrderSendTask</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>OrderResendIntermediateCatchEvent</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>UpdateSupplierContactInfoUserTask</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>ParallelGateway_1</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>IntermediateCatchEvent</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>WaitingForConfirmationBoundaryEvent</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>ConfirmOrderReceivedUserTask</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>NotifyPurchaseManagerServiceTask</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>CheckStatusExclusiveGateway</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>OrderSubmitedEndEvent</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>OrderResendIntermediateThrowEvent</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>OrderPendingEndEvent</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>ResendRequestEndEvent</bpmn2:flowNodeRef>
+      </bpmn2:lane>
+    </bpmn2:laneSet>
+    <bpmn2:startEvent id="StartEvent_3">
+      <bpmn2:outgoing>SequenceFlow_14</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:sequenceFlow id="SequenceFlow_14" name="" sourceRef="StartEvent_3" targetRef="CheckOutPurchaseOrderUserTask"/>
+    <bpmn2:userTask id="CheckOutPurchaseOrderUserTask" camunda:assignee="demo" camunda:candidateGroups="Compras" camunda:formKey="app:order.html" name="Conferir &#xD;&#xA;Pedido de &#xD;&#xA;Compra ${loopCounter}/${orderId}">
+      <bpmn2:incoming>SequenceFlow_14</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_8</bpmn2:outgoing>
+    </bpmn2:userTask>
+    <bpmn2:sequenceFlow id="SequenceFlow_8" name="" sourceRef="CheckOutPurchaseOrderUserTask" targetRef="SendPurchaseOrderSendTask"/>
+    <bpmn2:sendTask id="SendPurchaseOrderSendTask" camunda:delegateExpression="${Logger}" name="Enviar&#xD;&#xA;Pedido&#xD;&#xA;Compra">
+      <bpmn2:incoming>SequenceFlow_8</bpmn2:incoming>
+      <bpmn2:incoming>SequenceFlow_45</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_18</bpmn2:outgoing>
+    </bpmn2:sendTask>
+    <bpmn2:sequenceFlow id="SequenceFlow_18" name="" sourceRef="SendPurchaseOrderSendTask" targetRef="ParallelGateway_1"/>
+    <bpmn2:intermediateCatchEvent id="OrderResendIntermediateCatchEvent" name="Reenviar&#xD;&#xA;Pedido">
+      <bpmn2:outgoing>SequenceFlow_44</bpmn2:outgoing>
+      <bpmn2:linkEventDefinition id="ResendOrderLinkEventDefinitionCatch" name="Reenviar&#xD;&#xA;Pedido"/>
+    </bpmn2:intermediateCatchEvent>
+    <bpmn2:sequenceFlow id="SequenceFlow_44" name="" sourceRef="OrderResendIntermediateCatchEvent" targetRef="UpdateSupplierContactInfoUserTask"/>
+    <bpmn2:userTask id="UpdateSupplierContactInfoUserTask" camunda:assignee="demo" camunda:formKey="app:contact-info.xhtml" name="Atualizar Informações de Contato">
+      <bpmn2:incoming>SequenceFlow_44</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_45</bpmn2:outgoing>
+    </bpmn2:userTask>
+    <bpmn2:sequenceFlow id="SequenceFlow_45" name="" sourceRef="UpdateSupplierContactInfoUserTask" targetRef="SendPurchaseOrderSendTask"/>
+    <bpmn2:parallelGateway id="ParallelGateway_1">
+      <bpmn2:incoming>SequenceFlow_18</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_19</bpmn2:outgoing>
+      <bpmn2:outgoing>SequenceFlow_20</bpmn2:outgoing>
+    </bpmn2:parallelGateway>
+    <bpmn2:sequenceFlow id="SequenceFlow_19" name="" sourceRef="ParallelGateway_1" targetRef="ConfirmOrderReceivedUserTask"/>
+    <bpmn2:sequenceFlow id="SequenceFlow_20" name="" sourceRef="ParallelGateway_1" targetRef="IntermediateCatchEvent"/>
+    <bpmn2:intermediateCatchEvent id="IntermediateCatchEvent">
+      <bpmn2:incoming>SequenceFlow_20</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_13</bpmn2:outgoing>
+      <bpmn2:messageEventDefinition id="_MessageEventDefinition_6" messageRef="Message_4"/>
+    </bpmn2:intermediateCatchEvent>
+    <bpmn2:boundaryEvent id="WaitingForConfirmationBoundaryEvent" name="2 dias &#xD;&#xA;uteis" attachedToRef="ConfirmOrderReceivedUserTask" cancelActivity="false">
+      <bpmn2:extensionElements/>
+      <bpmn2:outgoing>SequenceFlow_24</bpmn2:outgoing>
+      <bpmn2:timerEventDefinition id="_TimerEventDefinition_2">
+        <bpmn2:timeCycle xsi:type="bpmn2:tFormalExpression">R3/PT1M</bpmn2:timeCycle>
+      </bpmn2:timerEventDefinition>
+    </bpmn2:boundaryEvent>
+    <bpmn2:sequenceFlow id="SequenceFlow_24" name="" sourceRef="WaitingForConfirmationBoundaryEvent" targetRef="NotifyPurchaseManagerServiceTask"/>
+    <bpmn2:userTask id="ConfirmOrderReceivedUserTask" camunda:assignee="demo" camunda:formKey="app:confirm.html" name="Confirmar&#xD;&#xA;Recebimento">
+      <bpmn2:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="status" label="Situacao do Pedido" type="enum">
+            <camunda:value id="accepted" name="Confirmado"/>
+            <camunda:value id="not_accepted" name="Nao Aceitou"/>
+            <camunda:value id="not_received" name="Nao Recebeu"/>
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>SequenceFlow_19</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_17</bpmn2:outgoing>
+    </bpmn2:userTask>
+    <bpmn2:sendTask id="NotifyPurchaseManagerServiceTask" camunda:delegateExpression="${NotifyOrderConfirmationPending}" name="Notificar &#xD;&#xA;Responsável">
+      <bpmn2:incoming>SequenceFlow_24</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_31</bpmn2:outgoing>
+    </bpmn2:sendTask>
+    <bpmn2:sequenceFlow id="SequenceFlow_31" name="" sourceRef="NotifyPurchaseManagerServiceTask" targetRef="OrderPendingEndEvent"/>
+    <bpmn2:exclusiveGateway id="CheckStatusExclusiveGateway" default="OrderConfirmedSequenceFlow">
+      <bpmn2:incoming>SequenceFlow_13</bpmn2:incoming>
+      <bpmn2:incoming>SequenceFlow_17</bpmn2:incoming>
+      <bpmn2:outgoing>OrderConfirmedSequenceFlow</bpmn2:outgoing>
+      <bpmn2:outgoing>RequestResendSequenceFlow</bpmn2:outgoing>
+      <bpmn2:outgoing>ResendOrderSequenceFlow</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+    <bpmn2:sequenceFlow id="OrderConfirmedSequenceFlow" name="" sourceRef="CheckStatusExclusiveGateway" targetRef="OrderSubmitedEndEvent"/>
+    <bpmn2:sequenceFlow id="RequestResendSequenceFlow" name="" sourceRef="CheckStatusExclusiveGateway" targetRef="ResendRequestEndEvent">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression"><![CDATA[#{status=="not_accepted"}]]></bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="ResendOrderSequenceFlow" name="" sourceRef="CheckStatusExclusiveGateway" targetRef="OrderResendIntermediateThrowEvent">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression"><![CDATA[#{status=="not_received"}]]></bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:endEvent id="OrderSubmitedEndEvent" name="Pedido&#xD;&#xA;Efetivado">
+      <bpmn2:incoming>OrderConfirmedSequenceFlow</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:intermediateThrowEvent id="OrderResendIntermediateThrowEvent" name="Reenviar&#xD;&#xA;Pedido">
+      <bpmn2:incoming>ResendOrderSequenceFlow</bpmn2:incoming>
+      <bpmn2:linkEventDefinition id="ResendOrderLinkEventDefinitionThrow" name="Reenviar&#xD;&#xA;Pedido"/>
+    </bpmn2:intermediateThrowEvent>
+    <bpmn2:endEvent id="OrderPendingEndEvent" name="Pedido Pendente&#xD;&#xA;Aguardando confirmação">
+      <bpmn2:incoming>SequenceFlow_31</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:endEvent id="ResendRequestEndEvent" name="Gerar Nova&#xD;&#xA;Requisição &#xD;&#xA;Parcial ou Total">
+      <bpmn2:incoming>RequestResendSequenceFlow</bpmn2:incoming>
+      <bpmn2:messageEventDefinition id="_MessageEventDefinition_9" camunda:delegateExpression="${Logger}"/>
+    </bpmn2:endEvent>
+    <bpmn2:sequenceFlow id="SequenceFlow_13" name="" sourceRef="IntermediateCatchEvent" targetRef="CheckStatusExclusiveGateway"/>
+    <bpmn2:sequenceFlow id="SequenceFlow_17" name="" sourceRef="ConfirmOrderReceivedUserTask" targetRef="CheckStatusExclusiveGateway"/>
+  </bpmn2:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1" name="Default Collaboration Diagram">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration">
+      <bpmndi:BPMNShape id="BPMNShape_1" bpmnElement="MRP" isHorizontal="true">
+        <dc:Bounds height="136.0" width="637.0" x="0.0" y="1.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_StartEvent_1" bpmnElement="RequestStartEvent">
+        <dc:Bounds height="36.0" width="36.0" x="108.0" y="41.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="38.0" width="114.0" x="72.0" y="79.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_IntermediateThrowEvent_3" bpmnElement="SendRequestIntermediateThrowEvent">
+        <dc:Bounds height="36.0" width="36.0" x="252.0" y="41.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="38.0" width="70.0" x="235.0" y="1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_Participant_2" bpmnElement="Purchasing" isHorizontal="true">
+        <dc:Bounds height="492.0" width="1033.0" x="0.0" y="176.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_3" bpmnElement="PurchaseStartEvent">
+        <dc:Bounds height="36.0" width="36.0" x="91.0" y="270.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="38.0" width="70.0" x="74.0" y="311.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_UserTask_3" bpmnElement="QuotationUserTask">
+        <dc:Bounds height="80.0" width="100.0" x="276.0" y="304.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_UserTask_4" bpmnElement="PurchasePlanningUserTask">
+        <dc:Bounds height="80.0" width="100.0" x="432.0" y="304.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_11" bpmnElement="SequenceFlow_11" sourceElement="_BPMNShape_UserTask_3" targetElement="_BPMNShape_UserTask_4">
+        <di:waypoint xsi:type="dc:Point" x="376.0" y="344.0"/>
+        <di:waypoint xsi:type="dc:Point" x="432.0" y="344.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="398.0" y="344.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_EndEvent_13" bpmnElement="RequestMessageEndEvent">
+        <dc:Bounds height="36.0" width="36.0" x="396.0" y="41.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="414.0" y="82.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_16" bpmnElement="SequenceFlow_16" sourceElement="_BPMNShape_IntermediateThrowEvent_3" targetElement="_BPMNShape_EndEvent_13">
+        <di:waypoint xsi:type="dc:Point" x="288.0" y="59.0"/>
+        <di:waypoint xsi:type="dc:Point" x="396.0" y="59.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="310.0" y="59.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_3" bpmnElement="GeneratePurchaseOrdersServiceTask">
+        <dc:Bounds height="80.0" width="100.0" x="684.0" y="296.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="SequenceFlow_1" sourceElement="BPMNShape_StartEvent_1" targetElement="_BPMNShape_IntermediateThrowEvent_3">
+        <di:waypoint xsi:type="dc:Point" x="144.0" y="59.0"/>
+        <di:waypoint xsi:type="dc:Point" x="252.0" y="59.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="175.0" y="59.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_SubProcess_2" bpmnElement="PurchasingPlanningSubProcess" isExpanded="true">
+        <dc:Bounds height="151.0" width="469.0" x="168.0" y="260.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_11" bpmnElement="StartEvent_1">
+        <dc:Bounds height="36.0" width="36.0" x="192.0" y="326.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="210.0" y="367.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="SequenceFlow_3" sourceElement="_BPMNShape_StartEvent_11" targetElement="_BPMNShape_UserTask_3">
+        <di:waypoint xsi:type="dc:Point" x="228.0" y="344.0"/>
+        <di:waypoint xsi:type="dc:Point" x="276.0" y="344.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="256.0" y="344.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_EndEvent_15" bpmnElement="EndEvent_1">
+        <dc:Bounds height="36.0" width="36.0" x="579.0" y="326.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="597.0" y="367.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_4" bpmnElement="SequenceFlow_4" sourceElement="_BPMNShape_UserTask_4" targetElement="_BPMNShape_EndEvent_15">
+        <di:waypoint xsi:type="dc:Point" x="532.0" y="344.0"/>
+        <di:waypoint xsi:type="dc:Point" x="579.0" y="344.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="547.0" y="344.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_BoundaryEvent_11" bpmnElement="IncludeRequestBoundaryEvent">
+        <dc:Bounds height="36.0" width="36.0" x="192.0" y="393.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="38.0" width="147.0" x="228.0" y="428.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_7" bpmnElement="SequenceFlow_7" sourceElement="_BPMNShape_BoundaryEvent_11" targetElement="_BPMNShape_SubProcess_2">
+        <di:waypoint xsi:type="dc:Point" x="210.0" y="429.0"/>
+        <di:waypoint xsi:type="dc:Point" x="210.0" y="478.0"/>
+        <di:waypoint xsi:type="dc:Point" x="402.0" y="478.0"/>
+        <di:waypoint xsi:type="dc:Point" x="402.0" y="410.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="207.0" y="440.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_10" bpmnElement="SequenceFlow_10" sourceElement="_BPMNShape_StartEvent_3" targetElement="_BPMNShape_SubProcess_2">
+        <di:waypoint xsi:type="dc:Point" x="127.0" y="287.0"/>
+        <di:waypoint xsi:type="dc:Point" x="151.0" y="286.0"/>
+        <di:waypoint xsi:type="dc:Point" x="151.0" y="285.0"/>
+        <di:waypoint xsi:type="dc:Point" x="168.0" y="288.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="153.0" y="286.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_MessageFlow_1" bpmnElement="MessageFlow_1" sourceElement="_BPMNShape_IntermediateThrowEvent_3" targetElement="_BPMNShape_StartEvent_3">
+        <di:waypoint xsi:type="dc:Point" x="270.0" y="77.0"/>
+        <di:waypoint xsi:type="dc:Point" x="270.0" y="150.0"/>
+        <di:waypoint xsi:type="dc:Point" x="108.0" y="150.0"/>
+        <di:waypoint xsi:type="dc:Point" x="109.0" y="270.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="105.0" y="157.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_TextAnnotation_2" bpmnElement="TextAnnotation_1">
+        <dc:Bounds height="50.0" width="313.0" x="216.0" y="188.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_TextAnnotation_3" bpmnElement="TextAnnotation_2">
+        <dc:Bounds height="50.0" width="373.0" x="60.0" y="524.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_Association_6" bpmnElement="Association_6" sourceElement="_BPMNShape_TextAnnotation_3" targetElement="_BPMNShape_BoundaryEvent_11">
+        <di:waypoint xsi:type="dc:Point" x="202.0" y="524.0"/>
+        <di:waypoint xsi:type="dc:Point" x="118.0" y="476.0"/>
+        <di:waypoint xsi:type="dc:Point" x="192.0" y="424.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_Association_7" bpmnElement="Association_7" sourceElement="_BPMNShape_TextAnnotation_2" targetElement="_BPMNShape_StartEvent_3">
+        <di:waypoint xsi:type="dc:Point" x="216.0" y="211.0"/>
+        <di:waypoint xsi:type="dc:Point" x="164.0" y="210.0"/>
+        <di:waypoint xsi:type="dc:Point" x="122.0" y="270.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_UserTask_12" bpmnElement="CheckOutPurchaseOrderUserTask">
+        <dc:Bounds height="80.0" width="100.0" x="1236.0" y="290.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_Participant_3" bpmnElement="SupplyerParticipant" isHorizontal="true">
+        <dc:Bounds height="125.0" width="695.0" x="1195.0" y="0.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_SendTask_2" bpmnElement="SendPurchaseOrderSendTask">
+        <dc:Bounds height="80.0" width="100.0" x="1393.0" y="290.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_8" bpmnElement="SequenceFlow_8" sourceElement="_BPMNShape_UserTask_12" targetElement="_BPMNShape_SendTask_2">
+        <di:waypoint xsi:type="dc:Point" x="1336.0" y="330.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1393.0" y="330.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="1358.0" y="330.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_9" bpmnElement="SequenceFlow_9" sourceElement="_BPMNShape_SubProcess_2" targetElement="_BPMNShape_ServiceTask_3">
+        <di:waypoint xsi:type="dc:Point" x="636.0" y="336.0"/>
+        <di:waypoint xsi:type="dc:Point" x="684.0" y="336.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="642.0" y="336.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_13" bpmnElement="StartEvent_3">
+        <dc:Bounds height="36.0" width="36.0" x="1152.0" y="312.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="1170.0" y="353.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_14" bpmnElement="SequenceFlow_14" sourceElement="_BPMNShape_StartEvent_13" targetElement="_BPMNShape_UserTask_12">
+        <di:waypoint xsi:type="dc:Point" x="1188.0" y="330.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1236.0" y="330.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="1216.0" y="330.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_EndEvent_16" bpmnElement="SteelPurchaseEndEvent">
+        <dc:Bounds height="36.0" width="36.0" x="866.0" y="452.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="38.0" width="157.0" x="806.0" y="493.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_UserTask_13" bpmnElement="ConfirmOrderReceivedUserTask">
+        <dc:Bounds height="80.0" width="100.0" x="1649.0" y="408.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_ParallelGateway_3" bpmnElement="ParallelGateway_1">
+        <dc:Bounds height="50.0" width="50.0" x="1543.0" y="305.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="1568.0" y="360.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_18" bpmnElement="SequenceFlow_18" sourceElement="_BPMNShape_SendTask_2" targetElement="_BPMNShape_ParallelGateway_3">
+        <di:waypoint xsi:type="dc:Point" x="1493.0" y="330.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1543.0" y="330.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="1515.0" y="330.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_19" bpmnElement="SequenceFlow_19" sourceElement="_BPMNShape_ParallelGateway_3" targetElement="_BPMNShape_UserTask_13">
+        <di:waypoint xsi:type="dc:Point" x="1568.0" y="355.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1568.0" y="448.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1649.0" y="448.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="1565.0" y="435.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_IntermediateCatchEvent_3" bpmnElement="IntermediateCatchEvent">
+        <dc:Bounds height="36.0" width="36.0" x="1681.0" y="192.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="1699.0" y="233.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_20" bpmnElement="SequenceFlow_20" sourceElement="_BPMNShape_ParallelGateway_3" targetElement="_BPMNShape_IntermediateCatchEvent_3">
+        <di:waypoint xsi:type="dc:Point" x="1568.0" y="305.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1568.0" y="210.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1681.0" y="210.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="1565.0" y="280.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_14" bpmnElement="StartEvent_4">
+        <dc:Bounds height="36.0" width="36.0" x="1259.0" y="46.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="1277.0" y="87.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_MessageFlow_4" bpmnElement="MessageFlow_4" sourceElement="_BPMNShape_SendTask_2" targetElement="_BPMNShape_StartEvent_14">
+        <di:waypoint xsi:type="dc:Point" x="1443.0" y="290.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1441.0" y="143.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1276.0" y="144.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1277.0" y="82.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="1330.0" y="144.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_UserTask_14" bpmnElement="UserTask_3">
+        <dc:Bounds height="80.0" width="100.0" x="1367.0" y="24.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_21" bpmnElement="SequenceFlow_21" sourceElement="_BPMNShape_StartEvent_14" targetElement="_BPMNShape_UserTask_14">
+        <di:waypoint xsi:type="dc:Point" x="1295.0" y="64.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1367.0" y="64.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="1317.0" y="64.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_BoundaryEvent_12" bpmnElement="WaitingForConfirmationBoundaryEvent">
+        <dc:Bounds height="36.0" width="36.0" x="1663.0" y="470.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="38.0" width="55.0" x="1695.0" y="497.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_8" bpmnElement="NotifyPurchaseManagerServiceTask">
+        <dc:Bounds height="80.0" width="100.0" x="1788.0" y="544.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_24" bpmnElement="SequenceFlow_24" sourceElement="_BPMNShape_BoundaryEvent_12" targetElement="_BPMNShape_ServiceTask_8">
+        <di:waypoint xsi:type="dc:Point" x="1681.0" y="506.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1681.0" y="584.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1788.0" y="584.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="1678.0" y="581.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_UserTask_15" bpmnElement="UserTask_4">
+        <dc:Bounds height="80.0" width="99.0" x="1553.0" y="23.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_27" bpmnElement="SequenceFlow_27" sourceElement="_BPMNShape_UserTask_14" targetElement="_BPMNShape_UserTask_15">
+        <di:waypoint xsi:type="dc:Point" x="1467.0" y="64.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1553.0" y="63.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="1489.0" y="64.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_EndEvent_18" bpmnElement="OrderPendingEndEvent">
+        <dc:Bounds height="36.0" width="36.0" x="2015.0" y="566.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="38.0" width="149.0" x="1959.0" y="607.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_31" bpmnElement="SequenceFlow_31" sourceElement="_BPMNShape_ServiceTask_8" targetElement="_BPMNShape_EndEvent_18">
+        <di:waypoint xsi:type="dc:Point" x="1888.0" y="584.0"/>
+        <di:waypoint xsi:type="dc:Point" x="2015.0" y="584.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="1910.0" y="584.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_EndEvent_19" bpmnElement="EndEvent_6">
+        <dc:Bounds height="36.0" width="36.0" x="1735.0" y="45.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="38.0" width="73.0" x="1776.0" y="44.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_32" bpmnElement="SequenceFlow_32" sourceElement="_BPMNShape_UserTask_15" targetElement="_BPMNShape_EndEvent_19">
+        <di:waypoint xsi:type="dc:Point" x="1651.0" y="63.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1735.0" y="63.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="1658.0" y="63.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_MessageFlow_6" bpmnElement="MessageFlow_6" sourceElement="_BPMNShape_EndEvent_19" targetElement="_BPMNShape_IntermediateCatchEvent_3">
+        <di:waypoint xsi:type="dc:Point" x="1753.0" y="81.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1752.0" y="146.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1696.0" y="147.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1698.0" y="192.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="1701.0" y="136.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_IntermediateThrowEvent_5" bpmnElement="OrderResendIntermediateThrowEvent">
+        <dc:Bounds height="36.0" width="36.0" x="2015.0" y="430.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="38.0" width="65.0" x="2001.0" y="471.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_IntermediateCatchEvent_5" bpmnElement="OrderResendIntermediateCatchEvent">
+        <dc:Bounds height="36.0" width="36.0" x="1152.0" y="465.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="38.0" width="65.0" x="1138.0" y="506.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_ExclusiveGateway_8" bpmnElement="CheckStatusExclusiveGateway" isMarkerVisible="true">
+        <dc:Bounds height="50.0" width="50.0" x="1908.0" y="305.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="1933.0" y="360.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_EndEvent_20" bpmnElement="OrderSubmitedEndEvent">
+        <dc:Bounds height="36.0" width="36.0" x="2015.0" y="192.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="38.0" width="58.0" x="2004.0" y="233.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_38" bpmnElement="OrderConfirmedSequenceFlow" sourceElement="_BPMNShape_ExclusiveGateway_8" targetElement="_BPMNShape_EndEvent_20">
+        <di:waypoint xsi:type="dc:Point" x="1933.0" y="305.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1933.0" y="210.0"/>
+        <di:waypoint xsi:type="dc:Point" x="2015.0" y="210.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="1930.0" y="280.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_EndEvent_21" bpmnElement="ResendRequestEndEvent">
+        <dc:Bounds height="36.0" width="36.0" x="2015.0" y="312.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="54.0" width="96.0" x="1985.0" y="353.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_42" bpmnElement="RequestResendSequenceFlow" sourceElement="_BPMNShape_ExclusiveGateway_8" targetElement="_BPMNShape_EndEvent_21">
+        <di:waypoint xsi:type="dc:Point" x="1958.0" y="330.0"/>
+        <di:waypoint xsi:type="dc:Point" x="2015.0" y="330.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="1980.0" y="330.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_UserTask_17" bpmnElement="UpdateSupplierContactInfoUserTask">
+        <dc:Bounds height="80.0" width="100.0" x="1236.0" y="443.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_44" bpmnElement="SequenceFlow_44" sourceElement="_BPMNShape_IntermediateCatchEvent_5" targetElement="_BPMNShape_UserTask_17">
+        <di:waypoint xsi:type="dc:Point" x="1188.0" y="483.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1236.0" y="483.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="1194.0" y="483.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_45" bpmnElement="SequenceFlow_45" sourceElement="_BPMNShape_UserTask_17" targetElement="_BPMNShape_SendTask_2">
+        <di:waypoint xsi:type="dc:Point" x="1336.0" y="483.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1443.0" y="483.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1443.0" y="370.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="1438.0" y="483.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_47" bpmnElement="ResendOrderSequenceFlow" sourceElement="_BPMNShape_ExclusiveGateway_8" targetElement="_BPMNShape_IntermediateThrowEvent_5">
+        <di:waypoint xsi:type="dc:Point" x="1933.0" y="355.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1933.0" y="448.0"/>
+        <di:waypoint xsi:type="dc:Point" x="2015.0" y="448.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="1949.0" y="448.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_Participant_4" bpmnElement="Purchasin" isHorizontal="true">
+        <dc:Bounds height="493.0" width="1032.0" x="1092.0" y="175.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_CallActivity_3" bpmnElement="ProcessPurchaseOrdersCallActivity">
+        <dc:Bounds height="80.0" width="99.0" x="834.0" y="296.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_5" bpmnElement="SequenceFlow_5" sourceElement="_BPMNShape_ServiceTask_3" targetElement="_BPMNShape_CallActivity_3">
+        <di:waypoint xsi:type="dc:Point" x="784.0" y="336.0"/>
+        <di:waypoint xsi:type="dc:Point" x="834.0" y="336.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="806.0" y="336.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_6" bpmnElement="SequenceFlow_6" sourceElement="_BPMNShape_CallActivity_3" targetElement="_BPMNShape_EndEvent_16">
+        <di:waypoint xsi:type="dc:Point" x="883.0" y="376.0"/>
+        <di:waypoint xsi:type="dc:Point" x="884.0" y="452.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="880.0" y="391.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_Lane_2" bpmnElement="ProcessRequestLane" isHorizontal="true">
+        <dc:Bounds height="492.0" width="1003.0" x="30.0" y="176.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_Lane_5" bpmnElement="ProcessPurchaseOrdersLane" isHorizontal="true">
+        <dc:Bounds height="493.0" width="1002.0" x="1122.0" y="175.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_13" bpmnElement="SequenceFlow_13" sourceElement="_BPMNShape_IntermediateCatchEvent_3" targetElement="_BPMNShape_ExclusiveGateway_8">
+        <di:waypoint xsi:type="dc:Point" x="1717.0" y="210.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1832.0" y="210.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1832.0" y="330.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1908.0" y="330.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="1829.0" y="251.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_17" bpmnElement="SequenceFlow_17" sourceElement="_BPMNShape_UserTask_13" targetElement="_BPMNShape_ExclusiveGateway_8">
+        <di:waypoint xsi:type="dc:Point" x="1749.0" y="448.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1828.0" y="448.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1828.0" y="330.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1908.0" y="330.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_Lane_6" bpmnElement="PurchaseRequestLane" isHorizontal="true">
+        <dc:Bounds height="136.0" width="607.0" x="30.0" y="1.0"/>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>
