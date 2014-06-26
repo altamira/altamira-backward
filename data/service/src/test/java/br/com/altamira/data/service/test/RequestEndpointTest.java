@@ -16,6 +16,7 @@
  */
 package br.com.altamira.data.service.test;
 
+import java.io.File;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
@@ -31,21 +32,40 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
 public class RequestEndpointTest {
 	
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        return ShrinkWrap.create(WebArchive.class, "test.war")
-                .addClasses(Request.class, RequestDao.class, Resources.class)
-                .addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml")
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
-                // Deploy our test datasource
-                .addAsWebInfResource("test-ds.xml");
-    }
+	  @Deployment
+	  public static WebArchive createDeployment() {
+	    // resolve given dependencies from Maven POM
+	    File[] libs = Maven.resolver()
+	      .offline(false)
+	      .loadPomFromFile("pom.xml")
+	      .importRuntimeAndTestDependencies().resolve().withTransitivity().asFile();
+
+	    return ShrinkWrap
+	            .create(WebArchive.class, "steel.war")
+	            // add needed dependencies
+	            .addAsLibraries(libs)
+	            // prepare as process application archive for camunda BPM Platform
+	            .addAsWebResource("META-INF/processes.xml", "WEB-INF/classes/META-INF/processes.xml")
+	            // enable CDI
+	            .addAsWebResource("WEB-INF/beans.xml", "WEB-INF/beans.xml")
+	            // boot JPA persistence unit
+	            .addAsResource("META-INF/persistence.xml", "META-INF/persistence.xml")
+	            // add your own classes (could be done one by one as well)
+	            .addPackages(false, "br.com.altamira.bpm.purchase.request.steel") // not recursive to skip package 'nonarquillian'
+	            // add process definition
+	            .addAsResource("process.bpmn")
+	            // add process image for visualizations
+	            .addAsResource("process.png")
+	            // now you can add additional stuff required for your test case
+	    ;
+	  }
 
     @Inject
     RequestDao requestDao;

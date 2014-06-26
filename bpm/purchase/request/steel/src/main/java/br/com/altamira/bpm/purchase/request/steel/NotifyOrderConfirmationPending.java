@@ -36,14 +36,15 @@ public class NotifyOrderConfirmationPending implements JavaDelegate {
 	@Resource(mappedName = RESOURCE_NAME)
 	private Session mailSession;
 	
-	private static final String FROM_USER = "admin@example.org";
+	private static final String FROM_USER = "Sistema Altamira <sistema@altamira.com.br>";
 	
 	private final static Logger LOGGER = Logger.getLogger(NotifyOrderConfirmationPending.class.getName());
 
 	@Override
 	public void execute(DelegateExecution execution) throws Exception {
 		
-		String assignee = "esli.gomes";
+		//String assignee = "esli.gomes";
+		String assignee = "demo";
 
 		if (mailSession == null) {
 			LOGGER.warning("Resource injection fail '" + RESOURCE_NAME + "', do it manually by context.lookup.");

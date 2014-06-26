@@ -37,7 +37,7 @@ public class NotifyTaskAssignedListener implements TaskListener {
 	//@Resource(mappedName = RESOURCE_NAME)
 	private Session mailSession;
 	
-	private static final String FROM_USER = "admin@example.org";
+	private static final String FROM_USER = "Sistema Altamira <sistema@altamira.com.br>";
 	private final static Logger LOGGER = Logger.getLogger(NotifyTaskAssignedListener.class.getName());
 
 	public void notify(DelegateTask delegateTask) {
@@ -130,6 +130,8 @@ public class NotifyTaskAssignedListener implements TaskListener {
 						+ "', user is not enrolled with identity service.");
 			}
 
+		} else {
+			LOGGER.warning("Not sending Notification email to user, couldn't get the user assigned to this task.");
 		}
 
 	}

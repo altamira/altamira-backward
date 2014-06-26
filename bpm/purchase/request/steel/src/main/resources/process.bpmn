@@ -73,6 +73,9 @@
       </bpmn2:startEvent>
       <bpmn2:sequenceFlow id="SequenceFlow_3" name="" sourceRef="StartEvent_1" targetRef="QuotationUserTask"/>
       <bpmn2:userTask id="QuotationUserTask" camunda:assignee="demo" camunda:formKey="app:quotation.html" name="Cotação">
+        <bpmn2:extensionElements>
+          <camunda:taskListener event="assignment" expression="${NotifyUser}"/>
+        </bpmn2:extensionElements>
         <bpmn2:incoming>SequenceFlow_3</bpmn2:incoming>
         <bpmn2:outgoing>SequenceFlow_11</bpmn2:outgoing>
       </bpmn2:userTask>
