@@ -1,0 +1,114 @@
+<div class="container">
+    <div class="modal-header">
+        <h4>{{modal.title}}</h4>
+    </div>
+    <div class="modal-body">
+ 			<accordion ng-init="isopenDadosFaturamento=true">
+    			<accordion-group is-open="isopenDadosFaturamento">
+        			<accordion-heading>Dados para Faturamento <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isopenDadosFaturamento, 'glyphicon-chevron-right': !isopenDadosFaturamento}"></i>
+        			</accordion-heading>
+    				<form name="request_form" class="form-horizontal" role="form" novalidate>
+			    		<div class="form-group">
+				    		<label class="col-sm-2 control-label">Cliente</label>
+				    		<div class="col-sm-10">
+			      				<p class="form-control-static" ng-bind="modal.purchaseOrder.faturamento.fornecedor.razaoSocial"></p>
+			    			</div>
+			    		</div>
+			    		<div class="form-group">
+				    		<label class="col-sm-2 control-label">CNPJ</label>
+				    		<div class="col-sm-4">
+			      				<p class="form-control-static" ng-bind="modal.purchaseOrder.faturamento.fornecedor.cnpj"></p>
+			    			</div>
+				    		<label class="col-sm-3 control-label">IE</label>
+				    		<div class="col-sm-3">
+			      				<p class="form-control-static" ng-bind="modal.purchaseOrder.faturamento.fornecedor.ie"></p>
+			    			</div>
+			    		</div>
+			    		<div class="form-group">
+				    		<label class="col-sm-2 control-label">Número</label>
+				    		<div class="col-sm-4">
+			      				<p class="form-control-static" ng-bind="modal.purchaseOrder.id"></p>
+			    			</div>
+				    		<label class="col-sm-3 control-label">Data Emissão</label>
+				    		<div class="col-sm-3">
+			      				<p class="form-control-static" ng-bind="modal.purchaseOrder.dataEmissao|date:'dd/MM/yyyy'"></p>
+			    			</div>
+			    		</div>
+    				</form>
+    			</accordion-group>
+    			<accordion-group is-open="isopenEnderecoCobranca">
+    				<form name="request_form" role="form" novalidate ng-init="isopenDadosFaturamento=true">
+	        			<accordion-heading>Endereço para Cobrança <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isopenEnderecoCobranca, 'glyphicon-chevron-right': !isopenEnderecoCobranca}"></i>
+	        			</accordion-heading>
+
+						<div class="form-group">
+	    					<label for="logradouro">Logradouro</label>
+							<input type="text" class="form-control" id="logradouro" placeholder="Logradouro..." ng-model="modal.purchaseOrder.enderecoCobranca.logradouro">
+	  					</div>    			
+						<div class="form-group">
+	    					<label for="logradouro">CEP</label>
+							<input type="text" class="form-control" id="logradouro" placeholder="CEP..." ng-model="modal.purchaseOrder.enderecoCobranca.cep">
+	  					</div>    			
+						<div class="form-group">
+	    					<label for="logradouro" style="display: block;">Cidade</label>
+							<input type="text" class="form-control" id="logradouro" placeholder="CEP..." ng-model="modal.purchaseOrder.enderecoCobranca.municipio"
+							style="display: inline-block; width:40%;">
+    						<select id="standard" name="standard" class="form-control" ng-model="modal.purchaseOrder.enderecoCobranca.uf" ng-options="s for s in modal.states" required style="display: inline-block; width:20%;"></select>
+	  					</div>    			
+    				</form>
+  				</accordion-group>
+    			<accordion-group is-open="isopenCondicaoPagamento">
+        			<accordion-heading>Condições de Pagamento <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isopenCondicaoPagamento, 'glyphicon-chevron-right': !isopenCondicaoPagamento}"></i>
+        			</accordion-heading>
+    			</accordion-group>
+    			<accordion-group is-open="isopenDadosEntrega">
+        			<accordion-heading>Dados para Entrega <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isopenDadosEntrega, 'glyphicon-chevron-right': !isopenDadosEntrega}"></i>
+        			</accordion-heading>
+    			</accordion-group>
+ 			</accordion>
+
+			<div class="panel panel-default">
+				<div class="panel-heading"><strong>Produtos:</strong></div>
+				<div class="panel-body">
+				    <div class="table-responsive wrapperProductTable">
+	  					<table class="table table-condensed table-bordered productTable">
+					        <thead>
+					          <tr>
+					            <th>Entrega</th>
+					            <th>Espessura</th>
+					            <th>Largura</th>
+					            <th>Comprimento</th>
+					            <th>Laminação</th>
+					            <th>Tratamento</th>
+					            <th>Norma</th>
+					            <th>Peso</th>
+					            <th>IPI</th>
+					            <th>Unitário</th>
+					            <th>Total</th>
+					          </tr>
+					        </thead>
+					        <tbody>
+					          <tr ng-repeat="product in modal.purchaseOrder.produtos">
+					            <td>{{product.thickness}}</td>
+					            <td>{{product.thickness}}</td>
+					            <td>{{product.width}}</td>
+					            <td>{{product.length}}</td>
+					            <td>{{product.lamination}}</td>
+					            <td>{{product.treatment}}</td>
+					            <td>{{product.standard}}</td>
+					            <td>{{product.weight}}</td>
+					            <td>{{product.ipi}}</td>
+					            <td>{{product.unit}}</td>
+					            <td>{{product.total}}</td>
+					          </tr>
+						    </tbody>
+					    </table>
+					</div>
+				</div>
+			</div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-disabled="request_form.$invalid" ng-click="ok()">OK</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </div>
+<div>

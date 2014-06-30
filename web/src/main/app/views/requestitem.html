@@ -1,0 +1,97 @@
+<div class="container">
+
+	<navtitle></navtitle>
+
+	<form name="request_form" role="form" novalidate>
+	<fieldset>
+
+		<legend>{{modal.title}}</legend>
+
+	    <div class="span2">
+			<div class="input-control radio" data-role="input-control">
+	    		<label>
+	    			<input type="radio" name="tipo" id="tipoChapa" ng-model="modal.item.cut" value="C" ng-change="changedCut()"><span class="check"></span>Chapa
+	    		</label>
+	    	</div>
+	    </div>
+
+	    <div class="span2">
+	    	<div class="input-control radio" data-role="input-control">
+		    	<label>
+		    		<input type="radio" name="tipo" id="tipoBobina" ng-model="modal.item.cut" value="B" ng-change="changedCut()"><span class="check"></span>Bobina
+		    	</label>
+	    	</div>
+		</div>
+	
+		<div class="input-control radio" data-role="input-control">
+    		<div class="span2">
+    			<label><input type="radio" name="fina" id="finaQuente" ng-model="modal.item.material.lamination" value="FQ"><span class="check"></span>Fina Quente</label>
+    		</div>
+    		<div class="span2">
+		  		<label><input type="radio" name="fina" id="finaFrio" ng-model="modal.item.material.lamination" value="FF"><span class="check"></span>Fina Frio</label>
+    		</div>
+		</div>
+
+		<div class="input-control select">
+			<label for="treatment">Tratamento</label>
+			<select id="treatment" class="form-control" ng-model="modal.item.material.treatment" ng-options="t.value as t.desc for t in modal.treatments"></select>
+		</div>
+
+		<div class="input-control select" ng-class="{'form-group' : true, 'has-error' : request_form.otherThicknesses.$dirty && request_form.otherThicknesses.$invalid}">
+			<label for="thickness">Espessura (mm)</label>
+			<select id="thickness" class="form-control" ng-model="modal.item.material.thickness" ng-options="t.value as t.desc for t in modal.thicknesses" ng-change="changedThickness()"></select>
+			<p class="input-control text" ng-show="modal.showOtherThickness">
+				<input type="number" class="form-control" id="otherThicknesses" name="otherThicknesses" ng-model="modal.item.otherThickness" placeholder="Nova espessura..." min='0.10' max='9.99' required>
+				<span class="help-block" ng-show="request_form.otherThicknesses.$dirty && request_form.otherThicknesses.$invalid">Valor inválido para "Espessura"!</span>
+			<p>
+		</div>
+
+		<div class="input-control select" ng-class="{'form-group' : true, 'has-error' : request_form.otherWidth.$dirty && request_form.otherWidth.$invalid}">
+			<label for="width">Largura (mm)</label>
+			<select id="width" class="form-control" ng-model="modal.item.material.width" ng-options="w for w in modal.widths" ng-change="changedWidth()"></select>
+			<p class="help-block" ng-show="modal.showOtherWidth">
+				<input type="number" class="form-control" id="otherWidth" name="otherWidth" ng-model="modal.item.otherWidth" placeholder="Nova largura..." min='20' max='3000' required>
+				<span class="help-block" ng-show="request_form.otherWidth.$dirty && request_form.otherWidth.$invalid">Valor inválido para "Largura"!</span>
+			<p>
+		</div>
+
+		<div class="input-control select" ng-class="{'form-group' : true, 'has-error' : request_form.otherLength.$dirty && request_form.otherLength.$invalid}">
+			<label for="length">Comprimento (mm)</label>
+			<select id="length" class="form-control" ng-model="modal.item.material.length" ng-options="l for l in modal.lengths" ng-change="changedLength()" ng-disabled="modal.item.cut === 'B'"></select>
+			<p class="help-block" ng-show="modal.showOtherLength">
+			<input type="number" class="form-control" id="otherLength" name="otherLength"
+				ng-model="modal.item.otherLength" placeholder="Novo comprimento..." min='0' max='3000'>
+				<span class="help-block" ng-show="request_form.otherLength.$dirty && request_form.otherLength.$invalid">Valor inválido para "Comprimento"!</span>
+			<p>
+		</div>
+
+		<div class="input-control text" ng-class="{'form-group' : true, 'has-error' : request_form.weight.$dirty && request_form.weight.$invalid}">
+		<label for="weight">Peso (Kg)</label>
+			<input id="weight" name="weight" type="number" class="form-control" ng-model="modal.item.weight" placeholder="Peso" min='1' integer required>
+			<span class="help-block" ng-show="request_form.weight.$dirty && request_form.weight.$invalid">Valor inválido para "Peso"!</span>
+		</div>
+
+		<div class="form-group" ng-class="{'form-group' : true, 'has-error' : request_form.arrival.$dirty && request_form.arrival.$invalid}">
+	    		<label for="arrival">Data Entrega</label>
+    			<p class="input-group">
+          			<input name="arrival" type="text" class="form-control" datepicker-popup="dd/MM/yyyy" ng-model="modal.item.arrival" is-open="modal.opened"
+          				min="modal.minDate" max="'2015-06-22'" show-weeks="false" show-button-bar="false" required/>
+          			<span class="input-group-btn">
+            			<button class="btn btn-default" ng-click="openCalendar($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+          			</span>
+        		</p>
+    			<span class="help-block" ng-show="request_form.arrival.$dirty && request_form.arrival.$invalid">Valor inválido para "Data Entrega"!</span>
+    		</div>
+
+	  	<div class="grid">
+	  	<div class="row">
+	    	<div class="span12">
+		        <button class="btn btn-primary" ng-disabled="request_form.$invalid" ng-click="ok()">OK</button>
+		        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+	      	</div>
+	    </div>
+	    </div>
+	</fieldset>
+	</form>
+</div>
+
