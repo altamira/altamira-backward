@@ -1,6 +1,6 @@
 'use strict';
 
 angular.module('webApp')
-  .controller('PurchaseorderCtrl', function ($scope) {
+  .controller('PurchaseOrderCtrl', function ($scope) {
 
   });

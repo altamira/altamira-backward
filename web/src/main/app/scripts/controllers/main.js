@@ -1,12 +1,12 @@
 'use strict';
 
 angular.module('webApp')
-  .controller('MainCtrl', function ($rootScope, $scope, $cookieStore, $location, $modal, $log, $timeout, Auth) {
+  .controller('MainCtrl', function ($rootScope, $scope/*, $cookieStore, $location, $log, $timeout, Auth*/) {
 
     // Configura o subtítulo a ser usado na página.
     $rootScope.page.title = 'Home';
 
-    var handleError = function(evt, error) {
+    /*var handleError = function(evt, error) {
       var modalInstance = $modal.open({
           templateUrl: 'showErrorServerModal.html',
           controller: showErrorServerModalController,
@@ -25,10 +25,10 @@ angular.module('webApp')
       }, function () {
         $log.debug('Modal cancelada: ' + new Date());
       });
-    };
+    };*/
 
     // Tratamento dos eventos de início e fim de requisições http.
-    $scope.$on('http:start', function(evt, error) {
+    /*$scope.$on('http:start', function(evt, error) {
       $scope.httpIndicator = true;
 
       $timeout(function() {
@@ -65,7 +65,7 @@ angular.module('webApp')
       $scope.logged = Auth.isLogged();
 
       $location.path('/');
-    };
+    };*/
 
     var setTilesAreaSize = function(){
         var groups = $('.tile-group');

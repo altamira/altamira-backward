@@ -1,14 +1,14 @@
 'use strict';
 
 angular.module('webApp')
-  .controller('RequestItemCtrl', function ($rootScope, $scope, $log, Request, Material, DateUtil) {
+  .controller('RequestItemCtrl', function ($rootScope, $scope, $log, Restangular, Request, Material, DateUtil) {
 
   // Verifica se um item foi selecionado
   $scope.title = 'Ítem Requisição';
 
   var item = Request.getSelectedItem();
 
-  if (item.id == 0) {
+  if (item.id === 0) {
     $scope.title = 'Novo ' + $scope.title;
   }
 
@@ -106,7 +106,7 @@ angular.module('webApp')
 
     Request.setSelectedItem(item);
 
-    // Cria o material. Para isso é necessário que o mesmo esteja sempre com o identificador igual à "0".
+    // Cria o material. Para isso é necessário que o mesmo esteja sempre com o identificador igual à '0'.
     var editedItem = item;
     editedItem.material.id = 0;
     Material.save(editedItem.material).then(function(dataMaterial) {
@@ -168,7 +168,7 @@ angular.module('webApp')
     }
   };
 
-  /*$rootScope.$on("RequestItemChanged", function() {
+  /*$rootScope.$on('RequestItemChanged', function() {
       var item = Request.getSelectedItem();
   });*/
 

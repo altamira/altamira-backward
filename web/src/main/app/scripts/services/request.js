@@ -18,7 +18,7 @@ angular.module('webApp')
     // Public API...
     return {
       getSelectedItem : function() {
-        if (selectedRequestItem == null) {
+        if (selectedRequestItem === null) {
           selectedRequestItem = {
             id : 0,
             weight : null,
@@ -37,7 +37,7 @@ angular.module('webApp')
       },
       setSelectedItem : function(item) {
         selectedRequestItem = item;
-        $rootScope.$emit("RequestItemChanged");
+        $rootScope.$emit('RequestItemChanged');
       },
       getTreatments : function () {
         return treatments;
@@ -60,7 +60,7 @@ angular.module('webApp')
           selectedRequest.items = [];
         }
 
-        $rootScope.$emit("RequestChanged", selectedRequest);
+        $rootScope.$emit('RequestChanged', selectedRequest);
         });
         return selectedRequest;
       },

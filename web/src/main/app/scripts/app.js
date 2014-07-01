@@ -31,7 +31,7 @@ angular
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
       })
-      .when('/task', {
+      /*.when('/task', {
         templateUrl: 'views/task.html',
         controller: 'TaskCtrl'
       })
@@ -45,11 +45,11 @@ angular
       })
       .when('/purchaseplanning', {
         templateUrl: 'views/purchaseplanning.html',
-        controller: 'PurchaseplanningCtrl'
+        controller: 'PurchasePlanningCtrl'
       })
       .when('/purchaseorder', {
         templateUrl: 'views/purchaseorder.html',
-        controller: 'PurchaseorderCtrl'
+        controller: 'PurchaseOrderCtrl'
       })
       .when('/request-edit', {
         templateUrl: 'request.html',
@@ -58,7 +58,7 @@ angular
       .when('/requestItem', {
         templateUrl: 'views/requestItem.html',
         controller: 'RequestItemCtrl'
-      })
+      })*/
       .otherwise({
         redirectTo: '/'
       });
