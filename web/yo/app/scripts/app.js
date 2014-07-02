@@ -9,22 +9,31 @@
  * Main module of the application.
  */
 angular
-  .module('yoApp', [
-    'ngCookies',
-    'ngResource',
+  .module('webApp', [
     'ngRoute',
-    'ngSanitize',
-    'ngTouch'
+    'restangular'
   ])
-  .config(function ($routeProvider) {
+  .run(function($rootScope, $location) {
+    $rootScope.bgcolor = 'white';
+    $rootScope.fgcolor = 'black';
+    $rootScope.page = { title : 'Altamira Industria Metalurgica' };
+
+    var history = [];
+
+    $rootScope.$on('$routeChangeSuccess', function() {
+        history.push($location.$$path);
+    });
+
+    $rootScope.back = function () {
+        var prevUrl = history.length > 1 ? history.splice(-2)[0] : '/';
+        $location.path(prevUrl);
+    };
+  })
+  .config(function ($routeProvider/*, $httpProvider, RestangularProvider*/) {
     $routeProvider
       .when('/', {
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
-      })
-      .when('/about', {
-        templateUrl: 'views/about.html',
-        controller: 'AboutCtrl'
       })
       .otherwise({
         redirectTo: '/'
