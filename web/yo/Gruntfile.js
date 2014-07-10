@@ -78,10 +78,10 @@ module.exports = function (grunt) {
         }
       ],
       options: {
-        port: 9000,
+        port: 9004,
         // Change this to '0.0.0.0' to access the server from outside.
-        hostname: 'localhost',
-        livereload: 35729
+        hostname: '0.0.0.0',
+        livereload: 35728
       },
       livereload: {
         options: {
@@ -332,11 +332,6 @@ module.exports = function (grunt) {
           cwd: '.tmp/images',
           dest: '<%= yeoman.dist %>/images',
           src: ['generated/*']
-        }, {
-          expand: true,
-          cwd: 'bower_components/bootstrap/dist',
-          src: 'fonts/*',
-          dest: '<%= yeoman.dist %>'
         }, {
             expand: true,
             cwd: 'bower_components/metro-ui',

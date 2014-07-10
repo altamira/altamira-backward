@@ -23,7 +23,10 @@ angular.module('webApp').controller('MainCtrl', function($scope, $http) {
         $.each(groups, function(i, t){
             tileAreaWidth += $(t).outerWidth()+46;
         });
-        $('.tile-area').css({
+        /*$('.tile-area').css({
+            width: tileAreaWidth
+        });*/
+        $('.container').css({
             width: tileAreaWidth
         });
     };
