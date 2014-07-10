@@ -1,0 +1,98 @@
+<!-- <div class="container"> -->
+
+<nav class="navigation-bar fixed-top">
+	<nav class="navigation-bar-content">
+
+		<a href="/" class="element brand"><span class="icon-arrow-left-3"></span><span
+			class="no-tablet-portrait no-phone">&nbsp;Requisi&ccedil;&atilde;o
+				de Compra</span></a> <span class="element-divider"></span> <a
+			class="element brand" href="#"><span class="icon-spin"></span></a> <a
+			class="element brand" href="#"><span class="icon-plus-2"></span></a>
+		<a class="element brand" href="#"><span class="icon-checkmark"></span></a>
+		<a class="element brand" href="#"><span class="icon-printer"></span></a>
+
+		<div class="no-tablet-portrait no-phone">
+			<span class="element-divider"></span>
+			<div class="element input-element">
+				<form>
+					<div class="input-control text">
+						<input type="text" placeholder="Search...">
+						<button class="btn-search"></button>
+					</div>
+				</form>
+			</div>
+
+			<div class="element place-right">
+				<a class="dropdown-toggle" href="#"> <span class="icon-cog"></span>
+				</a>
+				<ul class="dropdown-menu place-right" data-role="dropdown">
+					<li><a href="#">Products</a></li>
+					<li><a href="#">Download</a></li>
+					<li><a href="#">Support</a></li>
+					<li><a href="#">Buy Now</a></li>
+				</ul>
+			</div>
+			<span class="element-divider place-right"></span>
+		</div>
+	</nav>
+</nav>
+
+<div class="row no-tablet no-phone">
+	<alert ng-repeat="alert in alerts" type="alert.type"
+		close="closeAlert($index)">{{alert.msg}}</alert>
+
+	<h4
+		ng-bind="subtitle + ' Requisi&ccedil;&atilde;o de Compra de A&ccedil;o ' + (request.created|date:'dd/MM/yyyy')"></h4>
+	<p>
+		<button class="info" ng-click="editRequest()">
+			<i class="icon-plus-2 on-left"></i>Incluir
+		</button>
+
+		<!--<button type="button" class="btn btn-primary" ng-click="sendRequest()" ng-disabled="request.items.length === 0"><span class="glyphicon glyphicon-ok"></span> Enviar Requisição</button>-->
+		<button class="success" value="Enviar Requisi&ccedil;&atilde;o"
+			ng-disabled="request.items.length === 0" ng-click="editRequest()">
+			<i class="icon-arrow-right on-left"></i> Enviar
+			Requisi&ccedil;&atilde;o
+		</button>
+	</p>
+	
+</div>
+
+<div class="row">
+	<div class="listview-outlook" data-role="listview">
+		<div class="list-group">
+			<a href="" class="group-title">05/10/2014</a>
+			<div class="group-content">
+				<a href="#" class="list" ng-repeat="item in request.items">
+					<div class="list-content">
+						<div class="tile half tile-{{item.material.treatment}}">
+							<h2 class="text-center fg-white">{{item.material.treatment}}</h2>
+						</div>
+						<div class="data">
+							<span class="list-title"><span
+								ng-show="item.material.format">Chapa</span><span
+								ng-show="!item.material.format">Rolo</span><span ng-show="item.material.lamination == 'FF'">&nbsp;Fina Frio</span><span ng-show="item.material.lamination == 'FQ'">&nbsp;Fina Quente</span></span> <span class="list-remark"><div class="large_screen">
+									<b>Espessura:</b>
+								</div>&nbsp;{{item.material.thickness|number:2}}mm
+								<div class="large_screen">
+									<b>Largura:</b>
+								</div>&nbsp;{{item.material.width|number:2}}mm <i class="icon-tab-2 small_screen"></i>
+								<div class="large_screen">
+									<b>Comprimento:</b>
+								</div>&nbsp;{{item.material.length|number:2}}mm </span>{{item.weight}}Kg
+						</div>
+					</div>
+				</a>
+			</div>
+		</div>
+		<div class="list-group collapsed">
+			<a href="" class="group-title">07/10/2014</a>
+			<div class="group-content">
+				<a href="#" class="list">
+					<div class="list-content">...</div>
+				</a>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- </div> -->

@@ -142,6 +142,18 @@
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
+		  <plugin>
+                <groupId>com.github.trecloux</groupId>
+                <artifactId>yeoman-maven-plugin</artifactId>
+                <version>0.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.1</version>
@@ -151,13 +163,18 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.3</version>
-				<configuration>
-					<!-- A web.xml is no longer required. -->
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-				</configuration>
-			</plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <!-- Java EE 6 doesn't require web.xml, Maven needs to catch up! -->
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <webResources>
+                        <resource>
+                            <directory>yo/dist</directory>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 
