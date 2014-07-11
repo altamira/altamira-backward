@@ -22,13 +22,6 @@
 	padding-left: 5px;
 }
 
-@media only screen and (max-width: 800px) {
-    .navigation-bar-content .element, .navigation-bar .element, .navbar .element {
-        float: left;
-        display: inline;
-    }
-}
-
 .metro .tile.half.tile-DE {
     background-color: #1ba1e2;
 }
@@ -39,4 +32,16 @@
 
 .metro .tile.half.tile-GA {
 	background-color: #f0a30a;
+}
+
+@media only screen and (max-width: 800px) {
+    .navigation-bar, .navbar {
+		position: fixed !important;
+    }
+    .metro .navigation-bar .navigation-bar-content .element, .metro .navbar .navigation-bar-content .element, .metro .navigation-bar .navbar-content .element, .metro .navbar .navbar-content .element, .metro .navigation-bar .navigation-bar-content .element-divider, .metro .navbar .navigation-bar-content .element-divider, .metro .navigation-bar .navbar-content .element-divider, .metro .navbar .navbar-content .element-divider {
+        display: inline-block;
+    }
+    .metro h2 {
+        font-size: 28px;
+    }
 }
