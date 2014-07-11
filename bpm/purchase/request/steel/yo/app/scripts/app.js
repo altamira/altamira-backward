@@ -9,7 +9,7 @@
  * Main module of the application.
  */
 angular
-  .module('BpmPurchaseRequestSteelApp', [
+  .module('steelApp', [
     'ngAnimate',
     'ngCookies',
     'ngResource',
@@ -20,8 +20,8 @@ angular
   .config(function ($routeProvider) {
     $routeProvider
       .when('/', {
-        templateUrl: 'views/main.html',
-        controller: 'MainCtrl'
+        templateUrl: 'views/request.html',
+        controller: 'RequestCtrl'
       })
       .otherwise({
         redirectTo: '/'

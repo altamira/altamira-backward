@@ -25,7 +25,7 @@ module.exports = function(config) {
       'bower_components/angular-sanitize/angular-sanitize.js',
       'bower_components/angular-touch/angular-touch.js',
       'app/scripts/**/*.js',
-      'test/mock/**/*.js',
+      //'test/mock/**/*.js',
       'test/spec/**/*.js'
     ],
 
@@ -33,7 +33,7 @@ module.exports = function(config) {
     exclude: [],
 
     // web server port
-    port: 8080,
+    port: 9010,
 
     // Start these browsers, currently available:
     // - Chrome
@@ -65,7 +65,7 @@ module.exports = function(config) {
 
     // Uncomment the following lines if you are using grunt's server to run the tests
     proxies: {
-      '/': 'http://localhost:9000/'
+      '/': 'http://localhost:9002/'
     },
     // URL root prevent conflicts with the site root
     urlRoot: '_karma_'

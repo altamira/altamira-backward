@@ -7,13 +7,9 @@
  * # MainCtrl
  * Controller of the bpmpurchaserequeststeelApp
  */
-angular.module('BpmPurchaseRequestSteelApp')
-  .controller('MainCtrl', function ($scope) {
-    $scope.awesomeThings = [
-      'HTML5 Boilerplate',
-      'AngularJS',
-      'Karma'
-    ];
+angular.module('steelApp')
+  .controller('RequestCtrl', function ($scope) {
+	$scope.awesomeThings = [ 'HTML5 Boilerplate', 'AngularJS', 'Karma' ];
     
     $scope.request = { items : [
                                 { material: { format: 0, lamination: 'FQ', treatment: 'PR', thickness: '1.85', width: 240, length: 1400}, weight: 1260, arrival: '01/01/2014'},
