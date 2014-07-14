@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://activiti.org/bpmn" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:fox="http://www.camunda.com/fox" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" id="Definitions_1" exporter="camunda modeler" exporterVersion="2.6.0" targetNamespace="http://www.example.org/bpmn">
   <bpmn2:collaboration id="Collaboration" name="Default Collaboration">
-    <bpmn2:participant id="MRP" name="PCP" processRef="br.com.altamira.bpm.purchase.request.steel"/>
-    <bpmn2:participant id="Purchasing" name="Compras" processRef="br.com.altamira.bpm.purchasing.request.ProcessPurchaseRequest"/>
-    <bpmn2:participant id="SupplyerParticipant" name="Fornecedor" processRef="Process_1"/>
-    <bpmn2:participant id="Purchasin" name="Compras" processRef="br.com.altamira.bpm.purchasing.request.ProcessPurchaseOrders"/>
+    <bpmn2:participant id="MRP" name="PCP" processRef="bpm.manufactory.material.request"/>
+    <bpmn2:participant id="Purchasing" name="Compras" processRef="bpm.purchase.request.steel"/>
+    <bpmn2:participant id="SupplyerParticipant" name="Fornecedor" processRef="external.supplier"/>
+    <bpmn2:participant id="Purchasin" name="Compras" processRef="bpm.purchasing.request.order"/>
     <bpmn2:messageFlow id="MessageFlow_1" name="" sourceRef="SendRequestIntermediateThrowEvent" targetRef="PurchaseStartEvent"/>
     <bpmn2:messageFlow id="MessageFlow_4" name="" sourceRef="SendPurchaseOrderSendTask" targetRef="StartEvent_4"/>
     <bpmn2:messageFlow id="MessageFlow_6" name="" sourceRef="EndEvent_6" targetRef="IntermediateCatchEvent"/>
   </bpmn2:collaboration>
-  <bpmn2:process id="br.com.altamira.bpm.purchase.request.steel" name="Requisição de Compra de Aço" isExecutable="true">
+  <bpmn2:process id="bpm.manufactory.material.request" name="Requisição de Compra de Aço" isExecutable="true">
     <bpmn2:laneSet id="LaneSet_2" name="Lane Set 2">
       <bpmn2:lane id="PurchaseRequestLane" name="Requisição de Compra de Aço">
         <bpmn2:flowNodeRef>RequestStartEvent</bpmn2:flowNodeRef>
@@ -40,7 +40,7 @@
     </bpmn2:textAnnotation>
     <bpmn2:association id="Association_7" sourceRef="TextAnnotation_1" targetRef="PurchaseStartEvent"/>
   </bpmn2:process>
-  <bpmn2:process id="br.com.altamira.bpm.purchasing.request.ProcessPurchaseRequest" name="Processar Requisições de Compra de Aço" isExecutable="true">
+  <bpmn2:process id="bpm.purchase.request.steel" name="Processar Requisições de Compra de Aço" isExecutable="true">
     <bpmn2:laneSet id="LaneSet_1" name="Lane Set 1">
       <bpmn2:lane id="ProcessRequestLane" name="Processar Requisições de Compra de Aço">
         <bpmn2:flowNodeRef>PurchaseStartEvent</bpmn2:flowNodeRef>
@@ -118,10 +118,10 @@
     <bpmn2:association id="Association_6" sourceRef="TextAnnotation_2" targetRef="IncludeRequestBoundaryEvent"/>
   </bpmn2:process>
   <bpmn2:signal id="Signal_1" name="NewRequestSignal"/>
-  <bpmn2:message id="Message_1" name="REQUEST_CREATED_MESSAGE"/>
+  <bpmn2:message id="Message_1" name="REQUEST_NEW_MESSAGE"/>
   <bpmn2:message id="Message_2" name="REQUEST_INCLUDE_MESSAGE"/>
   <bpmn2:signal id="Signal_2" name="OrderNegeratedSignal"/>
-  <bpmn2:process id="Process_1" isExecutable="false">
+  <bpmn2:process id="external.supplier" isExecutable="false">
     <bpmn2:startEvent id="StartEvent_4">
       <bpmn2:outgoing>SequenceFlow_21</bpmn2:outgoing>
       <bpmn2:messageEventDefinition id="_MessageEventDefinition_7"/>
@@ -143,7 +143,7 @@
     <bpmn2:sequenceFlow id="SequenceFlow_32" name="" sourceRef="UserTask_4" targetRef="EndEvent_6"/>
   </bpmn2:process>
   <bpmn2:message id="Message_4" name="ORDER_RECEIVED_MESSAGE"/>
-  <bpmn2:process id="br.com.altamira.bpm.purchasing.request.ProcessPurchaseOrders" name="Processar Pedidos" isExecutable="true">
+  <bpmn2:process id="bpm.purchasing.request.order" name="Processar Pedidos" isExecutable="true">
     <bpmn2:laneSet id="LaneSet_5" name="Lane Set 5">
       <bpmn2:lane id="ProcessPurchaseOrdersLane" name="Processar Pedidos">
         <bpmn2:flowNodeRef>StartEvent_3</bpmn2:flowNodeRef>

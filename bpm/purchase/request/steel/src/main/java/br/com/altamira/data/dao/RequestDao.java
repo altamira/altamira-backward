@@ -28,11 +28,18 @@ public class RequestDao {
 		return findAllQuery.getResultList();
 	}
 	
-	public Request create(Request entity) {
+	public Request create(Request entity) throws Exception {
 		if (entity.getId() != null) {
 			throw new IllegalArgumentException("To create this entity id must be null.");
 		}
-		entityManager.persist(entity);
+		
+		try {
+			entityManager.persist(entity);
+			entityManager.flush();
+		} catch (Exception e) {
+			throw new Exception(e.getMessage());
+		}
+		
 		return entity;
 	}
 	
@@ -80,7 +87,7 @@ public class RequestDao {
 		return entity;
 	}
 	
-    public Request getCurrent() {
+    public Request getCurrent() throws Exception {
         List<Request> requests;
 
         requests = (List<Request>) entityManager

@@ -1,6 +1,7 @@
 package br.com.altamira.data.service;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -25,6 +26,11 @@ import br.com.altamira.data.model.Request;
 import br.com.altamira.data.serialize.RequestListSerializer;
 import br.com.altamira.data.serialize.JSonViews.JsonEntityView;
 //import br.com.altamira.data.serialize.JSonViews.JsonListView;
+
+
+
+
+
 
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -93,7 +99,13 @@ public class RequestEndpoint {
 	@Consumes("application/json")
 	public Response create(Request entity) throws IllegalArgumentException,
 			UriBuilderException, IOException {
-		requestDao.create(entity);
+		
+		try {
+			requestDao.create(entity);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+		}
 
 		return Response
 				.created(
@@ -138,17 +150,41 @@ public class RequestEndpoint {
 		return Response.noContent().build();
 	}
 
-	/*
-	 * @GET
-	 * 
-	 * @Path("/current")
-	 * 
-	 * @Produces("application/json") public Response getCurrent() { Request
-	 * entity = requestDao.getCurrent(); return
-	 * Response.ok(UriBuilder.fromResource(RequestEndpoint.class)
-	 * .path(String.valueOf(entity.getId())).build()) .entity(entity) .build();
-	 * }
+	/* 
+	 * Custom methods 
 	 */
+	
+	@GET
+	@Path("/current")
+	@Produces("application/json")
+	public Response getCurrent()
+			throws IOException {
+
+		Request entity;
+		try {
+			entity = requestDao.getCurrent();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+		}
+
+		if (entity == null) {
+			entity = new Request();
+			
+			entity.setCreated(new Date());
+			entity.setCreator("me"); // TODO get current user
+			entity.setSent(null);
+			
+			try {
+				requestDao.create(entity);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+			}
+		}
+
+		return Response.ok(serialize(entity)).build();
+	}
 
 	/*
 	 * @GET

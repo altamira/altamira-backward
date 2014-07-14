@@ -9,7 +9,7 @@ import org.camunda.bpm.engine.test.Deployment;
  */
 public class InMemoryH2Test extends ProcessEngineTestCase {
 
-  private static final String PROCESS_DEFINITION_KEY = "steel";
+  private static final String PROCESS_DEFINITION_KEY = "bpm.purchase.request.steel";
 
   // enable more detailed logging
   static {

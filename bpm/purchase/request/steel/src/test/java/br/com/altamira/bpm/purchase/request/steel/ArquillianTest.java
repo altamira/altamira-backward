@@ -3,24 +3,33 @@ package br.com.altamira.bpm.purchase.request.steel;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import br.com.altamira.data.dao.RequestDao;
+import br.com.altamira.data.model.Request;
 
 @RunWith(Arquillian.class)
 public class ArquillianTest {
   
-  private static final String PROCESS_DEFINITION_KEY = "steel";
+  private static final String PROCESS_DEFINITION_KEY = "bpm.purchase.request.steel";
 
   @Deployment
   public static WebArchive createDeployment() {
@@ -31,17 +40,19 @@ public class ArquillianTest {
       .importRuntimeAndTestDependencies().resolve().withTransitivity().asFile();
 
     return ShrinkWrap
-            .create(WebArchive.class, "steel.war")
+            .create(WebArchive.class, "SteelTest.war")
             // add needed dependencies
             .addAsLibraries(libs)
             // prepare as process application archive for camunda BPM Platform
-            .addAsWebResource("META-INF/processes.xml", "WEB-INF/classes/META-INF/processes.xml")
+            .addAsWebResource("META-INF/test-processes.xml", "WEB-INF/classes/META-INF/processes.xml")
             // enable CDI
             .addAsWebResource("WEB-INF/beans.xml", "WEB-INF/beans.xml")
             // boot JPA persistence unit
-            .addAsResource("META-INF/persistence.xml", "META-INF/persistence.xml")
+            .addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml")
             // add your own classes (could be done one by one as well)
             .addPackages(false, "br.com.altamira.bpm.purchase.request.steel") // not recursive to skip package 'nonarquillian'
+            .addPackages(true, "br.com.altamira.data")
+            .addPackage("br.com.altamira.data.model")
             // add process definition
             .addAsResource("process.bpmn")
             // add process image for visualizations
@@ -52,6 +63,9 @@ public class ArquillianTest {
 
   @Inject
   private ProcessEngine processEngine;
+  
+  @Inject 
+  private RequestDao requestDao;
 
   /**
    * Tests that the process is executable and reaches its end.
@@ -62,7 +76,8 @@ public class ArquillianTest {
     
     ProcessInstance processInstance = processEngine.getRuntimeService().startProcessInstanceByKey(PROCESS_DEFINITION_KEY);
 
-    assertEquals(1, processEngine.getHistoryService().createHistoricProcessInstanceQuery().processInstanceId(processInstance.getId()).finished().count());
+    //assertEquals(1, processEngine.getHistoryService().createHistoricProcessInstanceQuery().processInstanceId(processInstance.getId()).finished().count());
+    assertEquals(1, processEngine.getRuntimeService().createProcessInstanceQuery().processInstanceId(processInstance.getId()).count());
   }
 
   /**
@@ -75,4 +90,18 @@ public class ArquillianTest {
       processEngine.getRuntimeService().deleteProcessInstance(processInstance.getId(), "deleted to have a clean environment for Arquillian");
     }
   }  
+  
+  @Test
+  public void GetCurrentTest() throws Exception {
+	  ClientRequest request = new ClientRequest("http://localhost:8080/bpm-purchase-request-steel/rest/request/current");
+	  request.accept(MediaType.APPLICATION_JSON);
+      request.header("Content-Type", MediaType.APPLICATION_JSON);
+	  ClientResponse<Request> response = request.get(Request.class);
+	  
+	  assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
+	  
+	  Request r = response.getEntity();
+	  Assert.assertNotNull(r);
+  }
+  
 }

@@ -1,3 +1,5 @@
+<div class="fixed-top" style="height:50px;"></div>
+
 <div class="listview-outlook" data-role="listview">
 	<div class="list-group">
 		<a href="" class="group-title">05/10/2014</a>
@@ -13,11 +15,9 @@
 							ng-show="!item.material.format">Rolo</span><span
 							ng-show="item.material.lamination == 'FF'">&nbsp;Fina Frio</span><span
 							ng-show="item.material.lamination == 'FQ'">&nbsp;Fina
-								Quente</span></span> <span class="list-remark"><div
-								class="large_screen">
+								Quente</span></span> <span class="list-remark"><div class="large_screen">
 								<b>Espessura:</b>
-							</div>&nbsp;{{item.material.thickness|number:2}}mm
-							<div class="large_screen">
+							</div>&nbsp;{{item.material.thickness|number:2}}mm<div class="large_screen">
 								<b>Largura:</b>
 							</div>&nbsp;{{item.material.width|number:2}}mm <i
 							class="icon-tab-2 small_screen"></i>
