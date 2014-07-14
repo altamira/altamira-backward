@@ -1,5 +1,6 @@
 package br.com.altamira.data.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -28,17 +29,13 @@ public class RequestDao {
 		return findAllQuery.getResultList();
 	}
 	
-	public Request create(Request entity) throws Exception {
+	public Request create(Request entity) {
 		if (entity.getId() != null) {
 			throw new IllegalArgumentException("To create this entity id must be null.");
 		}
 		
-		try {
-			entityManager.persist(entity);
-			entityManager.flush();
-		} catch (Exception e) {
-			throw new Exception(e.getMessage());
-		}
+		entityManager.persist(entity);
+		entityManager.flush();
 		
 		return entity;
 	}
@@ -87,7 +84,7 @@ public class RequestDao {
 		return entity;
 	}
 	
-    public Request getCurrent() throws Exception {
+    public Request getCurrent() {
         List<Request> requests;
 
         requests = (List<Request>) entityManager
@@ -96,7 +93,7 @@ public class RequestDao {
 
         if (requests.isEmpty()) {
 
-            return create(new Request(null, null, "system"));
+            return create(new Request(null, new Date(), "system", null));
 
         }
 

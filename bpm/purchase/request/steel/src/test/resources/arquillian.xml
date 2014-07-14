@@ -9,15 +9,15 @@
    
    <!-- Uncomment to have test archives exported to the file system for inspection -->
    <engine>
-      <property name="deploymentExportPath">target/deploymentExport</property>
+      <property name="deploymentExportPath">target/arquillian</property>
    </engine>
 
    <!-- Example configuration for a remote JBoss Enterprise Application Platform 6 or AS 7 instance -->
-   <container qualifier="jboss" default="true">
+   <container qualifier="arq-jbossas-remote" default="true">
         <!-- By default, arquillian will use the JBOSS_HOME environment variable.  Alternatively, the configuration below can be uncommented. -->
-<!--         <configuration> -->
-<!--                 <property name="jbossHome">C:\tools\camunda-bpm-jboss-7.0.0-Final\server\jboss-as-7.1.3.Final</property> -->
-<!--         </configuration> -->
+        <!-- <configuration>
+                <property name="jbossHome">F:/cam-jboss-7.1.0-Final/server/jboss-as-7.2.0.Final</property>
+        </configuration> -->
    </container>
 
 </arquillian> 

@@ -81,10 +81,11 @@ public class Request implements Serializable {
         this.id = id;
     }*/
 
-    public Request(Long id, Date created, String creator) {
+    public Request(Long id, Date created, String creator, Date sent) {
         this.id = id;
         this.created = created;
         this.creator = creator;
+        this.sent = sent;
     }
 
     public Long getId() {

@@ -4,13 +4,16 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.xml.ws.soap.AddressingFeature.Responses;
 
 import org.camunda.bpm.engine.ProcessEngine;
+import org.camunda.bpm.engine.cdi.ProcessVariables;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -73,8 +76,20 @@ public class ArquillianTest {
   @Test
   public void testProcessExecution() throws Exception {
     cleanUpRunningProcessInstances();
+
+    Request entity = new Request();
     
-    ProcessInstance processInstance = processEngine.getRuntimeService().startProcessInstanceByKey(PROCESS_DEFINITION_KEY);
+    entity.setCreated(new Date());
+    entity.setCreator("Arquillian");
+    entity.setSent(null);
+    
+    requestDao.create(entity);
+    
+    HashMap<String, Object> variables = new HashMap<String, Object>();
+    
+    variables.put("REQUEST_ID", entity.getId());
+    
+    ProcessInstance processInstance = processEngine.getRuntimeService().startProcessInstanceByKey(PROCESS_DEFINITION_KEY, variables);
 
     //assertEquals(1, processEngine.getHistoryService().createHistoricProcessInstanceQuery().processInstanceId(processInstance.getId()).finished().count());
     assertEquals(1, processEngine.getRuntimeService().createProcessInstanceQuery().processInstanceId(processInstance.getId()).count());
@@ -98,7 +113,7 @@ public class ArquillianTest {
       request.header("Content-Type", MediaType.APPLICATION_JSON);
 	  ClientResponse<Request> response = request.get(Request.class);
 	  
-	  assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
+	  assertEquals(200, response.getStatus());
 	  
 	  Request r = response.getEntity();
 	  Assert.assertNotNull(r);
