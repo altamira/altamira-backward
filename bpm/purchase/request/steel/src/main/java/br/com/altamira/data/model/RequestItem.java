@@ -8,6 +8,7 @@ package br.com.altamira.data.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,6 +24,10 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
+import javax.xml.bind.annotation.XmlTransient;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import br.com.altamira.data.model.Material;
 /**
@@ -30,12 +35,10 @@ import br.com.altamira.data.model.Material;
  * @author Alessandro
  */
 @Entity
-@Table(name = "REQUEST_ITEM"/*, uniqueConstraints = @UniqueConstraint(name = "UK1", columnNames = {"REQUEST", "MATERIAL", "ARRIVAL_DATE"})*/)
+@Table(name = "REQUEST_ITEM", uniqueConstraints = @UniqueConstraint(name = "UK1", columnNames = {"REQUEST", "MATERIAL", "ARRIVAL_DATE"}))
 @NamedQueries({
-    @NamedQuery(name = "RequestItem.findAll", query = "SELECT r FROM RequestItem r"),
-    @NamedQuery(name = "RequestItem.findById", query = "SELECT r FROM RequestItem r WHERE r.id = :id"),
-    @NamedQuery(name = "RequestItem.findByArrival", query = "SELECT r FROM RequestItem r WHERE r.arrival = :arrival"),
-    @NamedQuery(name = "RequestItem.findByWeight", query = "SELECT r FROM RequestItem r WHERE r.weight = :weight")})
+    @NamedQuery(name = "RequestItem.list", query = "SELECT r FROM RequestItem r JOIN FETCH r.material JOIN r.request rq WHERE rq.id = :requestId"),
+    @NamedQuery(name = "RequestItem.findById", query = "SELECT r FROM RequestItem r WHERE r.id = :id")})
 public class RequestItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -56,10 +59,10 @@ public class RequestItem implements Serializable {
     @Column(name = "WEIGHT")
     private BigDecimal weight;
 
-    /*@JsonIgnore
-    @JoinColumn(name = "REQUEST", referencedColumnName = "ID")
+    @JsonIgnore
+	@JoinColumn(name = "REQUEST", referencedColumnName = "ID")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Request request;*/
+    private Request request;
     
     @JoinColumn(name = "MATERIAL", referencedColumnName = "ID")
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
@@ -71,22 +74,13 @@ public class RequestItem implements Serializable {
     public RequestItem() {
     }
 
-    public RequestItem(Long id) {
-        this.id = id;
-    }
-
-    public RequestItem(Long id, Date arrival, BigDecimal weight) {
-        this.id = id;
+    public RequestItem(Date arrival, BigDecimal weight) {
         this.arrival = arrival;
         this.weight = weight;
     }
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Date getArrival() {
@@ -104,15 +98,16 @@ public class RequestItem implements Serializable {
     public void setWeight(BigDecimal weight) {
         this.weight = weight;
     }
-
-    /*@XmlTransient
+	
+    @JsonIgnore
+    @XmlTransient
     public Request getRequest() {
         return request;
     }
 
     public void setRequest(Request request) {
         this.request = request;
-    }*/
+    }
 
     public Material getMaterial() {
         return material;

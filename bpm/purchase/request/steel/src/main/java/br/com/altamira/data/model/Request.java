@@ -17,7 +17,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -27,6 +26,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlTransient;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
@@ -35,12 +37,10 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "REQUEST")
 @NamedQueries({
-    @NamedQuery(name = "Request.findAll", query = "SELECT r FROM Request r"),
+    @NamedQuery(name = "Request.list", query = "SELECT r FROM Request r"),
     @NamedQuery(name = "Request.findById", query = "SELECT r FROM Request r WHERE r.id = :id"),
-    @NamedQuery(name = "Request.findByCreated", query = "SELECT r FROM Request r WHERE r.created = :created"),
-    @NamedQuery(name = "Request.findByCreator", query = "SELECT r FROM Request r WHERE r.creator = :creator"),
-    @NamedQuery(name = "Request.findBySent", query = "SELECT r FROM Request r WHERE r.sent = :sent"),
-	@NamedQuery(name = "Request.getCurrent", query = "SELECT r FROM Request r WHERE r.id = (SELECT MAX(rr.id) FROM Request rr WHERE rr.sent IS NULL)")})
+	@NamedQuery(name = "Request.current", query = "SELECT r FROM Request r WHERE r.id = (SELECT MAX(rr.id) FROM Request rr WHERE rr.sent IS NULL)"),
+	@NamedQuery(name = "Request.items", query = "SELECT r FROM RequestItem r WHERE r.request = :requestId")})
 public class Request implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -67,8 +67,9 @@ public class Request implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date sent;
     
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name="REQUEST")
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "request", fetch = FetchType.LAZY, orphanRemoval = true)
+    //@JoinColumn(name="REQUEST")
     private Set<RequestItem> items;
     
     /*@ManyToOne(optional = true, fetch = FetchType.LAZY)
@@ -77,24 +78,15 @@ public class Request implements Serializable {
     public Request() {
     }
 
-    /*public Request(Long id) {
-        this.id = id;
-    }*/
-
-    public Request(Long id, Date created, String creator, Date sent) {
-        this.id = id;
+    public Request(Date created, String creator) {
         this.created = created;
         this.creator = creator;
-        this.sent = sent;
+        this.sent = null;
     }
 
     public Long getId() {
         return id;
     }
-
-    /*public void setId(Long id) {
-        this.id = id;
-    }*/
 
     public Date getCreated() {
         return created;
@@ -120,6 +112,8 @@ public class Request implements Serializable {
         this.sent = sent;
     }
 
+    @JsonIgnore
+    @XmlTransient
     public Set<RequestItem> getItems() {
         return items;
     }

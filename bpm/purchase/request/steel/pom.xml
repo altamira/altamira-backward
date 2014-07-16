@@ -46,6 +46,8 @@
 
 		<camunda.version>7.1.0-Final</camunda.version>
 		<jackson.version>2.4.0</jackson.version>
+		
+		<jasperReport.version>5.2.0</jasperReport.version>
 	</properties>
 
 	<dependencyManagement>
@@ -267,6 +269,11 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>${jasperReport.version}</version>
+        </dependency>
 
 	</dependencies>
 

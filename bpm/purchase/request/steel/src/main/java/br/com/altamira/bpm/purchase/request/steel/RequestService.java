@@ -24,8 +24,8 @@ public class RequestService {
 	@Inject
 	private RuntimeService runtimeService;
 
-	@Inject
-	private ProcessEngine processEngine;
+//	@Inject
+//	private ProcessEngine processEngine;
 
 	public void startProcess(Request request) {
 

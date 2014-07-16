@@ -27,7 +27,7 @@ import javax.persistence.Table;
 @Table(name = "MATERIAL",
         uniqueConstraints = @UniqueConstraint(columnNames = {"LAMINATION", "TREATMENT", "THICKNESS", "WIDTH", "LENGTH"}))
 @NamedQueries({
-    @NamedQuery(name = "Material.findAll", query = "SELECT m FROM Material m"),
+    @NamedQuery(name = "Material.list", query = "SELECT m FROM Material m"),
     @NamedQuery(name = "Material.findById", query = "SELECT m FROM Material m WHERE m.id = :id"),
     @NamedQuery(name = "Material.findByLamination", query = "SELECT m FROM Material m WHERE m.lamination = :lamination"),
     @NamedQuery(name = "Material.findByTreatment", query = "SELECT m FROM Material m WHERE m.treatment = :treatment"),
@@ -46,21 +46,27 @@ public class Material implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MaterialSequence")
     @Column(name = "ID")
     private Long id;
+    
     @Basic(optional = false)
     @Column(name = "LAMINATION", columnDefinition = "char(2)")
     private String lamination;
+    
     @Basic(optional = false)
     @Column(name = "TREATMENT", columnDefinition = "char(2)")
     private String treatment;
+    
     @Basic(optional = false)
     @Column(name = "THICKNESS")
     private BigDecimal thickness;
+    
     @Basic(optional = false)
     @Column(name = "WIDTH")
     private BigDecimal width;
+    
     @Basic(optional = false)
     @Column(name = "LENGTH")
     private BigDecimal length;
+    
     @Column(name = "TAX")
     private BigDecimal tax;
     
@@ -78,13 +84,8 @@ public class Material implements Serializable {
     public Material() {
     }
 
-    public Material(Long id) {
-        this.id = id;
-    }
-
-    public Material(Long id, String lamination, String treatment,
+    public Material(String lamination, String treatment,
             BigDecimal thickness, BigDecimal width, BigDecimal length) {
-        this.id = id;
         this.lamination = lamination;
         this.treatment = treatment;
         this.thickness = thickness;
@@ -94,10 +95,6 @@ public class Material implements Serializable {
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getLamination() {

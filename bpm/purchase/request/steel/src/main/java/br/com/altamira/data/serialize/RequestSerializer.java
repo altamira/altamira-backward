@@ -12,38 +12,36 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import br.com.altamira.data.model.RequestItem;
-//import br.com.altamira.data.serialize.JSonViews.JsonEntityView;
+import br.com.altamira.data.model.Request;
 
-public class RequestItemSerializer extends JsonSerializer<RequestItem> {
+public class RequestSerializer extends JsonSerializer<Request> {
 
 	ObjectMapper objectMapper = new ObjectMapper();
-	Version version = new Version(1, 0, 0, "SNAPSHOT", "br.com.altamira", "data.serializer.RequestItem"); // maven/OSGi style version
+	Version version = new Version(1, 0, 0, "SNAPSHOT", "br.com.altamira", "data.serializer"); // maven/OSGi style version
 	private SimpleModule module = new SimpleModule("CustomSerializer", version);
 	//ObjectWriter objectWriter = objectMapper.writerWithView(JsonEntityView.class);
 	
-	BaseSerializer<RequestItem> serializer = new ListSerializer();
+	BaseSerializer<Request> serializer = new ListSerializer();
 	
-	public RequestItemSerializer() {
+	public RequestSerializer() {
+		module.addSerializer(Request.class, this);
 		objectMapper.registerModule(module);
-	
-		module.addSerializer(RequestItem.class, this);
 	}
-
-	public RequestItemSerializer(BaseSerializer<RequestItem> serializer) {
-		objectMapper.registerModule(module);
+	
+	public RequestSerializer(BaseSerializer<Request> serializer) {
+		module.addSerializer(Request.class, this);
 		
-		module.addSerializer(RequestItem.class, this);
+		objectMapper.registerModule(module);
 		
 		this.serializer = serializer;
 	}
 	
-	public String serialize(List<RequestItem> list)
+	public String serialize(List<Request> list)
 			throws IOException {
 		StringBuilder str = new StringBuilder();
 		
 		str.append("[");
-		for (RequestItem r : list) {
+		for (Request r : list) {
 			str.append(serialize(r));
 		}
 		str.append("]");
@@ -51,13 +49,13 @@ public class RequestItemSerializer extends JsonSerializer<RequestItem> {
 		return str.toString();
 	}
 
-	public String serialize(RequestItem entity) throws JsonProcessingException {
+	public String serialize(Request entity) throws IOException {
 		//return objectWriter.writeValueAsString(value);
 		return objectMapper.writeValueAsString(entity);
 	}
 	
 	@Override
-	public void serialize(RequestItem entity, JsonGenerator jgen,
+	public void serialize(Request entity, JsonGenerator jgen,
 			SerializerProvider provider) throws IOException,
 			JsonProcessingException {
 		
@@ -65,30 +63,37 @@ public class RequestItemSerializer extends JsonSerializer<RequestItem> {
 		
 	}
 	
-	public static class EntitySerializer implements BaseSerializer<RequestItem> {
-		public void serialize(RequestItem entity, JsonGenerator jgen,
+	public static class EntitySerializer implements BaseSerializer<Request> {
+		public void serialize(Request entity, JsonGenerator jgen,
 				SerializerProvider provider) throws IOException,
 				JsonProcessingException {
 			
 			jgen.writeStartObject();
 			jgen.writeNumberField("id", entity.getId());
-			jgen.writeObjectField("arrival", entity.getArrival());
-			jgen.writeObjectField("weight", entity.getWeight());
-			jgen.writeObjectField("material", entity.getMaterial());
+			jgen.writeObjectField("created", entity.getCreated());
+			jgen.writeStringField("creator", entity.getCreator());
+			jgen.writeObjectField("sent", entity.getSent() != null ? entity.getSent() : "");
+			if (entity.getItems() == null) {
+				jgen.writeArrayFieldStart("items");
+				jgen.writeEndArray();
+			} else {
+				jgen.writeObjectField("items", entity.getItems());
+			}
 			jgen.writeEndObject();
 			
 		}
 	}
 	
-	public static class ListSerializer implements BaseSerializer<RequestItem> {
-		public void serialize(RequestItem entity, JsonGenerator jgen,
+	public static class ListSerializer implements BaseSerializer<Request> {
+		public void serialize(Request entity, JsonGenerator jgen,
 				SerializerProvider provider) throws IOException,
 				JsonProcessingException {
 			
 			jgen.writeStartObject();
 			jgen.writeNumberField("id", entity.getId());
-			jgen.writeObjectField("arrival", entity.getArrival());
-			jgen.writeObjectField("weight", entity.getWeight());
+			jgen.writeObjectField("created", entity.getCreated());
+			jgen.writeStringField("creator", entity.getCreator());
+			jgen.writeObjectField("sent", entity.getSent() != null ? entity.getSent() : "");
 			jgen.writeEndObject();
 			
 		}

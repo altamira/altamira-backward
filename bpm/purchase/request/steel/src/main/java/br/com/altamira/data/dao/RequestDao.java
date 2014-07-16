@@ -11,6 +11,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import br.com.altamira.data.model.Request;
+import br.com.altamira.data.model.RequestItem;
 
 @Named
 @Stateless
@@ -19,14 +20,48 @@ public class RequestDao {
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	public List<Request> getAll(int startPosition, int maxResult) {
+	public List<Request> list(int startPosition, int maxResult) {
 
-		TypedQuery<Request> findAllQuery = entityManager.createNamedQuery("Request.findAll", Request.class);
+		TypedQuery<Request> findAllQuery = entityManager.createNamedQuery("Request.list", Request.class);
 
 		findAllQuery.setFirstResult(startPosition);
 		findAllQuery.setMaxResults(maxResult);
 
 		return findAllQuery.getResultList();
+	}
+	
+	public List<RequestItem> items(Long requestId, int startPosition, int maxResult) {
+
+		TypedQuery<RequestItem> findAllQuery = entityManager.createNamedQuery("Request.items", RequestItem.class);
+		findAllQuery.setParameter("requestId", requestId);
+		
+		findAllQuery.setFirstResult(startPosition);
+		findAllQuery.setMaxResults(maxResult);
+
+		return findAllQuery.getResultList();
+	}
+	
+	public Request find(long id) {
+        Request entity;
+
+        if (id == 0) {
+        	entity = current();
+        } else {
+			TypedQuery<Request> findByIdQuery = entityManager.createNamedQuery("Request.findById", Request.class);
+	        findByIdQuery.setParameter("id", id);
+	        try {
+	            entity = findByIdQuery.getSingleResult();
+	        } catch (NoResultException nre) {
+	            return null;
+	        }
+        }
+        
+        // Lazy load of items
+        if (entity.getItems() != null) {
+        	entity.getItems().size();
+        }
+
+        return entity;
 	}
 	
 	public Request create(Request entity) {
@@ -37,40 +72,34 @@ public class RequestDao {
 		entityManager.persist(entity);
 		entityManager.flush();
 		
-		return entity;
-	}
-	
-	public Request find(long id) {
-
-		TypedQuery<Request> findByIdQuery = entityManager.createNamedQuery("Request.findById", Request.class);
-        findByIdQuery.setParameter("id", id);
-        Request entity;
-        try {
-            entity = findByIdQuery.getSingleResult();
-        } catch (NoResultException nre) {
-            return null;
-        }
-        
-        // Lazy load of items
-        entity.getItems().size();
-
-        return entity;
+		// Reload to update child references
+		
+		return entityManager.find(Request.class, entity.getId());
 	}
 	
 	public Request update(Request entity) {
 		if (entity == null) {
 			throw new IllegalArgumentException();
 		}
-		if (entity.getId() == null && entity.getId() == 0l) {
-			return null;
+		if (entity.getId() == null || entity.getId() == 0l) {
+			throw new IllegalArgumentException();
 		}
-		return entityManager.contains(entity) ? null : entityManager.merge(entity);
+		/*if (!entityManager.contains(entity)) {
+			throw new IllegalArgumentException();
+		}*/
+		
+		entityManager.merge(entity);
+
+		// Reload to update child references
+		
+		return entityManager.find(Request.class, entity.getId());
 	}
 	
 	public Request remove(Request entity) {
 		if (entity == null) {
 			throw new IllegalArgumentException();
 		}
+		
 		entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
 
 		return entity;
@@ -84,20 +113,29 @@ public class RequestDao {
 		return entity;
 	}
 	
-    public Request getCurrent() {
+    public Request current() {
         List<Request> requests;
 
+        Request entity;
+        
         requests = (List<Request>) entityManager
-                .createNamedQuery("Request.getCurrent", Request.class)
+                .createNamedQuery("Request.current", Request.class)
                 .getResultList();
 
         if (requests.isEmpty()) {
 
-            return create(new Request(null, new Date(), "system", null));
+            entity = create(new Request(new Date(), "system"));
 
+        } else {
+        	entity = requests.get(0);
+        	
+        	// Lazy load of items
+        	if (entity.getItems() != null) {
+        		entity.getItems().size();
+        	}
         }
 
-        return requests.get(0);
+        return entity;
     }
 
     /*public byte[] getRequestReportJasperFile() throws SQLException {
@@ -112,9 +150,9 @@ public class RequestDao {
                 .getSingleResult();
 
         return tempBlob.getBytes(1, (int) tempBlob.length());
-    }
+    }*/
 
-    public List selectRequestReportDataById(long requestId) {
+    public List<Object[]> selectRequestReportDataById(long requestId) {
         StringBuffer selectSql = new StringBuffer().append(" SELECT M.ID, ")
                                                    .append("        M.LAMINATION, ")
                                                    .append("        M.TREATMENT, ")
@@ -128,14 +166,15 @@ public class RequestDao {
                                                    .append(" AND RT.MATERIAL = M.ID ")
                                                    .append(" AND R.ID = :request_id ");
 
-        List<Object[]> list = entityManager.createNativeQuery(selectSql.toString())
+        @SuppressWarnings("unchecked")
+		List<Object[]> list = entityManager.createNativeQuery(selectSql.toString())
                                            .setParameter("request_id", requestId)
                                            .getResultList();
 
         return list;
     }
 
-    public boolean insertGeneratedRequestReport(JasperPrint print) {
+    /*public boolean insertGeneratedRequestReport(JasperPrint print) {
         byte[] bArray = null;
 
         try {
