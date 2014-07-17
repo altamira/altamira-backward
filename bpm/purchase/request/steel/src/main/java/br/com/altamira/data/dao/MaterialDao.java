@@ -92,15 +92,27 @@ public class MaterialDao {
 		if (entity == null) {
 			throw new IllegalArgumentException();
 		}
-		entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
-
-		return entity;
+		
+		if (entity.getId() == null || entity.getId() == 0l) {
+			throw new IllegalArgumentException();
+		}
+		
+		return remove(entity.getId());
 	}
 	
 	public Material remove(long id) {
+		if (id == 0) {
+			throw new IllegalArgumentException();
+		}
+		
+		//entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
+
 		Material entity = entityManager.find(Material.class, id);
-        if (entity != null) {
+        
+		if (entity != null) {
 	        entityManager.remove(entity);
         }
+		
 		return entity;
-	}}
+	}
+}

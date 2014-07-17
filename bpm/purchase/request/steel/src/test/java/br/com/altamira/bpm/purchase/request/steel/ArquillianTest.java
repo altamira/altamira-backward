@@ -29,12 +29,18 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
+
 import br.com.altamira.data.dao.MaterialDao;
 import br.com.altamira.data.dao.RequestDao;
 import br.com.altamira.data.dao.RequestItemDao;
 import br.com.altamira.data.model.Material;
 import br.com.altamira.data.model.Request;
 import br.com.altamira.data.model.RequestItem;
+import br.com.altamira.data.serialize.JSonViews;
+import br.com.altamira.data.serialize.NullValueSerializer;
 
 @RunWith(Arquillian.class)
 public class ArquillianTest {
@@ -136,17 +142,70 @@ public class ArquillianTest {
 	public final static String url = "http://localhost:8080/bpm-purchase-request-steel/rest/request";
 	
 	@Test
-	@InSequence(1)
-	public void RequestDaoTest() throws Exception {
-		Request entity = new Request();
+	@InSequence(10)
+	public void MaterialDaoTest() {
+		Material material = new Material();
 		
-		entity.setCreated(new Date());
-		entity.setCreator("RequestDaoTest");
-		entity.setSent(null);
+		material.setLamination("FT");
+		material.setTreatment("PT");
+		material.setThickness(new BigDecimal(2.0));
+		material.setWidth(new BigDecimal(200.0));
+		material.setLength(new BigDecimal(1000.0));
+		material.setTax(new BigDecimal(4.5));
 		
-		requestDao.create(entity);
+		Material entity = materialDao.create(material);
 		
+		assertNotNull(entity);
 		assertNotNull(entity.getId());
+		assertEquals(entity.getLamination(), material.getLamination());
+		assertEquals(entity.getTreatment(), material.getTreatment());
+		assertEquals(entity.getThickness(), material.getThickness());
+		assertEquals(entity.getWidth(), material.getWidth());
+		assertEquals(entity.getLength(), material.getLength());
+		assertEquals(entity.getTax(), material.getTax());
+		
+		material = entity;
+		
+		material.setLamination("TX");
+		material.setTreatment("TX");
+		material.setThickness(new BigDecimal(3.5));
+		material.setWidth(new BigDecimal(100.5));
+		material.setLength(new BigDecimal(2000.5));
+		material.setTax(new BigDecimal(1.5));
+		
+		Material updated = materialDao.update(material);
+		
+		Material found = materialDao.find(entity);
+		
+		assertNotNull(found);
+		assertTrue(found.equals(updated));
+		
+		Material find = materialDao.find(entity.getLamination(), entity.getTreatment(), entity.getThickness(), entity.getWidth(), entity.getLength());
+		
+		assertTrue(found.equals(find));
+		
+		Material removed = materialDao.remove(entity);
+		
+		//assertNull(remove.getId()); // Id is not changed to null after remove
+		
+		Material notfound = materialDao.find(removed);
+		
+		assertNull(notfound);
+		
+	}
+	
+	@Test
+	@InSequence(20)
+	public void RequestDaoTest() throws Exception {
+		Request request = new Request();
+		
+		request.setCreated(new Date());
+		request.setCreator("RequestDaoTest");
+		request.setSent(null);
+		
+		requestDao.create(request);
+		
+		assertNotNull(request.getId());
 		
 		Material material = new Material();
 		
@@ -161,7 +220,7 @@ public class ArquillianTest {
 		
 		RequestItem item = new RequestItem();
 		
-		item.setRequest(entity);
+		item.setRequest(request);
 		item.setArrival(new Date());
 		item.setWeight(new BigDecimal(1234.0));
 		item.setMaterial(material);
@@ -169,10 +228,10 @@ public class ArquillianTest {
 		Set<RequestItem> items = new HashSet<RequestItem>();
 		items.add(item);
 		
-		entity.setItems(items);
+		request.setItems(items);
 		
 		// Insert Item
-		entity = requestDao.update(entity);
+		Request entity = requestDao.update(request);
 		
 		// be sure that the item was stored correctly
 		for (RequestItem r : entity.getItems()) {
@@ -208,51 +267,7 @@ public class ArquillianTest {
 	}
 
 	@Test
-	@InSequence(2)
-	public void MaterialDaoTest() {
-		Material entity = new Material();
-		
-		entity.setLamination("FT");
-		entity.setTreatment("PT");
-		entity.setThickness(new BigDecimal(2.0));
-		entity.setWidth(new BigDecimal(200.0));
-		entity.setLength(new BigDecimal(1000.0));
-		entity.setTax(new BigDecimal(4.5));
-		
-		materialDao.create(entity);
-		
-		assertNotNull(entity.getId());
-		
-		entity.setLamination("TX");
-		entity.setTreatment("TX");
-		entity.setThickness(new BigDecimal(3.5));
-		entity.setWidth(new BigDecimal(100.5));
-		entity.setLength(new BigDecimal(2000.5));
-		entity.setTax(new BigDecimal(1.5));
-		
-		Material updated = materialDao.update(entity);
-		
-		Material found = materialDao.find(entity);
-		
-		assertNotNull(found);
-		assertTrue(found.equals(updated));
-		
-		Material find = materialDao.find(entity.getLamination(), entity.getTreatment(), entity.getThickness(), entity.getWidth(), entity.getLength());
-		
-		assertTrue(found.equals(find));
-		
-		Material removed = materialDao.remove(entity);
-		
-		//assertNull(remove.getId()); // Id is not changed to null after remove
-		
-		Material notfound = materialDao.find(removed);
-		
-		assertNull(notfound);
-		
-	}
-	
-	@Test
-	@InSequence(3)
+	@InSequence(30)
 	public void RequestItemDaoTest() throws Exception {
 		
 		Request request = requestDao.current();
@@ -330,7 +345,7 @@ public class ArquillianTest {
 	}
 	
 	@Test
-	@InSequence(4)
+	@InSequence(40)
 	public void RequestEndpointGetCurrentTest() throws Exception {
 
 		UriBuilder context = UriBuilder.fromUri(url);
@@ -350,7 +365,7 @@ public class ArquillianTest {
 	
 	// Test another way to get the current request, pass ZERO as id
 	@Test
-	@InSequence(5)
+	@InSequence(41)
 	public void RequestEndpointFindByIdZeroTest() throws Exception {
 		
 		UriBuilder context = UriBuilder.fromUri(url);
@@ -368,14 +383,11 @@ public class ArquillianTest {
 	}
 	
 	@Test
-	@InSequence(6)
-	public void RequestEndpointFindByIdTest(Long id) throws Exception {
-		
-		if (id == null) { id = 1l; }
-		
+	@InSequence(42)
+	public void RequestEndpointFindByIdTest() throws Exception {
 		UriBuilder context = UriBuilder.fromUri(url);
 		
-		ClientRequest client = new ClientRequest(context.path("/{id}").build(id).toString());
+		ClientRequest client = new ClientRequest(context.path("/{id}").build(requestDao.current().getId()).toString());
 		client.accept(MediaType.APPLICATION_JSON);
 		client.header("Content-Type", MediaType.APPLICATION_JSON);
 
@@ -387,9 +399,73 @@ public class ArquillianTest {
 		Assert.assertNotNull(entity);
 	}
 	
-
 	@Test
-	@InSequence(7)
+	@InSequence(50)
+	public void RequestEndpointUpdateTest() throws Exception {
+
+		Request request = requestDao.current();
+		
+		assertNotNull(request);
+		
+		RequestItem item = new RequestItem();
+		
+		assertNotNull(item);
+		
+		Material material = new Material();
+		
+		material.setLamination("FQ");
+		material.setTreatment("UZ");
+		material.setThickness(new BigDecimal(2.0));
+		material.setWidth(new BigDecimal(200.0));
+		material.setLength(new BigDecimal(12.3));
+		material.setTax(new BigDecimal(4.5));
+		
+		materialDao.create(material);
+		
+		item.setArrival(new Date());
+		item.setWeight(new BigDecimal(8899.0));
+		item.setMaterial(material);
+		
+		request.getItems().add(item);
+		
+		request.setCreated(new Date());
+		request.setCreator("XXXX");
+		request.setSent(new Date());
+		
+		UriBuilder context = UriBuilder.fromUri(url);
+		
+		ClientRequest client = new ClientRequest(context.path("/{id}").build(request.getId()).toString());
+		client.accept(MediaType.APPLICATION_JSON);
+		client.header("Content-Type", MediaType.APPLICATION_JSON);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		mapper.registerModule(new Hibernate4Module());
+		mapper.getSerializerProvider().setNullValueSerializer(new NullValueSerializer());
+		ObjectWriter writer = mapper.writerWithView(JSonViews.EntityView.class);
+
+		client.body(MediaType.APPLICATION_JSON, writer.writeValueAsString(request));
+		
+		ClientResponse<Request> response = client.put(Request.class);
+		
+		assertEquals(200, response.getStatus());
+		
+		Request entity = response.getEntity();
+
+		assertNotNull(entity);
+		
+		// be sure that the fields deserialize are correct
+		assertNotNull(entity.getId());
+		assertEquals(entity.getCreated(), request.getCreated());
+		assertEquals(entity.getCreator(), request.getCreator());
+
+		for(RequestItem i : entity.getItems()) {
+			assertTrue(entity.getItems().contains(i));
+		}
+	}
+	
+	@Test
+	@InSequence(51)
 	public void RequestEndpointListTest() throws Exception {
 		UriBuilder context = UriBuilder.fromUri(url);
 		
@@ -408,7 +484,7 @@ public class ArquillianTest {
 	}
 
 	@Test
-	@InSequence(8)
+	@InSequence(60)
 	public void RequestItemEndpointCreateTest() throws Exception {
 		
 		UriBuilder context = UriBuilder.fromUri(url);
@@ -434,14 +510,112 @@ public class ArquillianTest {
 		
 		client.body(MediaType.APPLICATION_JSON, item);
 		
-		ClientResponse<RequestItem> responseItem = client.post(RequestItem.class);
+		ClientResponse<RequestItem> response = client.post(RequestItem.class);
 		
-		assertEquals(201, responseItem.getStatus());
+		assertEquals(201, response.getStatus());
+		
+		RequestItem entity = response.getEntity();
+		
+		// Be sure that the fields deserialize are correct
+		assertNotNull(entity);
+		assertNotNull(entity.getId());
+		assertEquals(item.getArrival(), entity.getArrival());
+		assertEquals(item.getWeight(), entity.getWeight());
+		assertNotNull(entity.getMaterial());
+		assertNotNull(entity.getMaterial().getId());
+		assertEquals(entity.getMaterial().getLamination(), material.getLamination());
+		assertEquals(entity.getMaterial().getTreatment(), material.getTreatment());
+		assertEquals(entity.getMaterial().getThickness(), material.getThickness());
+		assertEquals(entity.getMaterial().getWidth(), material.getWidth());
+		assertEquals(entity.getMaterial().getLength(), material.getLength());
+		assertEquals(entity.getMaterial().getTax(), material.getTax());
+		
+	}
+
+	@Test
+	@InSequence(61)
+	public void RequestItemEndpointFindByIdTest() throws Exception {
+		
+		RequestItem item = requestItemDao.list(requestDao.current().getId(), 0, 10).get(0);
+		
+		assertNotNull(item);
+		
+		UriBuilder context = UriBuilder.fromUri(url);
+		
+		ClientRequest client = new ClientRequest(context.path("/{id}/item/{item}").build(requestDao.current().getId(), item.getId()).toString());
+		client.accept(MediaType.APPLICATION_JSON);
+		client.header("Content-Type", MediaType.APPLICATION_JSON);
+
+		ClientResponse<RequestItem> response = client.get(RequestItem.class);
+
+		assertEquals(200, response.getStatus());
+
+		RequestItem entity = response.getEntity();
+		Assert.assertNotNull(entity);
 		
 	}
 	
 	@Test
-	@InSequence(9)
+	@InSequence(62)
+	public void RequestItemEndpointUpdateTest() throws Exception {
+
+		Request request = requestDao.current();
+		
+		assertNotNull(request);
+		
+		RequestItem item = requestItemDao.list(request.getId(), 0, 10).get(0);
+		
+		assertNotNull(item);
+		
+		Material material = new Material();
+		
+		material.setLamination("FQ");
+		material.setTreatment("PZ");
+		material.setThickness(new BigDecimal(2.0));
+		material.setWidth(new BigDecimal(200.0));
+		material.setLength(new BigDecimal(12.3));
+		material.setTax(new BigDecimal(4.5));
+		
+		item.setArrival(new Date());
+		item.setWeight(new BigDecimal(8899.0));
+		item.setMaterial(material);
+
+		UriBuilder context = UriBuilder.fromUri(url);
+		
+		ClientRequest client = new ClientRequest(context.path("/{id}/item/{item}").build(request.getId(), item.getId()).toString());
+		client.accept(MediaType.APPLICATION_JSON);
+		client.header("Content-Type", MediaType.APPLICATION_JSON);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		mapper.registerModule(new Hibernate4Module());
+
+		client.body(MediaType.APPLICATION_JSON, mapper.writeValueAsString(item));
+		
+		ClientResponse<RequestItem> response = client.put(RequestItem.class);
+		
+		assertEquals(200, response.getStatus());
+		
+		RequestItem entity = response.getEntity();
+
+		assertNotNull(entity);
+		
+		// be sure that the fields deserialize are correct
+		assertNotNull(entity.getId());
+		assertEquals(item.getArrival(), entity.getArrival());
+		assertEquals(item.getWeight(), entity.getWeight());
+		assertNotNull(entity.getMaterial());
+		assertNotNull(entity.getMaterial().getId());
+		assertEquals(entity.getMaterial().getLamination(), material.getLamination());
+		assertEquals(entity.getMaterial().getTreatment(), material.getTreatment());
+		assertEquals(entity.getMaterial().getThickness(), material.getThickness());
+		assertEquals(entity.getMaterial().getWidth(), material.getWidth());
+		assertEquals(entity.getMaterial().getLength(), material.getLength());
+		assertEquals(entity.getMaterial().getTax(), material.getTax());
+	}
+	
+	@Test
+	@InSequence(63)
 	public void RequestItemEndpointListTest() throws Exception {
 		
 		UriBuilder context = UriBuilder.fromUri(url);
@@ -489,8 +663,54 @@ public class ArquillianTest {
 		List<RequestItem> list = response.getEntity();
 		
 		Assert.assertNotNull(list);
+		
 		assertFalse(list.isEmpty());
 		
 	}
 	
+	@Test
+	@InSequence(64)
+	public void RequestItemEndpointDeleteByIdTest() throws Exception {
+		
+		RequestItem item = requestItemDao.list(requestDao.current().getId(), 0, 10).get(0);
+		
+		assertNotNull(item);
+		
+		UriBuilder context = UriBuilder.fromUri(url);
+		
+		ClientRequest client = new ClientRequest(context.path("/{id}/item/{item}").build(requestDao.current().getId(), item.getId()).toString());
+		client.accept(MediaType.APPLICATION_JSON);
+		client.header("Content-Type", MediaType.APPLICATION_JSON);
+
+		ClientResponse<RequestItem> response = client.delete(RequestItem.class);
+
+		assertEquals(204, response.getStatus());
+
+		RequestItem entity = requestItemDao.find(item.getId());
+		assertNull(entity);
+		
+	}
+	
+	@Test
+	@InSequence(70)
+	public void RequestEndpointDeleteByIdTest() throws Exception {
+		
+		Request request = requestDao.current();
+		
+		assertNotNull(request);
+		
+		UriBuilder context = UriBuilder.fromUri(url);
+		
+		ClientRequest client = new ClientRequest(context.path("/{id}").build(request.getId()).toString());
+		client.accept(MediaType.APPLICATION_JSON);
+		client.header("Content-Type", MediaType.APPLICATION_JSON);
+
+		ClientResponse<Request> response = client.delete(Request.class);
+
+		assertEquals(204, response.getStatus());
+
+		Request entity = requestDao.find(request.getId());
+		assertNull(entity);
+		
+	}	
 }

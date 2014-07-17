@@ -128,7 +128,20 @@ public class RequestItemDao {
 			throw new IllegalArgumentException("Update item of non current Request is not allowed");
 		}
 		
+		if (entity.getMaterial() == null) {
+			throw new IllegalArgumentException("Material is required.");
+		}
+		
 		Material material = materialDao.find(entity.getMaterial());
+		
+		if (entity.getMaterial().getId() != null && entity.getMaterial().getId() != 0l) {
+			if (material == null) {
+				throw new IllegalArgumentException("Material id doesn't match with properties.");
+			}
+			if (entity.getMaterial().getId() != material.getId()) {
+				throw new IllegalArgumentException("Material id doesn't match with properties. Material id is " + entity.getMaterial().getId() + ", expected id is " + material.getId());
+			}
+		}
 		
 		if (material == null) {
 			//Create a fresh copy with null id of material
@@ -161,17 +174,28 @@ public class RequestItemDao {
 			throw new IllegalArgumentException();
 		}
 		
-		entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
-
-		return entity;
+		if (entity.getId() == null || entity.getId() == 0l) {
+			throw new IllegalArgumentException();
+		}
+		
+		return remove(entity.getId());
 	}
 	
 	public RequestItem remove(long id) {
+		if (id == 0) {
+			throw new IllegalArgumentException();
+		}
+		
+		//entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
+
 		RequestItem entity = entityManager.find(RequestItem.class, id);
-        if (entity != null) {
+        
+		if (entity != null) {
 	        entityManager.remove(entity);
         }
+		
 		return entity;
 	}
+
 
 }

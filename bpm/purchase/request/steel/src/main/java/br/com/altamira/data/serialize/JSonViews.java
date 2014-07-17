@@ -1,6 +1,7 @@
 package br.com.altamira.data.serialize;
 
 public class JSonViews {
-	public static class JsonListView extends JSonViews { }
-	public static class JsonEntityView extends JsonListView { }
+	public static class DefaultView extends JSonViews { }
+	public static class ListView extends DefaultView { }
+	public static class EntityView extends ListView { }
 }

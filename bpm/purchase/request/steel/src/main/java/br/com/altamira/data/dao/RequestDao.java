@@ -30,7 +30,7 @@ public class RequestDao {
 		return findAllQuery.getResultList();
 	}
 	
-	public List<RequestItem> items(Long requestId, int startPosition, int maxResult) {
+	public List<RequestItem> listItems(Long requestId, int startPosition, int maxResult) {
 
 		TypedQuery<RequestItem> findAllQuery = entityManager.createNamedQuery("Request.items", RequestItem.class);
 		findAllQuery.setParameter("requestId", requestId);
@@ -84,9 +84,6 @@ public class RequestDao {
 		if (entity.getId() == null || entity.getId() == 0l) {
 			throw new IllegalArgumentException();
 		}
-		/*if (!entityManager.contains(entity)) {
-			throw new IllegalArgumentException();
-		}*/
 		
 		entityManager.merge(entity);
 
@@ -100,16 +97,26 @@ public class RequestDao {
 			throw new IllegalArgumentException();
 		}
 		
-		entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
-
-		return entity;
+		if (entity.getId() == null || entity.getId() == 0l) {
+			throw new IllegalArgumentException();
+		}
+		
+		return remove(entity.getId());
 	}
 	
 	public Request remove(long id) {
+		if (id == 0) {
+			throw new IllegalArgumentException();
+		}
+		
+		//entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
+
 		Request entity = entityManager.find(Request.class, id);
-        if (entity != null) {
+        
+		if (entity != null) {
 	        entityManager.remove(entity);
         }
+		
 		return entity;
 	}
 	

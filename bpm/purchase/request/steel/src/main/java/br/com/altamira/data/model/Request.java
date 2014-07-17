@@ -7,6 +7,7 @@ package br.com.altamira.data.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -28,7 +29,11 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlTransient;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import br.com.altamira.data.serialize.JSonViews;
+import br.com.altamira.data.serialize.NullCollectionSerializer;
+
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  *
@@ -67,10 +72,11 @@ public class Request implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date sent;
     
-    @JsonIgnore
+    @JsonView(JSonViews.EntityView.class)
+    @JsonSerialize(using = NullCollectionSerializer.class)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "request", fetch = FetchType.LAZY, orphanRemoval = true)
     //@JoinColumn(name="REQUEST")
-    private Set<RequestItem> items;
+    private Set<RequestItem> items = new HashSet<RequestItem>();
     
     /*@ManyToOne(optional = true, fetch = FetchType.LAZY)
     private QuotationRequest quotationRequest;*/
@@ -112,7 +118,6 @@ public class Request implements Serializable {
         this.sent = sent;
     }
 
-    @JsonIgnore
     @XmlTransient
     public Set<RequestItem> getItems() {
         return items;

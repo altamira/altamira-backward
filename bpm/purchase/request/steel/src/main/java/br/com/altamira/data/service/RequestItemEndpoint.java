@@ -21,10 +21,11 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriBuilderException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 
 import br.com.altamira.data.dao.RequestItemDao;
 import br.com.altamira.data.model.RequestItem;
-import br.com.altamira.data.serialize.RequestItemSerializer;
 
 @Stateless
 @Path("request/{requestId:[0-9]*}/item")
@@ -42,9 +43,11 @@ public class RequestItemEndpoint {
 
 		List<RequestItem> list = requestItemDao.list(requestId, startPosition, maxResult);
 		
-		RequestItemSerializer serializer = new RequestItemSerializer();
+		ObjectMapper mapper = new ObjectMapper();
 		
-		return Response.ok(serializer.serialize(list)).build();
+		mapper.registerModule(new Hibernate4Module());
+		
+		return Response.ok(mapper.writeValueAsString(list)).build();
 	}
 	
 	@GET
@@ -59,9 +62,11 @@ public class RequestItemEndpoint {
 			return Response.status(Status.NOT_FOUND).build();
 		}
 
-		RequestItemSerializer serializer = new RequestItemSerializer(new RequestItemSerializer.EntitySerializer());
+		ObjectMapper mapper = new ObjectMapper();
 		
-		return Response.ok(serializer.serialize(entity)).build();
+		mapper.registerModule(new Hibernate4Module());
+		
+		return Response.ok(mapper.writeValueAsString(entity)).build();
 	}
 	
 	@POST
@@ -69,15 +74,21 @@ public class RequestItemEndpoint {
 	@Consumes("application/json")
 	public Response create(@PathParam("requestId") Long requestId, RequestItem entity) throws IllegalArgumentException, UriBuilderException, JsonProcessingException {
 		
+		if (entity == null) {
+			return Response.status(Status.BAD_REQUEST).build();
+		}
+		
 		requestItemDao.create(entity);
 
-		RequestItemSerializer serializer = new RequestItemSerializer(new RequestItemSerializer.EntitySerializer());
+		ObjectMapper mapper = new ObjectMapper();
+		
+		mapper.registerModule(new Hibernate4Module());
 		
 		return Response
 				.created(
 						UriBuilder.fromResource(RequestItemEndpoint.class)
 								.path(String.valueOf(entity.getId())).build(requestId))
-				.entity(serializer.serialize(entity)).build();
+				.entity(mapper.writeValueAsString(entity)).build();
 	}
 
 	@PUT
@@ -87,6 +98,10 @@ public class RequestItemEndpoint {
 	public Response update(@PathParam("requestId") Long requestId, @PathParam("id") long id, RequestItem entity) throws IllegalArgumentException, UriBuilderException, JsonProcessingException
 			 {
 
+		if (entity == null) {
+			return Response.status(Status.BAD_REQUEST).build();
+		}
+		
 		if (entity.getId() != id) {
 			return Response.status(Status.CONFLICT)
 					.entity("entity id doesn't match with resource path id")
@@ -99,17 +114,19 @@ public class RequestItemEndpoint {
 			return Response.status(Status.NOT_FOUND).build();
 		}
 
-		RequestItemSerializer serializer = new RequestItemSerializer(new RequestItemSerializer.EntitySerializer());
+		ObjectMapper mapper = new ObjectMapper();
+		
+		mapper.registerModule(new Hibernate4Module());
 		
 		return Response
 				.ok(UriBuilder.fromResource(RequestItemEndpoint.class)
 						.path(String.valueOf(entity.getId())).build(requestId))
-				.entity(serializer.serialize(entity)).build();
+				.entity(mapper.writeValueAsString(entity)).build();
 	}
 
 	@DELETE
 	@Path("{id:[0-9]*}")
-	public Response removeById(@PathParam("id") long id) {
+	public Response removeById(@PathParam("requestId") Long requestId, @PathParam("id") long id) {
 		RequestItem entity = requestItemDao.remove(id);
 		if (entity == null) {
 			return Response.noContent().status(Status.NOT_FOUND).build();

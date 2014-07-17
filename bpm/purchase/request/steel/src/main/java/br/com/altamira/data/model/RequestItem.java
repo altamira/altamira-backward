@@ -28,8 +28,10 @@ import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlTransient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import br.com.altamira.data.model.Material;
+import br.com.altamira.data.serialize.NullCollectionSerializer;
 /**
  *
  * @author Alessandro
@@ -64,6 +66,7 @@ public class RequestItem implements Serializable {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Request request;
     
+	@JsonSerialize(using = NullCollectionSerializer.class)
     @JoinColumn(name = "MATERIAL", referencedColumnName = "ID")
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Material material;

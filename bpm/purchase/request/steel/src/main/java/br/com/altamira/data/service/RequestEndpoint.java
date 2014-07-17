@@ -30,6 +30,10 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriBuilderException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
+
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -37,7 +41,9 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import br.com.altamira.data.dao.RequestDao;
 import br.com.altamira.data.model.Request;
-import br.com.altamira.data.serialize.RequestSerializer;
+import br.com.altamira.data.model.RequestItem;
+import br.com.altamira.data.serialize.JSonViews;
+import br.com.altamira.data.serialize.NullValueSerializer;
 
 @Stateless
 @Path("request")
@@ -55,15 +61,13 @@ public class RequestEndpoint {
 
 		List<Request> list = requestDao.list(startPosition, maxResult);
 		
-		/*if (list.size() == 0) {
-			return Response.noContent().build();
-		}*/
+		ObjectMapper mapper = new ObjectMapper();
 		
-		RequestSerializer serializer = new RequestSerializer();
-		
-		/*return Response.ok(
-				serialize(requestDao.getAll(startPosition, maxResult))).build();*/
-		return Response.ok(serializer.serialize(list)).build();
+		mapper.registerModule(new Hibernate4Module());
+		mapper.getSerializerProvider().setNullValueSerializer(new NullValueSerializer());
+		ObjectWriter writer = mapper.writerWithView(JSonViews.ListView.class);
+
+		return Response.ok(writer.writeValueAsString(list)).build();
 	}
 
 	@GET
@@ -78,9 +82,13 @@ public class RequestEndpoint {
 			return Response.status(Status.NOT_FOUND).build();
 		}
 
-		RequestSerializer serializer = new RequestSerializer(new RequestSerializer.EntitySerializer());
+		ObjectMapper mapper = new ObjectMapper();
 		
-		return Response.ok(serializer.serialize(entity)).build();
+		mapper.registerModule(new Hibernate4Module());
+		mapper.getSerializerProvider().setNullValueSerializer(new NullValueSerializer());
+		ObjectWriter writer = mapper.writerWithView(JSonViews.EntityView.class);
+		
+		return Response.ok(writer.writeValueAsString(entity)).build();
 	}
 	
 	/*@POST
@@ -104,37 +112,49 @@ public class RequestEndpoint {
 	}*/
 
 	@PUT
-	@Path("{id:[0]}")
+	@Path("{id:[0-9]*}")
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response update(@PathParam("id") long id, Request entity)
 			throws IllegalArgumentException, UriBuilderException,
 			IOException {
 
+		if (entity == null) {
+			return Response.status(Status.BAD_REQUEST).build();
+		}
+			
 		if (entity.getId() != id) {
 			return Response.status(Status.CONFLICT)
-					.entity("entity id doesn't match with resource path id")
+					.entity("Entity id doesn't match with resource path id")
 					.build();
 		}
 		
 		if (entity.getId() != requestDao.current().getId()) {
 			return Response.status(Status.CONFLICT)
-					.entity("entity id doesn't match with resource path id")
+					.entity("Entity id doesn't match with current Request")
 					.build();
 		}
 
+		for (RequestItem item : entity.getItems()) {
+			item.setRequest(entity);
+		}
+		
 		entity = requestDao.update(entity);
 
 		if (entity == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
 
-		RequestSerializer  serializer = new RequestSerializer(new RequestSerializer.EntitySerializer());
+		ObjectMapper mapper = new ObjectMapper();
+		
+		mapper.registerModule(new Hibernate4Module());
+		mapper.getSerializerProvider().setNullValueSerializer(new NullValueSerializer());
+		ObjectWriter writer = mapper.writerWithView(JSonViews.EntityView.class);
 		
 		return Response
 				.ok(UriBuilder.fromResource(RequestEndpoint.class)
 						.path(String.valueOf(entity.getId())).build())
-				.entity(serializer.serialize(entity)).build();
+				.entity(writer.writeValueAsString(entity)).build();
 	}
 
 	@DELETE
@@ -161,12 +181,16 @@ public class RequestEndpoint {
 
 		entity = requestDao.current();
 
-		RequestSerializer serializer = new RequestSerializer(new RequestSerializer.EntitySerializer());
+		ObjectMapper mapper = new ObjectMapper();
+		
+		mapper.registerModule(new Hibernate4Module());
+		mapper.getSerializerProvider().setNullValueSerializer(new NullValueSerializer());
+		ObjectWriter writer = mapper.writerWithView(JSonViews.EntityView.class);
 		
 		//return Response.ok(serialize(entity)).build();
 		return Response.ok(UriBuilder.fromResource(RequestEndpoint.class)
                 .path(String.valueOf(entity.getId())).build())
-                .entity(serializer.serialize(entity))
+                .entity(writer.writeValueAsString(entity))
                 .build();
 	}
 	
