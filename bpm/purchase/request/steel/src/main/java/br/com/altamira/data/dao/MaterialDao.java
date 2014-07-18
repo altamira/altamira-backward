@@ -10,6 +10,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,6 +30,7 @@ public class MaterialDao {
 	@PersistenceContext
 	private EntityManager entityManager;
 
+	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED) 
 	public List<Material> list(int startPosition, int maxResult) {
 
 		TypedQuery<Material> findAllQuery = entityManager.createNamedQuery("Material.list", Material.class);
@@ -38,12 +41,14 @@ public class MaterialDao {
 		return findAllQuery.getResultList();
 	}
 	
+	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED) 
 	public Material find(Material material) {
 		return find(material.getLamination(), material.getTreatment(),
 				material.getThickness(), material.getWidth(),
 				material.getLength());
 	}
 
+	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED) 
 	public Material find(String lamination, String treatment,
 			BigDecimal thickness, BigDecimal width, BigDecimal length) {
 
@@ -52,7 +57,8 @@ public class MaterialDao {
 				.setParameter("lamination", lamination)
 				.setParameter("treatment", treatment)
 				.setParameter("thickness", thickness)
-				.setParameter("width", width).setParameter("length", length)
+				.setParameter("width", width)
+				.setParameter("length", length)
 				.getResultList();
 
 		if (materials.isEmpty()) {
@@ -62,6 +68,7 @@ public class MaterialDao {
 		return materials.get(0);
 	}
 
+	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED) 
 	public Material find(long id) {
 		return entityManager.find(Material.class, id);
 	}
@@ -109,9 +116,12 @@ public class MaterialDao {
 
 		Material entity = entityManager.find(Material.class, id);
         
-		if (entity != null) {
-	        entityManager.remove(entity);
-        }
+		if (entity == null) {
+			throw new IllegalArgumentException();
+		}
+
+        entityManager.remove(entity);
+        entityManager.flush();
 		
 		return entity;
 	}

@@ -10,7 +10,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.transaction.UserTransaction;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 
@@ -25,10 +28,13 @@ import org.jboss.resteasy.util.GenericType;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
@@ -94,6 +100,95 @@ public class ArquillianTest {
 	@Inject
 	private RequestItemDao requestItemDao;
 
+	@Inject 
+	private EntityManager entityManager;
+	
+	@Inject
+	private UserTransaction userTransaction;
+	
+	@Before
+	public void preparePersistenceTest() throws Exception {
+	    clearData();
+	    //insertData();
+	    //startTransaction();
+	}
+
+	private void clearData() throws Exception {
+	    System.out.println("Dumping old records...");
+	    userTransaction.begin();
+	    entityManager.joinTransaction();
+	    entityManager.createQuery("DELETE FROM RequestItem WHERE id IN (SELECT R.id FROM RequestItem R INNER JOIN R.material M WHERE M.lamination = 'NO' AND M.treatment = 'ZU')").executeUpdate();
+	    userTransaction.commit();
+	    userTransaction.begin();
+	    entityManager.joinTransaction();
+	    entityManager.createQuery("DELETE FROM RequestItem WHERE id IN (SELECT R.id FROM RequestItem R INNER JOIN R.material M WHERE M.lamination = 'FQ' AND M.treatment = 'TO')").executeUpdate();
+	    userTransaction.commit();
+	    userTransaction.begin();
+	    entityManager.joinTransaction();
+	    entityManager.createQuery("DELETE FROM RequestItem WHERE id IN (SELECT R.id FROM RequestItem R INNER JOIN R.material M WHERE M.lamination = 'FT' AND M.treatment = 'TR')").executeUpdate();
+	    userTransaction.commit();
+	    userTransaction.begin();
+	    entityManager.joinTransaction();
+	    entityManager.createQuery("DELETE FROM RequestItem WHERE id IN (SELECT R.id FROM RequestItem R INNER JOIN R.material M WHERE M.lamination = 'WQ' AND M.treatment = 'GU')").executeUpdate();
+	    userTransaction.commit();
+	    userTransaction.begin();
+	    entityManager.joinTransaction();
+	    entityManager.createQuery("DELETE FROM RequestItem WHERE id IN (SELECT R.id FROM RequestItem R INNER JOIN R.material M WHERE M.lamination = 'FZ' AND M.treatment = 'RT')").executeUpdate();
+	    userTransaction.commit();
+	    userTransaction.begin();
+	    entityManager.joinTransaction();
+	    entityManager.createQuery("DELETE FROM RequestItem WHERE id IN (SELECT R.id FROM RequestItem R INNER JOIN R.material M WHERE M.lamination = 'FQ' AND M.treatment = 'PZ')").executeUpdate();
+	    userTransaction.commit();
+	    userTransaction.begin();
+	    entityManager.joinTransaction();
+	    entityManager.createQuery("DELETE FROM Material M WHERE M.lamination = 'NO' AND M.treatment = 'ZU'").executeUpdate();
+	    userTransaction.commit();
+	    userTransaction.begin();
+	    entityManager.joinTransaction();
+	    entityManager.createQuery("DELETE FROM Material M WHERE M.lamination = 'FQ' AND M.treatment = 'TO'").executeUpdate();
+	    userTransaction.commit();
+	    userTransaction.begin();
+	    entityManager.joinTransaction();
+	    entityManager.createQuery("DELETE FROM Material M WHERE M.lamination = 'FT' AND M.treatment = 'TR'").executeUpdate();
+	    userTransaction.commit();
+	    userTransaction.begin();
+	    entityManager.joinTransaction();
+	    entityManager.createQuery("DELETE FROM Material M WHERE M.lamination = 'WQ' AND M.treatment = 'GU'").executeUpdate();
+	    userTransaction.commit();
+	    userTransaction.begin();
+	    entityManager.joinTransaction();
+	    entityManager.createQuery("DELETE FROM Material M WHERE M.lamination = 'FZ' AND M.treatment = 'RT'").executeUpdate();
+	    userTransaction.commit();
+	    userTransaction.begin();
+	    entityManager.joinTransaction();
+	    entityManager.createQuery("DELETE FROM Material M WHERE M.lamination = 'FQ' AND M.treatment = 'PZ'").executeUpdate();
+	    userTransaction.commit();
+	    entityManager.clear();
+	}
+
+	/*private void insertData() throws Exception {
+		userTransaction.begin();
+		entityManager.joinTransaction();
+	    System.out.println("Inserting records...");
+	    for (String title : GAME_TITLES) {
+	        Game game = new Game(title);
+	        entityManager.persist(game);
+	    }
+	    userTransaction.commit();
+	    // clear the persistence context (first-level cache)
+	    entityManager.clear();
+	}*/
+
+	/*private void startTransaction() throws Exception {
+		userTransaction.begin();
+		entityManager.joinTransaction();
+	}*/
+	
+	@After
+	public void commitTransaction() throws Exception {
+		//userTransaction.commit();
+	}
+	
 	/**
 	 * Tests that the process is executable and reaches its end.
 	 */
@@ -146,14 +241,18 @@ public class ArquillianTest {
 	public void MaterialDaoTest() {
 		Material material = new Material();
 		
-		material.setLamination("FT");
-		material.setTreatment("PT");
+		material.setLamination("LX");
+		material.setTreatment("LX");
 		material.setThickness(new BigDecimal(2.0));
 		material.setWidth(new BigDecimal(200.0));
 		material.setLength(new BigDecimal(1000.0));
 		material.setTax(new BigDecimal(4.5));
 		
-		Material entity = materialDao.create(material);
+		Material entity = materialDao.find(material);
+		
+		if (entity == null) {
+			entity = materialDao.create(material);
+		}
 		
 		assertNotNull(entity);
 		assertNotNull(entity.getId());
@@ -166,7 +265,7 @@ public class ArquillianTest {
 		
 		material = entity;
 		
-		material.setLamination("TX");
+		material.setLamination("LX");
 		material.setTreatment("TX");
 		material.setThickness(new BigDecimal(3.5));
 		material.setWidth(new BigDecimal(100.5));
@@ -209,8 +308,8 @@ public class ArquillianTest {
 		
 		Material material = new Material();
 		
-		material.setLamination("FQ");
-		material.setTreatment("PR");
+		material.setLamination("TX");
+		material.setTreatment("TR");
 		material.setThickness(new BigDecimal(2.0));
 		material.setWidth(new BigDecimal(200.0));
 		material.setLength(new BigDecimal(0));
@@ -264,6 +363,9 @@ public class ArquillianTest {
 		Request exist = requestDao.find(id);
 		
 		assertNull(exist);
+		
+		// cleanup
+		materialDao.remove(material);
 	}
 
 	@Test
@@ -279,15 +381,15 @@ public class ArquillianTest {
 			request.setCreator("RequestDaoTest");
 			request.setSent(null);
 			
-			requestDao.create(request);
+			request = requestDao.create(request);
 		}
 		
 		assertNotNull(request.getId());
 		
 		Material material = new Material();
 		
-		material.setLamination("FQ");
-		material.setTreatment("PR");
+		material.setLamination("FT");
+		material.setTreatment("TR");
 		material.setThickness(new BigDecimal(2.0));
 		material.setWidth(new BigDecimal(200.0));
 		material.setLength(new BigDecimal(0));
@@ -413,14 +515,16 @@ public class ArquillianTest {
 		
 		Material material = new Material();
 		
-		material.setLamination("FQ");
-		material.setTreatment("UZ");
+		material.setLamination("NO");
+		material.setTreatment("ZU");
 		material.setThickness(new BigDecimal(2.0));
 		material.setWidth(new BigDecimal(200.0));
 		material.setLength(new BigDecimal(12.3));
 		material.setTax(new BigDecimal(4.5));
 		
-		materialDao.create(material);
+		material = materialDao.create(material);
+		
+		assertNotNull(material);
 		
 		item.setArrival(new Date());
 		item.setWeight(new BigDecimal(8899.0));
@@ -462,6 +566,7 @@ public class ArquillianTest {
 		for(RequestItem i : entity.getItems()) {
 			assertTrue(entity.getItems().contains(i));
 		}
+
 	}
 	
 	@Test
@@ -473,11 +578,17 @@ public class ArquillianTest {
 		client.accept(MediaType.APPLICATION_JSON);
 		client.header("Content-Type", MediaType.APPLICATION_JSON);
 
-		ClientResponse<List<Request>> response = client.get(new GenericType<List<Request>>(){});
+		ClientResponse<String> response = client.get(new GenericType<String>(){});
 		
 		assertEquals(200, response.getStatus());
 		
-		List<Request> list = response.getEntity();
+		ObjectMapper mapper = new ObjectMapper();
+		
+		mapper.registerModule(new Hibernate4Module());
+		mapper.getSerializerProvider().setNullValueSerializer(new NullValueSerializer());
+		
+		//List<Request> list = response.getEntity();
+		List<Request> list = new ObjectMapper().readValue(response.getEntity(), new TypeReference<List<Request>>() { });
 		
 		Assert.assertNotNull(list);
 		
@@ -487,16 +598,20 @@ public class ArquillianTest {
 	@InSequence(60)
 	public void RequestItemEndpointCreateTest() throws Exception {
 		
+		Request request = requestDao.current();
+		
+		assertNotNull(request);
+		
 		UriBuilder context = UriBuilder.fromUri(url);
 		
-		ClientRequest client = new ClientRequest(context.path("/{id}/item").build(1).toString());
+		ClientRequest client = new ClientRequest(context.path("/{id}/item").build(request.getId()).toString());
 		client.accept(MediaType.APPLICATION_JSON);
 		client.header("Content-Type", MediaType.APPLICATION_JSON);
 		
 		Material material = new Material();
 		
-		material.setLamination("FQ");
-		material.setTreatment("PR");
+		material.setLamination("FZ");
+		material.setTreatment("RT");
 		material.setThickness(new BigDecimal(2.0));
 		material.setWidth(new BigDecimal(200.0));
 		material.setLength(new BigDecimal(12.3));
@@ -536,13 +651,47 @@ public class ArquillianTest {
 	@InSequence(61)
 	public void RequestItemEndpointFindByIdTest() throws Exception {
 		
-		RequestItem item = requestItemDao.list(requestDao.current().getId(), 0, 10).get(0);
+		Request request = requestDao.current();
+		
+		assertNotNull(request);
+		
+		RequestItem item = null;
+		
+		List<RequestItem> list = requestItemDao.list(request.getId(), 0, 10);
+		
+		if (list.isEmpty()) {
+			Material material = new Material();
+			
+			material.setLamination("FQ");
+			material.setTreatment("TO");
+			material.setThickness(new BigDecimal(2.0));
+			material.setWidth(new BigDecimal(200.0));
+			material.setLength(new BigDecimal(12.3));
+			material.setTax(new BigDecimal(4.5));
+			
+			Material m = materialDao.find(material);
+			
+			if (m != null) {
+				material = m;
+			}
+			
+			item = new RequestItem();
+			
+			item.setArrival(new Date());
+			item.setWeight(new BigDecimal(1234.0));
+			item.setMaterial(material);
+			item.setRequest(request);
+			
+			requestItemDao.create(item);
+		} else {
+			item = list.get(0);
+		}
 		
 		assertNotNull(item);
 		
 		UriBuilder context = UriBuilder.fromUri(url);
 		
-		ClientRequest client = new ClientRequest(context.path("/{id}/item/{item}").build(requestDao.current().getId(), item.getId()).toString());
+		ClientRequest client = new ClientRequest(context.path("/{id}/item/{item}").build(request.getId(), item.getId()).toString());
 		client.accept(MediaType.APPLICATION_JSON);
 		client.header("Content-Type", MediaType.APPLICATION_JSON);
 
@@ -563,11 +712,36 @@ public class ArquillianTest {
 		
 		assertNotNull(request);
 		
-		RequestItem item = requestItemDao.list(request.getId(), 0, 10).get(0);
+		RequestItem item = null;
+		
+		List<RequestItem> list = requestItemDao.list(request.getId(), 0, 10);
+
+		Material material = new Material();
+
+		if (list.isEmpty()) {
+			material = new Material();
+			
+			material.setLamination("WQ");
+			material.setTreatment("GU");
+			material.setThickness(new BigDecimal(2.0));
+			material.setWidth(new BigDecimal(200.0));
+			material.setLength(new BigDecimal(12.3));
+			material.setTax(new BigDecimal(4.5));
+			
+			
+			item = new RequestItem();
+			
+			item.setArrival(new Date());
+			item.setWeight(new BigDecimal(1234.0));
+			item.setMaterial(material);
+			item.setRequest(request);
+			
+			requestItemDao.create(item);
+		} else {
+			item = list.get(0);
+		}
 		
 		assertNotNull(item);
-		
-		Material material = new Material();
 		
 		material.setLamination("FQ");
 		material.setTreatment("PZ");
@@ -612,6 +786,8 @@ public class ArquillianTest {
 		assertEquals(entity.getMaterial().getWidth(), material.getWidth());
 		assertEquals(entity.getMaterial().getLength(), material.getLength());
 		assertEquals(entity.getMaterial().getTax(), material.getTax());
+		
+		
 	}
 	
 	@Test

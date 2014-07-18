@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -20,6 +22,7 @@ public class RequestDao {
 	@PersistenceContext
 	private EntityManager entityManager;
 
+	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED) 
 	public List<Request> list(int startPosition, int maxResult) {
 
 		TypedQuery<Request> findAllQuery = entityManager.createNamedQuery("Request.list", Request.class);
@@ -30,6 +33,7 @@ public class RequestDao {
 		return findAllQuery.getResultList();
 	}
 	
+	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED) 
 	public List<RequestItem> listItems(Long requestId, int startPosition, int maxResult) {
 
 		TypedQuery<RequestItem> findAllQuery = entityManager.createNamedQuery("Request.items", RequestItem.class);
@@ -81,6 +85,11 @@ public class RequestDao {
 		if (entity == null) {
 			throw new IllegalArgumentException();
 		}
+		
+		if (entity.getId() == null)	{
+			throw new IllegalArgumentException();
+		}
+		
 		if (entity.getId() == null || entity.getId() == 0l) {
 			throw new IllegalArgumentException();
 		}
@@ -113,9 +122,12 @@ public class RequestDao {
 
 		Request entity = entityManager.find(Request.class, id);
         
-		if (entity != null) {
-	        entityManager.remove(entity);
-        }
+		if (entity == null) {
+			throw new IllegalArgumentException();
+		}
+		
+	    entityManager.remove(entity);
+	    entityManager.flush();
 		
 		return entity;
 	}

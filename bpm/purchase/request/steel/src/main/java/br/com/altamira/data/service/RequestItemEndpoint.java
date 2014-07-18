@@ -24,7 +24,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 
+import br.com.altamira.data.dao.RequestDao;
 import br.com.altamira.data.dao.RequestItemDao;
+import br.com.altamira.data.model.Request;
 import br.com.altamira.data.model.RequestItem;
 
 @Stateless
@@ -32,11 +34,14 @@ import br.com.altamira.data.model.RequestItem;
 public class RequestItemEndpoint {
 	
 	@Inject
+	private RequestDao requestDao;
+	
+	@Inject
 	private RequestItemDao requestItemDao;
 
 	@GET
 	@Produces("application/json")
-	public Response list(@PathParam("requestId") Long requestId,
+	public Response list(@PathParam("requestId") long requestId,
 			@DefaultValue("0") @QueryParam("start") Integer startPosition,
 			@DefaultValue("10") @QueryParam("max") Integer maxResult)
 			throws IOException {
@@ -51,9 +56,9 @@ public class RequestItemEndpoint {
 	}
 	
 	@GET
-	@Path("{id:[0-9]*}")
+	@Path("{id:[0-9][0-9]*}")
 	@Produces("application/json")
-	public Response findById(@PathParam("requestId") Long requestId, @PathParam("id") long id)
+	public Response findById(@PathParam("requestId") long requestId, @PathParam("id") long id)
 			throws IOException {
 
 		RequestItem entity = requestItemDao.find(id);
@@ -72,10 +77,18 @@ public class RequestItemEndpoint {
 	@POST
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response create(@PathParam("requestId") Long requestId, RequestItem entity) throws IllegalArgumentException, UriBuilderException, JsonProcessingException {
+	public Response create(@PathParam("requestId") long requestId, RequestItem entity) throws IllegalArgumentException, UriBuilderException, JsonProcessingException {
 		
 		if (entity == null) {
 			return Response.status(Status.BAD_REQUEST).build();
+		}
+		
+		Request request = requestDao.current();
+		
+		if (Long.compare(request.getId().longValue(), requestId) != 0) {
+			return Response.status(Status.CONFLICT)
+					.entity("Request id doesn't match with resource path id")
+					.build();
 		}
 		
 		requestItemDao.create(entity);
@@ -92,22 +105,34 @@ public class RequestItemEndpoint {
 	}
 
 	@PUT
-	@Path("{id:[0-9]*}")
+	@Path("{id:[0-9][0-9]*}")
 	@Consumes("application/json")
 	@Produces("application/json")
-	public Response update(@PathParam("requestId") Long requestId, @PathParam("id") long id, RequestItem entity) throws IllegalArgumentException, UriBuilderException, JsonProcessingException
+	public Response update(@PathParam("requestId") long requestId, @PathParam("id") long id, RequestItem entity) throws IllegalArgumentException, UriBuilderException, JsonProcessingException
 			 {
 
 		if (entity == null) {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
 		
-		if (entity.getId() != id) {
+		if (entity.getId() == null) {
+			return Response.status(Status.BAD_REQUEST).build();
+		}
+		
+		if (entity.getId().longValue() != id) {
 			return Response.status(Status.CONFLICT)
-					.entity("entity id doesn't match with resource path id")
+					.entity("Entity id doesn't match with resource path id")
 					.build();
 		}
 
+		Request request = requestDao.current();
+		
+		if (Long.compare(request.getId().longValue(), requestId) != 0) {
+			return Response.status(Status.CONFLICT)
+					.entity("Request id doesn't match with resource path id")
+					.build();
+		}
+		
 		entity = requestItemDao.update(entity);
 
 		if (entity == null) {
@@ -125,9 +150,11 @@ public class RequestItemEndpoint {
 	}
 
 	@DELETE
-	@Path("{id:[0-9]*}")
-	public Response removeById(@PathParam("requestId") Long requestId, @PathParam("id") long id) {
+	@Path("{id:[0-9][0-9]*}")
+	public Response removeById(@PathParam("requestId") long requestId, @PathParam("id") long id) {
+		
 		RequestItem entity = requestItemDao.remove(id);
+		
 		if (entity == null) {
 			return Response.noContent().status(Status.NOT_FOUND).build();
 		}

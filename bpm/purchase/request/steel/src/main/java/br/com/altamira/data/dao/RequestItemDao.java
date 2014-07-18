@@ -3,6 +3,8 @@ package br.com.altamira.data.dao;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
@@ -27,6 +29,7 @@ public class RequestItemDao {
 	@Inject
 	private MaterialDao materialDao;
 
+	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED) 
 	public List<RequestItem> list(Long requestId, int startPosition, int maxResult) {
 
 		TypedQuery<RequestItem> findAllQuery = entityManager.createNamedQuery("RequestItem.list", RequestItem.class);
@@ -38,6 +41,7 @@ public class RequestItemDao {
 		return findAllQuery.getResultList();
 	}
 	
+	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED) 
 	public RequestItem find(long id) {
         RequestItem entity;
 
@@ -69,12 +73,12 @@ public class RequestItemDao {
 			entity.setRequest(request);
 		}
 		
-		if (entity.getRequest().getId() != request.getId()) {
-			throw new IllegalArgumentException("Insert item to non current Request is not allowed");
+		if (!entity.getRequest().getId().equals(request.getId())) {
+			throw new IllegalArgumentException("Insert item to non current Request is not allowed. Your id " + entity.getRequest().getId() + ", expected id " + request.getId());
 		}
 		
 		if (entity.getId() != null) {
-			throw new IllegalArgumentException("To create this entity id must be null.");
+			throw new IllegalArgumentException("To create this, entity id must be null.");
 		}
 		
 		Material material = materialDao.find(entity.getMaterial());
@@ -124,8 +128,8 @@ public class RequestItemDao {
 			entity.setRequest(request);
 		}
 		
-		if (entity.getRequest().getId() != request.getId()) {
-			throw new IllegalArgumentException("Update item of non current Request is not allowed");
+		if (!entity.getRequest().getId().equals(request.getId())) {
+			throw new IllegalArgumentException("Update item of non current Request is not allowed. Your id " + entity.getRequest().getId() + ", expected id " + request.getId());
 		}
 		
 		if (entity.getMaterial() == null) {
@@ -190,9 +194,12 @@ public class RequestItemDao {
 
 		RequestItem entity = entityManager.find(RequestItem.class, id);
         
-		if (entity != null) {
-	        entityManager.remove(entity);
-        }
+		if (entity == null) {
+			throw new IllegalArgumentException();
+		}
+		
+	    entityManager.remove(entity);
+	    entityManager.flush();
 		
 		return entity;
 	}

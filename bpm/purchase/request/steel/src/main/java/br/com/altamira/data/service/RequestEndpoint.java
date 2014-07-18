@@ -71,7 +71,7 @@ public class RequestEndpoint {
 	}
 
 	@GET
-	@Path("{id:[0-9]*}")
+	@Path("{id:[0-9][0-9]*}")
 	@Produces("application/json")
 	public Response findById(@PathParam("id") long id)
 			throws IOException {
@@ -112,7 +112,7 @@ public class RequestEndpoint {
 	}*/
 
 	@PUT
-	@Path("{id:[0-9]*}")
+	@Path("{id:[0-9][0-9]*}")
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response update(@PathParam("id") long id, Request entity)
@@ -122,14 +122,20 @@ public class RequestEndpoint {
 		if (entity == null) {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
-			
-		if (entity.getId() != id) {
+
+		if (entity.getId() == null) {
 			return Response.status(Status.CONFLICT)
-					.entity("Entity id doesn't match with resource path id")
+					.entity("Entity id can't be null")
 					.build();
 		}
 		
-		if (entity.getId() != requestDao.current().getId()) {
+		if (entity.getId().longValue() != id) {
+			return Response.status(Status.CONFLICT)
+					.entity("Entity id doesn't match with resource path id. The result of compare is " + entity.getId().compareTo(id))
+					.build();
+		}
+		
+		if (entity.getId().compareTo(requestDao.current().getId()) != 0) {
 			return Response.status(Status.CONFLICT)
 					.entity("Entity id doesn't match with current Request")
 					.build();
@@ -158,7 +164,7 @@ public class RequestEndpoint {
 	}
 
 	@DELETE
-	@Path("{id:[1-9]*}")
+	@Path("{id:[0-9][0-9]*}")
 	public Response removeById(@PathParam("id") long id) {
 		Request entity = requestDao.remove(id);
 		if (entity == null) {
@@ -195,7 +201,7 @@ public class RequestEndpoint {
 	}
 	
     @GET
-    @Path("{id:[0-9]*}/report")
+    @Path("{id:[0-9][0-9]*}/report")
     @Produces("application/pdf")
     public Response reportInPdf(@PathParam("id") long id) {
 
