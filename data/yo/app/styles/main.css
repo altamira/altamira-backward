@@ -1,0 +1,47 @@
+/* Space out content a bit */
+
+@media screen and (max-width: 640px) {
+	.small_screen {
+	   display: inline;
+	}
+	.large_screen {
+       display: none;
+    }
+}
+
+@media screen and (min-width: 641px) {
+    .small_screen {
+       display: none;
+    }
+    .large_screen {
+       display: inline;
+    }
+}
+
+.metro .listview-outlook .list .list-content {
+	padding-left: 5px;
+}
+
+.metro .tile.half.tile-DE {
+    background-color: #1ba1e2;
+}
+
+.metro .tile.half.tile-PR {
+	background-color: #a4c400;
+}
+
+.metro .tile.half.tile-GA {
+	background-color: #f0a30a;
+}
+
+@media only screen and (max-width: 800px) {
+    .navigation-bar, .navbar {
+		position: fixed !important;
+    }
+    .metro .navigation-bar .navigation-bar-content .element, .metro .navbar .navigation-bar-content .element, .metro .navigation-bar .navbar-content .element, .metro .navbar .navbar-content .element, .metro .navigation-bar .navigation-bar-content .element-divider, .metro .navbar .navigation-bar-content .element-divider, .metro .navigation-bar .navbar-content .element-divider, .metro .navbar .navbar-content .element-divider {
+        display: inline-block;
+    }
+    .metro h2 {
+        font-size: 28px;
+    }
+}
