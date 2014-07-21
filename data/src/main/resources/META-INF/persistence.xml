@@ -11,6 +11,8 @@
 		<class>br.com.altamira.data.model.Request</class>
 		<class>br.com.altamira.data.model.RequestItem</class>
 		<class>br.com.altamira.data.model.Material</class>
+		
+		<class>br.com.altamira.data.service.RequestReportLog</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

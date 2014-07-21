@@ -49,8 +49,6 @@ import br.com.altamira.data.serialize.NullValueSerializer;
 @RunWith(Arquillian.class)
 public class ArquillianTest {
 
-	private static final String PROCESS_DEFINITION_KEY = "bpm.purchase.request.steel";
-
 	@Deployment
 	public static WebArchive createDeployment() {
 		// resolve given dependencies from Maven POM
@@ -74,13 +72,13 @@ public class ArquillianTest {
 				// add your own classes (could be done one by one as well)
 				// not recursive to skip package 'nonarquillian'
 				.addPackages(true, "br.com.altamira.data")
-				.addPackage("br.com.altamira.data.model")
-				.addPackage("br.com.altamira.data.serialize")
+				/*.addPackage("br.com.altamira.data.model")
+				.addPackage("br.com.altamira.data.serialize")*/
 		// now you can add additional stuff required for your test case
 		;
 	}
 
-	public final static String url = "http://localhost:8080/bpm-purchase-request-steel/rest/request";
+	public final static String url = "http://localhost:8080/data/rest/request";
 
 	@Inject
 	private RequestDao requestDao;
