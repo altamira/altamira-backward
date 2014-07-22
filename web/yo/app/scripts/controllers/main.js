@@ -10,7 +10,7 @@ angular.module('webApp').controller('MainCtrl', function($scope, $http) {
 	$scope.serverSays = 'none';
     // Configura o subtítulo a ser usado na página.
 
-	$http.get('./rest/members').success(function(data) {
+	$http.get('./rest/request/current').success(function(data) {
 		$scope.serverSays = data[0];
 		console.log($scope.serverSays);
 	}).error(function() {
