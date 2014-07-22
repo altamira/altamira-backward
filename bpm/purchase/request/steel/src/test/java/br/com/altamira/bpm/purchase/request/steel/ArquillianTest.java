@@ -10,9 +10,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
@@ -61,7 +61,7 @@ public class ArquillianTest {
 				.resolve().withTransitivity().asFile();
 
 		return ShrinkWrap
-				.create(WebArchive.class, "SteelTest.war")
+				.create(WebArchive.class, "bpm-purchase-request-steel-test.war")
 				// add needed dependencies
 				.addAsLibraries(libs)
 				// prepare as process application archive for camunda BPM
@@ -77,10 +77,10 @@ public class ArquillianTest {
 				.addPackages(false,
 						"br.com.altamira.bpm.purchase.request.steel")
 				// not recursive to skip package 'nonarquillian'
-				.addPackages(true, "br.com.altamira.data")
-				.addPackage("br.com.altamira.data.model")
-				.addPackage("br.com.altamira.data.serialize")
 				// add process definition
+				//.addPackages(true, "br.com.altamira.data.model")
+				.addPackage("br.com.altamira.data.model")
+				//.addPackage("br.com.altamira.data.dao")
 				.addAsResource("process.bpmn")
 				// add process image for visualizations
 				.addAsResource("process.png")
@@ -88,7 +88,9 @@ public class ArquillianTest {
 		;
 	}
 
-	@Inject
+	public final static String url = "http://localhost:8080/data/rest/request";
+	
+	@PersistenceContext
 	private ProcessEngine processEngine;
 
 	@Inject
@@ -234,8 +236,6 @@ public class ArquillianTest {
 		}
 	}
 
-	public final static String url = "http://localhost:8080/bpm-purchase-request-steel/rest/request";
-	
 	@Test
 	@InSequence(10)
 	public void MaterialDaoTest() {
@@ -549,6 +549,7 @@ public class ArquillianTest {
 		ObjectWriter writer = mapper.writerWithView(JSonViews.EntityView.class);
 
 		client.body(MediaType.APPLICATION_JSON, writer.writeValueAsString(request));
+		//client.body(MediaType.APPLICATION_JSON, request);
 		
 		ClientResponse<Request> response = client.put(Request.class);
 		
@@ -579,6 +580,7 @@ public class ArquillianTest {
 		client.header("Content-Type", MediaType.APPLICATION_JSON);
 
 		ClientResponse<String> response = client.get(new GenericType<String>(){});
+		//ClientResponse<List<Request>> response = client.get(new GenericType<List<Request>>(){});
 		
 		assertEquals(200, response.getStatus());
 		
@@ -760,11 +762,12 @@ public class ArquillianTest {
 		client.accept(MediaType.APPLICATION_JSON);
 		client.header("Content-Type", MediaType.APPLICATION_JSON);
 		
-		ObjectMapper mapper = new ObjectMapper();
+		//ObjectMapper mapper = new ObjectMapper();
 		
-		mapper.registerModule(new Hibernate4Module());
+		//mapper.registerModule(new Hibernate4Module());
 
-		client.body(MediaType.APPLICATION_JSON, mapper.writeValueAsString(item));
+		//client.body(MediaType.APPLICATION_JSON, mapper.writeValueAsString(item));
+		client.body(MediaType.APPLICATION_JSON, item);
 		
 		ClientResponse<RequestItem> response = client.put(RequestItem.class);
 		

@@ -1,15 +1,10 @@
 package br.com.altamira.bpm.purchase.request.steel;
 
 import java.util.HashMap;
-import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.RuntimeService;
-import org.joda.time.DateTime;
-
 import br.com.altamira.data.model.Request;
 
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 
 public class RequestService {

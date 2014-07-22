@@ -35,10 +35,6 @@ angular
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
       })
-      .when('/request', {
-    	templateUrl: '/bpm-purchase-request-steel/views/request.html',
-    	controller: 'RequestCtrl'
-      })
       .otherwise({
         redirectTo: '/'
       });

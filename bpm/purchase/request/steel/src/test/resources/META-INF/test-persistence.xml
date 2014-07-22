@@ -25,16 +25,18 @@
 		<class>br.com.altamira.data.model.RequestItem</class>
 		<class>br.com.altamira.data.model.Material</class>
 
+        <class>br.com.altamira.data.service.RequestReportLog</class>
+        
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
 		<properties>
 			<!-- Properties for Hibernate -->
-            <property name="hibernate.hbm2ddl.auto" value="validate" />
-            <!-- <property name="hibernate.hbm2ddl.auto" value="create" /> -->
+            <!-- <property name="hibernate.hbm2ddl.auto" value="validate" /> -->
+            <property name="hibernate.hbm2ddl.auto" value="create" />
             <property name="hibernate.show_sql" value="true" />
             <property name="hibernate.format_sql" value="true" />
-            <property name="hibernate.dialect" value="org.hibernate.dialect.Oracle10gDialect" />
-            <!-- <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" /> -->
+            <!-- <property name="hibernate.dialect" value="org.hibernate.dialect.Oracle10gDialect" /> -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
 
 		</properties>
 	</persistence-unit>

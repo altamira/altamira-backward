@@ -66,6 +66,11 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			<dependency>
+				<groupId>br.com.altamira</groupId>
+				<artifactId>altamira-data</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -237,6 +242,12 @@
 			<groupId>de.neuland-bfi</groupId>
 			<artifactId>jade4j</artifactId>
 			<version>0.4.0</version>
+			<exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
 		</dependency>
 
 		<dependency>
@@ -253,7 +264,7 @@
             <exclusions>
                 <exclusion>
                     <groupId>commons-httpclient</groupId>
-                    <artifactId>commons-httpclient</artifactId>
+                    <artifactId>jackson-core</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>javax.servlet</groupId>
@@ -262,17 +273,28 @@
             </exclusions>
             <scope>test</scope>
 		</dependency>
-        <dependency>
+		
+        <!-- <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxb-provider</artifactId>
             <version>2.3.6.Final</version>
             <scope>test</scope>
-        </dependency>
+        </dependency> -->
 
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
             <version>${jasperReport.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>commons-httpclient</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- <dependency>
@@ -283,10 +305,30 @@
         
         <!-- <dependency>
         	<groupId>org.jboss.resteasy</groupId>
-        	<artifactId>resteasy-jackson2-provider</artifactId>
+        	<artifactId>resteasy-jackson-provider</artifactId>
         	<version>3.0.8.Final</version>
+        </dependency>
+
+        <dependency>
+        	<groupId>org.codehaus.jackson</groupId>
+        	<artifactId>jackson-jaxrs</artifactId>
+        	<version>1.9.12</version>
         </dependency> -->
         
+        <!-- <dependency>
+        	<groupId>com.fasterxml.jackson.datatype</groupId>
+        	<artifactId>jackson-datatype-joda</artifactId>
+        	<version>2.4.0</version>
+        	<type>bundle</type>
+        </dependency> -->
+
+
+        <dependency>
+        	<groupId>br.com.altamira</groupId>
+        	<artifactId>altamira-data</artifactId>
+        	<version>1.0.0-SNAPSHOT</version>
+        	<classifier>classes</classifier>
+        </dependency>
 	</dependencies>
 
 	<!-- <repositories> <repository> <id>camunda-bpm-nexus</id> <name>camunda 
@@ -320,6 +362,7 @@
 							<directory>yo/dist</directory>
 						</resource>
 					</webResources>
+					<attachClasses>true</attachClasses>
 				</configuration>
 			</plugin>
 			<!-- <plugin> <artifactId>maven-clean-plugin</artifactId> <version>2.5</version> 
