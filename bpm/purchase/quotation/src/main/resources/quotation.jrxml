@@ -1,0 +1,621 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="quotation" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="bff67084-cdee-40b4-8a72-c0d51495ce6b">
+	<property name="ireport.zoom" value="1.6105100000000039"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.callouts" value="##Wed Jan 29 11:54:44 IST 2014"/>
+	<style name="Crosstab Data Text" hAlign="Center"/>
+	<style name="background" mode="Transparent" markup="styled" fontName="Times New Roman" fontSize="8" pdfFontName="Times-Roman">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{SUPPLIER_PRICEMeasure}==$V{lowestprice_NAME_ALL}]]></conditionExpression>
+			<style mode="Transparent" backcolor="#CCCCCC"/>
+		</conditionalStyle>
+	</style>
+	<subDataset name="supplierDataSet" uuid="1d58d271-fead-442a-86de-52fdd7cc41dc">
+		<parameter name="QUOTATION_ID" class="java.math.BigDecimal">
+			<defaultValueExpression><![CDATA[$P{QUOTATION_ID}]]></defaultValueExpression>
+		</parameter>
+		<queryString>
+			<![CDATA[SELECT Q.ROW_NUM,
+       QI.LAMINATION,
+       QI.TREATMENT,
+       QI.THICKNESS,
+       QI.WEIGHT AS TOTAL_WEIGHT,
+       QIQ.SUPPLIER AS SUPPLIER_ID,
+       S.NAME,
+       QIQ.STANDARD,
+       QIQ.WEIGHT,
+       QIQ.PRICE,
+       (SELECT
+        LISTAGG( TRIM( REPLACE(TO_CHAR(SIS.WEIGHT, '99999999.0'),'.',',') ) || 'T [' || SIS.WIDTH || 'mm' ||  CASE WHEN SIS.LENGTH IS NOT NULL THEN 'x' || SIS.LENGTH || 'mm' || ']' ELSE  ']' END
+                ,'<br/>') WITHIN GROUP (ORDER BY SIS.WEIGHT) AS SUPPLIER_STOCK_INFO
+        FROM SUPPLIER_IN_STOCK SIS WHERE SIS.QUOTATION_ITEM_QUOTE = QIQ.ID) AS SUPPLIER_STOCK_INFO
+FROM QUOTATION_ITEM_QUOTE QIQ,
+     QUOTATION_ITEM QI,
+     SUPPLIER S,
+     (SELECT QI.ID,
+             ROW_NUMBER() OVER (ORDER BY QI.LAMINATION, QI.TREATMENT, QI.THICKNESS) AS ROW_NUM
+      FROM QUOTATION_ITEM QI
+      WHERE QI.QUOTATION = $P{QUOTATION_ID}
+      ORDER BY QI.ID) Q
+WHERE QI.QUOTATION = $P{QUOTATION_ID}
+AND QI.ID = Q.ID
+AND QI.ID = QIQ.QUOTATION_ITEM
+AND QIQ.SUPPLIER = S.ID]]>
+		</queryString>
+		<field name="ROW_NUM" class="java.math.BigDecimal"/>
+		<field name="LAMINATION" class="java.lang.String"/>
+		<field name="TREATMENT" class="java.lang.String"/>
+		<field name="THICKNESS" class="java.math.BigDecimal"/>
+		<field name="TOTAL_WEIGHT" class="java.math.BigDecimal"/>
+		<field name="SUPPLIER_ID" class="java.math.BigDecimal"/>
+		<field name="NAME" class="java.lang.String"/>
+		<field name="STANDARD" class="java.lang.String"/>
+		<field name="WEIGHT" class="java.math.BigDecimal"/>
+		<field name="PRICE" class="java.math.BigDecimal"/>
+		<field name="SUPPLIER_STOCK_INFO" class="java.lang.String"/>
+	</subDataset>
+	<subDataset name="dataset2" uuid="7ad851aa-4dca-4a93-90a8-ed39e1809476">
+		<parameter name="QUOTATION_ID" class="java.math.BigDecimal">
+			<defaultValueExpression><![CDATA[$P{QUOTATION_ID}]]></defaultValueExpression>
+		</parameter>
+		<queryString>
+			<![CDATA[SELECT QR.REQUEST, R.CREATED_DATE FROM QUOTATION_REQUEST QR, REQUEST R WHERE QR.QUOTATION = $P{QUOTATION_ID} AND R.ID = QR.REQUEST]]>
+		</queryString>
+		<field name="REQUEST" class="java.math.BigDecimal"/>
+		<field name="CREATED_DATE" class="java.sql.Timestamp"/>
+	</subDataset>
+	<parameter name="PRICELIST" class="java.util.List"/>
+	<parameter name="QUOTATION_ID" class="java.math.BigDecimal">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PRICELIST_CODE" class="java.lang.String"/>
+	<parameter name="altamira_logo" class="java.lang.Object"/>
+	<parameter name="QUOTATION_DATE" class="java.util.Date"/>
+	<parameter name="USERNAME" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT SUM(ROUND(QI.WEIGHT/1000, 2))
+FROM QUOTATION_ITEM QI
+WHERE QI.QUOTATION = $P{QUOTATION_ID}]]>
+	</queryString>
+	<field name="SUM(ROUND(QI.WEIGHT/1000,2))" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="63">
+			<frame>
+				<reportElement uuid="3ddcb77c-a0af-40f2-b879-9ed4854087f2" x="0" y="0" width="802" height="60"/>
+				<box>
+					<pen lineWidth="0.75"/>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement uuid="300718d3-94d5-401f-a9ee-80d465dabde7" x="2" y="11" width="150" height="38"/>
+					<imageExpression><![CDATA[$P{altamira_logo}]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement uuid="971860d0-a5ad-4c08-afb8-d76dae08a5f9" x="162" y="4" width="264" height="13"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
+						<font fontName="Times New Roman" size="8" isBold="true" pdfFontName="Times-Bold" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[ALTAMIRA Indústria Metalúrgica Ltda.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="deb9094b-0bc3-4de6-9c22-662f32b6d0a3" x="162" y="16" width="264" height="34"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
+						<font fontName="Times New Roman" size="8" isBold="false" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Rua Ganges, 528 - Vila Nova Manchester
+03445-030 - São Paulo - SP   Fone: (11) 2095-2855   Fax: (11) 2095-2865
+CNPJ: 43.799.295/0001-10    IE: 109.095.380.110]]></text>
+				</staticText>
+				<textField>
+					<reportElement uuid="d6372f53-4559-4cdf-bb0a-325a9b947ef7" x="747" y="4" width="49" height="13"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[(new SimpleDateFormat("dd/MM/yyyy")).format(new Date())]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="bf8967b9-5689-4139-8ee4-3056f4bcb0a6" x="715" y="4" width="29" height="13"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Times New Roman" size="8" isBold="true" pdfFontName="Times-Bold" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Data]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="99da5ce9-fab2-43e1-b90a-d42f019acdac" x="715" y="17" width="29" height="13"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Times New Roman" size="8" isBold="true" pdfFontName="Times-Bold" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Hora]]></text>
+				</staticText>
+				<textField>
+					<reportElement uuid="b143398e-37d8-4d20-8d30-50604c2d69bd" x="747" y="17" width="49" height="13"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[(new SimpleDateFormat("HH:mm:ss")).format(new Date())]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="170ecbc1-be94-4a15-971a-462b08b8e359" x="715" y="30" width="29" height="13"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Times New Roman" size="8" isBold="true" pdfFontName="Times-Bold" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Página]]></text>
+				</staticText>
+				<textField>
+					<reportElement uuid="cdda0242-a758-46fa-8c03-5038449981a3" x="748" y="31" width="18" height="12"/>
+					<textElement textAlignment="Left">
+						<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+				</textField>
+				<textField evaluationTime="Report">
+					<reportElement uuid="fe58795f-bfaf-4c60-982e-5452041e894b" x="767" y="31" width="12" height="12"/>
+					<textElement>
+						<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="7447aa66-265f-4bca-8722-f5086c83dc7e" x="748" y="44" width="49" height="13"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{USERNAME}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="89">
+			<staticText>
+				<reportElement uuid="e05a3a44-f7ff-4064-9a42-884daad58323" x="1" y="47" width="110" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="8" isBold="true" pdfFontName="Times-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Requisições de Compra de Aço:]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement uuid="0cb8242e-2637-4dc0-a940-f83f8d20ae0a" x="0" y="64" width="800" height="18"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Horizontal" ignoreWidth="false">
+					<datasetRun subDataset="dataset2" uuid="2f738881-19a3-4825-8313-dcdf97a2a609">
+						<datasetParameter name="QUOTATION_ID">
+							<datasetParameterExpression><![CDATA[$P{QUOTATION_ID}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="18" width="80">
+						<textField>
+							<reportElement uuid="7f897eba-063d-41d1-a664-03df5ffaffdc" x="0" y="0" width="75" height="15"/>
+							<box leftPadding="3">
+								<pen lineWidth="0.5"/>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+							</textElement>
+							<textFieldExpression><![CDATA[new DecimalFormat("#00000").format($F{REQUEST})
++"  "+
+(new SimpleDateFormat("dd/MM/yyyy")).format($F{CREATED_DATE})]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+			<textField>
+				<reportElement uuid="f569fe74-6b38-482b-b15b-06003632012f" x="1" y="27" width="799" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="9" isBold="true" pdfFontName="Times-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Nro "+
+new DecimalFormat("#00000").format($P{QUOTATION_ID})+
+" - Cotação de Aço - "+
+(new SimpleDateFormat("dd/MM/yyyy")).format($P{QUOTATION_DATE})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="6f4364a0-89e0-4746-b6fd-5fe8faaab174" x="1" y="2" width="801" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="14" isBold="true" pdfFontName="Times-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Quotação]]></text>
+			</staticText>
+		</band>
+		<band height="90">
+			<crosstab columnBreakOffset="500" ignoreWidth="false">
+				<reportElement uuid="fea5b996-0ac0-40e1-8e7a-4c15351b7363" style="Crosstab Data Text" mode="Transparent" x="0" y="5" width="802" height="62"/>
+				<box rightPadding="0"/>
+				<crosstabParameter name="CROSSTAB_PRICELIST" class="java.util.List">
+					<parameterValueExpression><![CDATA[$P{PRICELIST}]]></parameterValueExpression>
+				</crosstabParameter>
+				<crosstabParameter name="CROSSTAB_PRICELIST_CODE">
+					<parameterValueExpression><![CDATA[$P{PRICELIST_CODE}]]></parameterValueExpression>
+				</crosstabParameter>
+				<crosstabDataset>
+					<dataset>
+						<datasetRun subDataset="supplierDataSet" uuid="1a406870-71e5-4aa7-9745-a101285d4b57">
+							<datasetParameter name="QUOTATION_ID">
+								<datasetParameterExpression><![CDATA[$P{QUOTATION_ID}]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+				</crosstabDataset>
+				<crosstabHeaderCell>
+					<cellContents>
+						<staticText>
+							<reportElement uuid="32cc83ab-1e39-4bbf-84e3-96595388fe5b" style="Crosstab Data Text" mode="Opaque" x="0" y="0" width="38" height="22" backcolor="#F0F8FF"/>
+							<box>
+								<pen lineWidth="0.5"/>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement>
+								<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+							</textElement>
+							<text><![CDATA[Laminação]]></text>
+						</staticText>
+						<staticText>
+							<reportElement uuid="87062102-f26e-47ba-ba7e-732b29cd13c8" style="Crosstab Data Text" mode="Opaque" x="38" y="0" width="40" height="22" backcolor="#F0F8FF"/>
+							<box>
+								<pen lineWidth="0.5"/>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement>
+								<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+							</textElement>
+							<text><![CDATA[Tratamento]]></text>
+						</staticText>
+						<staticText>
+							<reportElement uuid="c80a751c-40d0-487c-8728-524475502e4c" style="Crosstab Data Text" mode="Opaque" x="78" y="0" width="35" height="22" backcolor="#F0F8FF"/>
+							<box>
+								<pen lineWidth="0.5"/>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement>
+								<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+							</textElement>
+							<text><![CDATA[Espessura
+(mm)]]></text>
+						</staticText>
+						<staticText>
+							<reportElement uuid="242f6933-375b-4766-abd8-7fff85fc64f6" style="Crosstab Data Text" mode="Opaque" x="113" y="0" width="35" height="22" backcolor="#F0F8FF"/>
+							<box>
+								<pen lineWidth="0.5"/>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement>
+								<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+							</textElement>
+							<text><![CDATA[Requisção
+(T)]]></text>
+						</staticText>
+					</cellContents>
+				</crosstabHeaderCell>
+				<rowGroup name="LAMINATION" width="0">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{LAMINATION}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Transparent">
+							<box>
+								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="TREATMENT" width="0">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{TREATMENT}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Transparent">
+							<box>
+								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="THICKNESS" width="148">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{THICKNESS}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents>
+							<textField isStretchWithOverflow="true">
+								<reportElement uuid="ccc2e3c0-f90d-4f15-81ce-903ac185fb1b" style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="38" height="40"/>
+								<box>
+									<pen lineWidth="0.5"/>
+									<topPen lineWidth="0.5"/>
+									<leftPen lineWidth="0.5"/>
+									<bottomPen lineWidth="0.5"/>
+									<rightPen lineWidth="0.5"/>
+								</box>
+								<textElement verticalAlignment="Top">
+									<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{LAMINATION}]]></textFieldExpression>
+							</textField>
+							<textField isStretchWithOverflow="true">
+								<reportElement uuid="fa7e2ee2-d1cf-4429-b4b5-d2bc6ffce9b0" style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="38" y="0" width="40" height="40"/>
+								<box>
+									<pen lineWidth="0.5"/>
+									<topPen lineWidth="0.5"/>
+									<leftPen lineWidth="0.5"/>
+									<bottomPen lineWidth="0.5"/>
+									<rightPen lineWidth="0.5"/>
+								</box>
+								<textElement verticalAlignment="Top">
+									<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{TREATMENT}]]></textFieldExpression>
+							</textField>
+							<textField isStretchWithOverflow="true">
+								<reportElement uuid="f682de85-6a44-4868-8c7b-af0c702a2556" style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="78" y="0" width="35" height="40"/>
+								<box>
+									<pen lineWidth="0.5"/>
+									<topPen lineWidth="0.5"/>
+									<leftPen lineWidth="0.5"/>
+									<bottomPen lineWidth="0.5"/>
+									<rightPen lineWidth="0.5"/>
+								</box>
+								<textElement verticalAlignment="Top">
+									<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{THICKNESS}]]></textFieldExpression>
+							</textField>
+							<textField isStretchWithOverflow="true" pattern="#,##0.00">
+								<reportElement uuid="3867f3ec-b59f-42ef-95fb-8343c9ab1410" style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="113" y="0" width="35" height="40"/>
+								<box>
+									<pen lineWidth="0.5"/>
+									<topPen lineWidth="0.5"/>
+									<leftPen lineWidth="0.5"/>
+									<bottomPen lineWidth="0.5"/>
+									<rightPen lineWidth="0.5"/>
+								</box>
+								<textElement verticalAlignment="Top">
+									<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{TOTAL_WEIGHT}/1000]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<columnGroup name="NAME" height="22" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{NAME}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField isStretchWithOverflow="true">
+								<reportElement uuid="405fff34-9b81-457e-8fad-d8b57d82ef2c" style="Crosstab Data Text" x="0" y="0" width="88" height="22"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[""+""+""+$V{NAME}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents backcolor="#CCCCCC" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField isStretchWithOverflow="true">
+								<reportElement uuid="a4f2ae12-f2a6-4e6e-90c0-e99ea221fd23" style="Crosstab Data Text" mode="Transparent" x="0" y="0" width="48" height="22"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+									<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA["Tabela("+$P{CROSSTAB_PRICELIST_CODE}+")"]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<measure name="SUPPLIER_PRICEMeasure" class="java.lang.String">
+					<measureExpression><![CDATA[$F{PRICE}]]></measureExpression>
+				</measure>
+				<measure name="TOTAL_WEIGHT" class="java.math.BigDecimal">
+					<measureExpression><![CDATA[$F{TOTAL_WEIGHT}]]></measureExpression>
+				</measure>
+				<measure name="STANDARD" class="java.lang.String">
+					<measureExpression><![CDATA[$F{STANDARD}]]></measureExpression>
+				</measure>
+				<measure name="WEIGHT" class="java.lang.String">
+					<measureExpression><![CDATA[$F{WEIGHT}]]></measureExpression>
+				</measure>
+				<measure name="STOCK_INFO" class="java.lang.String">
+					<measureExpression><![CDATA[$F{SUPPLIER_STOCK_INFO}]]></measureExpression>
+				</measure>
+				<measure name="ROWS" class="java.lang.Integer">
+					<measureExpression><![CDATA[$F{ROW_NUM}]]></measureExpression>
+				</measure>
+				<measure name="lowestprice" class="java.lang.String" calculation="Lowest">
+					<measureExpression><![CDATA[$F{PRICE}]]></measureExpression>
+				</measure>
+				<crosstabCell width="88" height="40">
+					<cellContents mode="Opaque" style="background">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+							<reportElement uuid="cb238022-6aa4-4329-8f02-9e1937821b30" style="Crosstab Data Text" positionType="Float" mode="Transparent" x="0" y="0" width="88" height="10" backcolor="#FFFFFF"/>
+							<box>
+								<bottomPen lineWidth="0.5" lineStyle="Solid"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle" markup="styled">
+								<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+							</textElement>
+							<textFieldExpression><![CDATA[new DecimalFormat("#,##0.0", new DecimalFormatSymbols(new Locale("pt","BR"))).format(new BigDecimal($V{SUPPLIER_PRICEMeasure}))
++
+(
+$P{CROSSTAB_PRICELIST}!=null
+? (
+    $V{ROWS} > $P{CROSSTAB_PRICELIST}.size()
+	? ""
+	: " ("+ (((new BigDecimal($V{SUPPLIER_PRICEMeasure})-($P{CROSSTAB_PRICELIST}.get($V{ROWS}-1)))*100)/($P{CROSSTAB_PRICELIST}.get($V{ROWS}-1))).intValue() + "%)"
+  )
+: ""
+)]]></textFieldExpression>
+						</textField>
+						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+							<reportElement uuid="49221046-154a-49d4-b1cf-a8c764608f74" style="Crosstab Data Text" positionType="Float" x="0" y="10" width="88" height="10"/>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{STANDARD}]]></textFieldExpression>
+						</textField>
+						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+							<reportElement uuid="757957f5-0038-4449-9b3d-9169587e468a" style="Crosstab Data Text" positionType="Float" x="0" y="20" width="88" height="10"/>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+							</textElement>
+							<textFieldExpression><![CDATA[new DecimalFormat("#,##0.0", new DecimalFormatSymbols(new Locale("pt","BR"))).format(new BigDecimal($V{WEIGHT}))+"T"]]></textFieldExpression>
+						</textField>
+						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+							<reportElement uuid="0f8f7bdc-63a2-4f3e-9e8e-60ed9e60671a" style="Crosstab Data Text" positionType="Float" stretchType="RelativeToBandHeight" x="0" y="30" width="88" height="10"/>
+							<box bottomPadding="2"/>
+							<textElement textAlignment="Center" verticalAlignment="Top" markup="html">
+								<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{STOCK_INFO}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell height="25" rowTotalGroup="LAMINATION">
+					<cellContents backcolor="#005FB3" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement uuid="0579290c-c6b2-4f32-965d-7b3954fb3239" style="Crosstab Data Text" x="0" y="0" width="50" height="25" forecolor="#FFFFFF"/>
+							<textElement/>
+							<textFieldExpression><![CDATA[$V{SUPPLIER_PRICEMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="48" height="40" columnTotalGroup="NAME">
+					<cellContents backcolor="#CCCCCC" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+							<reportElement uuid="fc63be41-d88b-467d-97d2-a6024fcf17c4" style="Crosstab Data Text" mode="Transparent" x="0" y="0" width="48" height="40"/>
+							<textElement verticalAlignment="Top">
+								<font fontName="Times New Roman" size="7" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$P{CROSSTAB_PRICELIST}.get($V{ROWS}-1)]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="LAMINATION" columnTotalGroup="NAME">
+					<cellContents backcolor="#005FB3" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement uuid="c9c4b7ca-713e-47ad-ae6e-fab34cb62223" style="Crosstab Data Text" x="0" y="0" width="50" height="25" forecolor="#FFFFFF"/>
+							<textElement/>
+							<textFieldExpression><![CDATA[$V{SUPPLIER_PRICEMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell height="25" rowTotalGroup="TREATMENT">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement uuid="daa3ffc8-771e-4029-8ebd-365135b3e40a" style="Crosstab Data Text" x="0" y="0" width="50" height="25"/>
+							<textElement/>
+							<textFieldExpression><![CDATA[$V{SUPPLIER_PRICEMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="TREATMENT" columnTotalGroup="NAME">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement uuid="0e55a344-eacc-4055-a209-01d31888503a" style="Crosstab Data Text" x="0" y="0" width="50" height="25"/>
+							<textElement/>
+							<textFieldExpression><![CDATA[$V{SUPPLIER_PRICEMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="THICKNESS">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="THICKNESS" columnTotalGroup="NAME">
+					<cellContents/>
+				</crosstabCell>
+			</crosstab>
+			<textField>
+				<reportElement uuid="ca84d20c-0d8b-483e-892c-3fe48396404b" positionType="Float" x="78" y="67" width="35" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Total:"]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement uuid="e4c3425a-d70f-4746-94bf-6fcd4d80461e" positionType="Float" x="113" y="67" width="35" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SUM(ROUND(QI.WEIGHT/1000,2))}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
