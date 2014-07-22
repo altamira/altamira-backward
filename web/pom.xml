@@ -20,7 +20,7 @@
 
 	<artifactId>altamira-web</artifactId>
 	<packaging>war</packaging>
-	<name>web</name>
+	<name>Altamira Web</name>
 	<description>A starter Java EE 6 webapp project for use on JBoss AS 7 / EAP 6, generated from the jboss-javaee6-webapp archetype</description>
 
 	<url>http://jboss.org/jbossas</url>

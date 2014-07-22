@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  
   <parent>
     <groupId>br.com.altamira</groupId>
-    <artifactId>purchase</artifactId>
+    <artifactId>altamira-bpm-purchase</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>request</artifactId>
+  
+  <artifactId>altamira-bpm-purchase-request</artifactId>
   <packaging>pom</packaging>
-  <name>Altamira Purchase Request</name>
+  <name>Altamira BPM Purchase Request</name>
+  
   <modules>
     <module>steel</module>
   </modules>
+  
 </project>
