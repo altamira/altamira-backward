@@ -1,6 +1,6 @@
 // Karma configuration
 // http://karma-runner.github.io/0.12/config/configuration-file.html
-// Generated on 2014-07-03 using
+// Generated on 2014-07-01 using
 // generator-karma 0.8.2
 
 module.exports = function(config) {
@@ -16,16 +16,19 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      'bower_components/jquery/dist/jquery.js',
+      'bower_components/jquery-mousewheel/jquery.mousewheel.js',
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
-      'bower_components/angular-animate/angular-animate.js',
       'bower_components/angular-cookies/angular-cookies.js',
       'bower_components/angular-resource/angular-resource.js',
       'bower_components/angular-route/angular-route.js',
       'bower_components/angular-sanitize/angular-sanitize.js',
       'bower_components/angular-touch/angular-touch.js',
+      'bower_components/restangular/dist/restangular.js',
+      'bower_components/momentjs/moment.js',
+      'bower_components/underscore/underscore.js',
       'app/scripts/**/*.js',
-      //'test/mock/**/*.js',
       'test/spec/**/*.js'
     ],
 
@@ -33,7 +36,7 @@ module.exports = function(config) {
     exclude: [],
 
     // web server port
-    port: 9010,
+    port: 9009,
 
     // Start these browsers, currently available:
     // - Chrome
@@ -64,10 +67,10 @@ module.exports = function(config) {
     logLevel: config.LOG_INFO,
 
     // Uncomment the following lines if you are using grunt's server to run the tests
-    proxies: {
-      '/': 'http://localhost:9002/'
-    },
-    // URL root prevent conflicts with the site root
-    urlRoot: '_karma_'
+     proxies: {
+       '/': 'http://localhost:9001/'
+     },
+     //URL root prevent conflicts with the site root
+     urlRoot: '_karma_'
   });
 };

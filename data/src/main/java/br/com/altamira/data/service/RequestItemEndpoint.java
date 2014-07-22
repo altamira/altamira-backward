@@ -46,7 +46,13 @@ public class RequestItemEndpoint {
 			@DefaultValue("10") @QueryParam("max") Integer maxResult)
 			throws IOException {
 
-		List<RequestItem> list = requestItemDao.list(requestId, startPosition, maxResult);
+		List<RequestItem> list;
+		
+		try {
+			list = requestItemDao.list(requestId, startPosition, maxResult);
+		} catch (Exception e) {
+    		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    	}
 		
 		ObjectMapper mapper = new ObjectMapper();
 		
@@ -60,8 +66,13 @@ public class RequestItemEndpoint {
 	@Produces("application/json")
 	public Response findById(@PathParam("requestId") long requestId, @PathParam("id") long id)
 			throws IOException {
-
-		RequestItem entity = requestItemDao.find(id);
+		RequestItem entity = null;
+		
+		try {
+			entity = requestItemDao.find(id);
+		} catch (Exception e) {
+    		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    	}
 
 		if (entity == null) {
 			return Response.status(Status.NOT_FOUND).build();
@@ -78,20 +89,29 @@ public class RequestItemEndpoint {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response create(@PathParam("requestId") long requestId, RequestItem entity) throws IllegalArgumentException, UriBuilderException, JsonProcessingException {
+		Request request = null;
 		
 		if (entity == null) {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
 		
-		Request request = requestDao.current();
-		
+		try {
+			request = requestDao.current();
+		} catch (Exception e) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+		}
+	
 		if (Long.compare(request.getId().longValue(), requestId) != 0) {
 			return Response.status(Status.CONFLICT)
 					.entity("Request id doesn't match with resource path id")
 					.build();
 		}
 		
-		requestItemDao.create(entity);
+		try {
+			requestItemDao.create(entity);
+		} catch (Exception e) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+		}
 
 		ObjectMapper mapper = new ObjectMapper();
 		
@@ -110,7 +130,8 @@ public class RequestItemEndpoint {
 	@Produces("application/json")
 	public Response update(@PathParam("requestId") long requestId, @PathParam("id") long id, RequestItem entity) throws IllegalArgumentException, UriBuilderException, JsonProcessingException
 			 {
-
+		Request request = null;
+		
 		if (entity == null) {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
@@ -125,7 +146,11 @@ public class RequestItemEndpoint {
 					.build();
 		}
 
-		Request request = requestDao.current();
+		try {
+			request = requestDao.current();
+		} catch (Exception e) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+		}
 		
 		if (Long.compare(request.getId().longValue(), requestId) != 0) {
 			return Response.status(Status.CONFLICT)
@@ -152,8 +177,13 @@ public class RequestItemEndpoint {
 	@DELETE
 	@Path("{id:[0-9][0-9]*}")
 	public Response removeById(@PathParam("requestId") long requestId, @PathParam("id") long id) {
+		RequestItem entity = null;
 		
-		RequestItem entity = requestItemDao.remove(id);
+		try {
+			entity = requestItemDao.remove(id);
+		} catch (Exception e) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+		}
 		
 		if (entity == null) {
 			return Response.noContent().status(Status.NOT_FOUND).build();

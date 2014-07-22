@@ -1,17 +1,17 @@
 'use strict';
 
-describe('Controller: RequestCtrl', function () {
+describe('Controller: MainCtrl', function () {
 
   // load the controller's module
-  beforeEach(module('steelApp'));
+  beforeEach(module('webApp'));
 
-  var RequestCtrl,
+  var MainCtrl,
     scope;
 
   // Initialize the controller and a mock scope
   beforeEach(inject(function ($controller, $rootScope) {
     scope = $rootScope.$new();
-    RequestCtrl = $controller('RequestCtrl', {
+    MainCtrl = $controller('MainCtrl', {
       $scope: scope
     });
   }));

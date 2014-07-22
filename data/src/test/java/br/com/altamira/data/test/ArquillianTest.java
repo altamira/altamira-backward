@@ -5,12 +5,10 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.transaction.UserTransaction;
@@ -66,6 +64,7 @@ public class ArquillianTest {
 						"WEB-INF/classes/META-INF/processes.xml")
 				// enable CDI
 				.addAsWebResource("WEB-INF/beans.xml", "WEB-INF/beans.xml")
+				.addAsWebResource("log4j.xml", "log4j.xml")
 				// boot JPA persistence unit
 				.addAsResource("META-INF/test-persistence.xml",
 						"META-INF/persistence.xml")
@@ -130,6 +129,10 @@ public class ArquillianTest {
 	    userTransaction.commit();
 	    userTransaction.begin();
 	    entityManager.joinTransaction();
+	    entityManager.createQuery("DELETE FROM RequestItem WHERE id IN (SELECT R.id FROM RequestItem R INNER JOIN R.material M WHERE M.lamination = 'TX' AND M.treatment = 'TR')").executeUpdate();
+	    userTransaction.commit();
+	    userTransaction.begin();
+	    entityManager.joinTransaction();
 	    entityManager.createQuery("DELETE FROM Material M WHERE M.lamination = 'NO' AND M.treatment = 'ZU'").executeUpdate();
 	    userTransaction.commit();
 	    userTransaction.begin();
@@ -151,6 +154,10 @@ public class ArquillianTest {
 	    userTransaction.begin();
 	    entityManager.joinTransaction();
 	    entityManager.createQuery("DELETE FROM Material M WHERE M.lamination = 'FQ' AND M.treatment = 'PZ'").executeUpdate();
+	    userTransaction.commit();
+	    userTransaction.begin();
+	    entityManager.joinTransaction();
+	    entityManager.createQuery("DELETE FROM Material M WHERE M.lamination = 'TX' AND M.treatment = 'TR'").executeUpdate();
 	    userTransaction.commit();
 	    entityManager.clear();
 	}
@@ -270,6 +277,7 @@ public class ArquillianTest {
 		Set<RequestItem> items = new HashSet<RequestItem>();
 		items.add(item);
 		
+		request.setSent(new Date());
 		request.setItems(items);
 		
 		// Insert Item
@@ -306,9 +314,6 @@ public class ArquillianTest {
 		Request exist = requestDao.find(id);
 		
 		assertNull(exist);
-		
-		// cleanup
-		materialDao.remove(material);
 	}
 
 	@Test

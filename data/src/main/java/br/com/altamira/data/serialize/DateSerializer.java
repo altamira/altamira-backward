@@ -1,7 +1,7 @@
 package br.com.altamira.data.serialize;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+//import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -22,8 +22,8 @@ public class DateSerializer extends JsonSerializer<Date> {
 		if (date == null) {
 			jgen.writeString("");
 		} else {
-			jgen.writeString(new SimpleDateFormat("dd.MM.yyyy HH:mm:ss")
-					.format(date));
+			//jgen.writeString(new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(date));
+			jgen.writeObject(date);
 		}
 	}
 }

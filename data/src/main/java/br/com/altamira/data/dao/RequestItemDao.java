@@ -58,11 +58,11 @@ public class RequestItemDao {
 	
 	public RequestItem create(RequestItem entity) {
 		if (entity == null) {
-			throw new IllegalArgumentException("RequestItem cant'b be null");
+			throw new IllegalArgumentException("Entity can't be null.");
 		}
 		
-		if (entity.getId() != null) {
-			throw new IllegalArgumentException("RequestItem Id must be null");
+		if (entity.getId() != null && entity.getId() > 0) {
+			throw new IllegalArgumentException("To create this entity, id must be null or zero.");
 		}
 		
 		Request request = requestDao.current();	// get current request
@@ -75,10 +75,6 @@ public class RequestItemDao {
 		
 		if (!entity.getRequest().getId().equals(request.getId())) {
 			throw new IllegalArgumentException("Insert item to non current Request is not allowed. Your id " + entity.getRequest().getId() + ", expected id " + request.getId());
-		}
-		
-		if (entity.getId() != null) {
-			throw new IllegalArgumentException("To create this, entity id must be null.");
 		}
 		
 		Material material = materialDao.find(entity.getMaterial());
@@ -113,11 +109,11 @@ public class RequestItemDao {
 	public RequestItem update(RequestItem entity) {
 		
 		if (entity == null) {
-			throw new IllegalArgumentException("RequestItem can't be null");
+			throw new IllegalArgumentException("Entity can't be null.");
 		}
 		
 		if (entity.getId() == null || entity.getId() == 0l) {
-			throw new IllegalArgumentException("RequestItem Id can't be null or zero");
+			throw new IllegalArgumentException("Entity id can't be null or zero.");
 		}
 
 		Request request = requestDao.current();	// get current request
@@ -175,11 +171,11 @@ public class RequestItemDao {
 	
 	public RequestItem remove(RequestItem entity) {
 		if (entity == null) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Entity can't be null.");
 		}
 		
 		if (entity.getId() == null || entity.getId() == 0l) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Entity id can't be null or zero.");
 		}
 		
 		return remove(entity.getId());
@@ -187,7 +183,7 @@ public class RequestItemDao {
 	
 	public RequestItem remove(long id) {
 		if (id == 0) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Entity id can't be zero.");
 		}
 		
 		//entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
@@ -195,7 +191,7 @@ public class RequestItemDao {
 		RequestItem entity = entityManager.find(RequestItem.class, id);
         
 		if (entity == null) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Entity not found.");
 		}
 		
 	    entityManager.remove(entity);

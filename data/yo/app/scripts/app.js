@@ -2,26 +2,42 @@
 
 /**
  * @ngdoc overview
- * @name bpmpurchaserequeststeelApp
+ * @name yoApp
  * @description
- * # bpmpurchaserequeststeelApp
+ * # yoApp
  *
  * Main module of the application.
  */
 angular
-  .module('steelApp', [
-    'ngAnimate',
-    'ngCookies',
-    'ngResource',
+  .module('dataApp', [
     'ngRoute',
-    'ngSanitize',
-    'ngTouch'
+    'restangular'
   ])
-  .config(function ($routeProvider) {
+  .run(function($rootScope, $location) {
+    $rootScope.bgcolor = 'white';
+    $rootScope.fgcolor = 'black';
+    $rootScope.page = { title : 'Altamira Industria Metalurgica' };
+
+    var history = [];
+
+    $rootScope.$on('$routeChangeSuccess', function() {
+        history.push($location.$$path);
+    });
+
+    $rootScope.back = function () {
+        var prevUrl = history.length > 1 ? history.splice(-2)[0] : '/';
+        $location.path(prevUrl);
+    };
+  })
+  .config(function ($routeProvider/*, $httpProvider, RestangularProvider*/) {
     $routeProvider
       .when('/', {
         templateUrl: 'views/main.html',
-        controller: 'RequestCtrl'
+        controller: 'MainCtrl'
+      })
+      .when('/request', {
+    	templateUrl: '/bpm-purchase-request-steel/views/request.html',
+    	controller: 'RequestCtrl'
       })
       .otherwise({
         redirectTo: '/'

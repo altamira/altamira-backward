@@ -1,47 +1,39 @@
-/* Space out content a bit */
+/* Add Altamira Web custom style here */
 
-@media screen and (max-width: 640px) {
-	.small_screen {
-	   display: inline;
+body {
+	margin-top: 0px;
+	border-top: 0px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+
+.metro .tile-group {
+	margin-right: 20px;
+}
+
+body {
+	background-color: white;
+    background-color: #128023;
+	display: block;
+}
+
+h1 {
+	font-size: 100%;
+}
+
+.metro h5 {
+	font-weight: normal;
+	font-size: 10pt;
+}
+
+@media screen and (max-width: 380px) {
+	div.label h4 {
+		font-size: 10pt;
 	}
-	.large_screen {
-       display: none;
-    }
 }
 
-@media screen and (min-width: 641px) {
-    .small_screen {
-       display: none;
-    }
-    .large_screen {
-       display: inline;
-    }
-}
-
-.metro .listview-outlook .list .list-content {
-	padding-left: 5px;
-}
-
-.metro .tile.half.tile-DE {
-    background-color: #1ba1e2;
-}
-
-.metro .tile.half.tile-PR {
-	background-color: #a4c400;
-}
-
-.metro .tile.half.tile-GA {
-	background-color: #f0a30a;
-}
-
-@media only screen and (max-width: 800px) {
-    .navigation-bar, .navbar {
-		position: fixed !important;
-    }
-    .metro .navigation-bar .navigation-bar-content .element, .metro .navbar .navigation-bar-content .element, .metro .navigation-bar .navbar-content .element, .metro .navbar .navbar-content .element, .metro .navigation-bar .navigation-bar-content .element-divider, .metro .navbar .navigation-bar-content .element-divider, .metro .navigation-bar .navbar-content .element-divider, .metro .navbar .navbar-content .element-divider {
-        display: inline-block;
-    }
-    .metro h2 {
-        font-size: 28px;
-    }
+@media screen and (min-width: 420px) {
+	.container {
+	   width: 460px;
+	}
 }

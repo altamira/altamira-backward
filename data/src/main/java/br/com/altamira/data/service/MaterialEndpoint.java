@@ -39,7 +39,13 @@ public class MaterialEndpoint {
 			@DefaultValue("10") @QueryParam("max") Integer maxResult)
 			throws IOException {
 
-		List<Material> list = materialDao.list(startPosition, maxResult);
+		List<Material> list;
+		
+		try {
+			list = materialDao.list(startPosition, maxResult);
+		} catch (Exception e) {
+    		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    	}
 		
 		if (list.size() == 0) {
 			return Response.status(Status.NOT_FOUND).build();
@@ -52,7 +58,13 @@ public class MaterialEndpoint {
     @Path("/{id:[1-9]*}")
     @Produces("application/json")
     public Response findById(@PathParam("id") long id) {
-    	Material entity = materialDao.find(id);
+    	Material entity = null;
+    	
+    	try {
+    		entity = materialDao.find(id);
+    	} catch (Exception e) {
+    		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    	}
 
 		if (entity == null) {
 			return Response.status(Status.NOT_FOUND).build();
@@ -65,7 +77,11 @@ public class MaterialEndpoint {
     @Consumes("application/json")
     public Response create(Material entity) {
     	
-    	materialDao.create(entity);
+    	try {
+    		entity = materialDao.create(entity);
+    	} catch (Exception e) {
+    		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    	}
 
 		return Response.created(
 		        UriBuilder.fromResource(MaterialEndpoint.class)
@@ -86,7 +102,11 @@ public class MaterialEndpoint {
 					.build();
 		}
     	
-    	entity = materialDao.update(entity);
+    	try {
+    		entity = materialDao.update(entity);
+    	} catch (Exception e) {
+    		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    	}
 
 		if (entity == null) {
 			return Response.status(Status.NOT_FOUND).build();
@@ -101,7 +121,13 @@ public class MaterialEndpoint {
     @DELETE
     @Path("/{id:[1-9]*}")
     public Response deleteById(@PathParam("id") long id) {
-    	Material entity = materialDao.remove(id);
+    	Material entity = null;
+    	try {
+    		entity = materialDao.remove(id);
+    	} catch (Exception e) {
+    		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    	}
+    	
 		if (entity == null) {
 			return Response.noContent().status(Status.NOT_FOUND).build();
 		}

@@ -69,7 +69,7 @@ public class Request implements Serializable {
     @Column(name = "CREATOR", columnDefinition = "nvarchar2(255)")
     private String creator;
     
-    @JsonSerialize(using = DateSerializer.class)
+    //@JsonSerialize(using = DateSerializer.class)
     @Column(name = "SENT")
     @Temporal(TemporalType.TIMESTAMP)
     private Date sent;

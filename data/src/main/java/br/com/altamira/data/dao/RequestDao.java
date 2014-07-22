@@ -69,8 +69,12 @@ public class RequestDao {
 	}
 	
 	public Request create(Request entity) {
-		if (entity.getId() != null) {
-			throw new IllegalArgumentException("To create this entity id must be null.");
+		if (entity == null) {
+			throw new IllegalArgumentException("Entity can't be null.");
+		}
+		
+		if (entity.getId() != null && entity.getId() > 0) {
+			throw new IllegalArgumentException("To create this entity, id must be null or zero.");
 		}
 		
 		entityManager.persist(entity);
@@ -83,15 +87,10 @@ public class RequestDao {
 	
 	public Request update(Request entity) {
 		if (entity == null) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Entity can't be null.");
 		}
-		
-		if (entity.getId() == null)	{
-			throw new IllegalArgumentException();
-		}
-		
 		if (entity.getId() == null || entity.getId() == 0l) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Entity id can't be null or zero.");
 		}
 		
 		entityManager.merge(entity);
@@ -103,11 +102,11 @@ public class RequestDao {
 	
 	public Request remove(Request entity) {
 		if (entity == null) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Entity can't be null.");
 		}
 		
 		if (entity.getId() == null || entity.getId() == 0l) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Entity id can't be null or zero.");
 		}
 		
 		return remove(entity.getId());
@@ -115,7 +114,7 @@ public class RequestDao {
 	
 	public Request remove(long id) {
 		if (id == 0) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Entity id can't be zero.");
 		}
 		
 		//entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
@@ -123,7 +122,7 @@ public class RequestDao {
 		Request entity = entityManager.find(Request.class, id);
         
 		if (entity == null) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Entity not found.");
 		}
 		
 	    entityManager.remove(entity);

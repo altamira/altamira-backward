@@ -18,7 +18,7 @@ public class JacksonConfig implements ContextResolver<ObjectMapper>
     {
         objectMapper = new ObjectMapper();
         objectMapper.registerModule(new Hibernate4Module());
-        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
         objectMapper.getSerializerProvider().setNullValueSerializer(new NullValueSerializer());
     }
     @Override

@@ -59,7 +59,13 @@ public class RequestEndpoint {
 			@DefaultValue("10") @QueryParam("max") Integer maxResult)
 			throws IOException {
 
-		List<Request> list = requestDao.list(startPosition, maxResult);
+		List<Request> list;
+		
+		try {
+			list = requestDao.list(startPosition, maxResult);
+		} catch (Exception e) {
+    		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    	}
 		
 		ObjectMapper mapper = new ObjectMapper();
 		
@@ -76,8 +82,13 @@ public class RequestEndpoint {
 	@Produces("application/json")
 	public Response findById(@PathParam("id") long id)
 			throws IOException {
-
-		Request entity = requestDao.find(id);
+		Request entity = null;
+		
+		try {
+			entity = requestDao.find(id);
+		} catch (Exception e) {
+    		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    	}
 
 		if (entity == null) {
 			return Response.status(Status.NOT_FOUND).build();
@@ -146,7 +157,11 @@ public class RequestEndpoint {
 			item.setRequest(entity);
 		}
 		
-		entity = requestDao.update(entity);
+		try {
+			entity = requestDao.update(entity);
+		} catch (Exception e) {
+    		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    	}
 
 		if (entity == null) {
 			return Response.status(Status.NOT_FOUND).build();
@@ -167,10 +182,18 @@ public class RequestEndpoint {
 	@DELETE
 	@Path("{id:[0-9][0-9]*}")
 	public Response removeById(@PathParam("id") long id) {
-		Request entity = requestDao.remove(id);
+		Request entity = null;
+		
+		try {
+			entity = requestDao.remove(id);
+		} catch (Exception e) {
+    		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    	}
+		
 		if (entity == null) {
 			return Response.noContent().status(Status.NOT_FOUND).build();
 		}
+		
 		return Response.noContent().build();
 	}
 
@@ -186,8 +209,12 @@ public class RequestEndpoint {
 
 		Request entity;
 
-		entity = requestDao.current();
-
+		try {
+			entity = requestDao.current();
+		} catch (Exception e) {
+    		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    	}
+		
 		ObjectMapper mapper = new ObjectMapper();
 		
 		mapper.registerModule(new Hibernate4Module());
@@ -205,12 +232,16 @@ public class RequestEndpoint {
     @Path("{id:[0-9][0-9]*}/report")
     @Produces("application/pdf")
     public Response reportInPdf(@PathParam("id") long id) {
-
+    	Request entity = null;
+    	
         // generate report
         JasperPrint jasperPrint = null;
 
-        
-        Request entity = requestDao.find(id);
+        try {
+        	entity = requestDao.find(id);
+        } catch (Exception e) {
+    		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    	}
         
         if (entity == null) {
 			return Response.status(Status.NOT_FOUND).build();
@@ -342,8 +373,7 @@ public class RequestEndpoint {
             return response.build();
 
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+    		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         } finally {
             try {
                 /*if (jasperPrint != null) {
