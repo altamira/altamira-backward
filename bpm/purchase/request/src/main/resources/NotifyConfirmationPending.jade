@@ -1,0 +1,12 @@
+doctype 5
+html(lang="en")
+  head
+    title Pedido Pendente
+
+  body
+    div(class="container")
+      h1 #{task.name}
+      h2 O Pedido de Compra #{orderId} esta pendente de confirmação a mais de 1 dia. 
+      p Para executar esta tarefa 
+          a(href="http://sistema.altamira.com.br/camunda/app/tasklist/default/#/task/#{task.id}", title="Clique Aqui") Clique Aqui
+      h5 Este email foi enviado automaticamente pelo sistema de informação da Altamira

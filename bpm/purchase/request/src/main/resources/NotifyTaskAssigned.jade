@@ -1,0 +1,12 @@
+doctype 5
+html(lang="en")
+  head
+    title Tarefa
+
+  body
+    div(class="container")
+      h1 #{task.name}
+      h2 Uma nova tarefa foi atribuida a você. 
+      p Para executar esta tarefa 
+          a(href="http://sistema.altamira.com.br/camunda/app/tasklist/default/#/task/#{task.id}", title="Clique Aqui") Clique Aqui
+      h5 Este email foi enviado automaticamente pelo Sistema de Informação da Altamira
