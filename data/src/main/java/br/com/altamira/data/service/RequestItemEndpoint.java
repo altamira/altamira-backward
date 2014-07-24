@@ -158,7 +158,11 @@ public class RequestItemEndpoint {
 					.build();
 		}
 		
-		entity = requestItemDao.update(entity);
+		try {
+			entity = requestItemDao.update(entity);
+		} catch (Exception e) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+		}
 
 		if (entity == null) {
 			return Response.status(Status.NOT_FOUND).build();

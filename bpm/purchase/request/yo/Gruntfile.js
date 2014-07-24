@@ -70,7 +70,7 @@ module.exports = function (grunt) {
       // Proxy requests starting with /webresources to the server on port 8080
       proxies: [
         {
-          context: '/rest',
+          context: '/data/rest',
           host: 'localhost',
           port: 8080,
           https: false,
