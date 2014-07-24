@@ -4,17 +4,23 @@
 
     <nav class="navbar-content ">
 
-        <div class="element ">
-            <a href="/" class="fg-white"><span class="icon-arrow-left"></span></a>
-        </div>
+    	<a href="/" class="fg-white">
+	        <div class="element ">
+	            <span class="icon-arrow-left"></span>
+	        </div>
+        </a>
         <item class="element-divider no-phone no-tablet-portrait"></item>
-        <div class="element no-phone no-tablet-portrait">
-            <a href="/" class="fg-white">&nbsp;Requisi&ccedil;&atilde;o&nbsp;de&nbsp;Compra&nbsp;de&nbsp;A&ccedil;o&nbsp;&nbsp;#{{request.id | leadingZero:4}}</a>
-        </div>
+        <a href="/" class="fg-white">
+	        <div class="element no-phone no-tablet-portrait">
+	            &nbsp;Requisi&ccedil;&atilde;o&nbsp;de&nbsp;Compra&nbsp;de&nbsp;A&ccedil;o&nbsp;&nbsp;#{{request.id | leadingZero:4}}
+	        </div>
+        </a>
         <item class="element-divider no-phone no-tablet-portrait"></item>
-        <div class="element">
-            <a href="#/edit" class="fg-white"><span class="icon-plus-2"></span></a>
-        </div>
+        <a href="#/edit" class="fg-white">
+	        <div class="element">
+	            <span class="icon-plus-2"></span>
+	        </div>
+        </a>
         <a href="/" class="fg-white">
 	        <div class="element">
 	            <span class="icon-checkmark"></span>

@@ -12,10 +12,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ejb.Stateless;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.ValidationException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -159,7 +163,15 @@ public class RequestEndpoint {
 		
 		try {
 			entity = requestDao.update(entity);
-		} catch (Exception e) {
+		} catch (ConstraintViolationException ce) {
+            // Handle bean validation issues
+            return createViolationResponse(ce.getConstraintViolations()).build();
+        } catch (ValidationException e) {
+            // Handle the unique constrain violation
+            //Map<String, String> responseObj = new HashMap<String, String>();
+            //responseObj.put("email", "Email taken");
+            return Response.status(Response.Status.CONFLICT).entity(entity).build();
+        } catch (Exception e) {
     		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
     	}
 
@@ -186,7 +198,15 @@ public class RequestEndpoint {
 		
 		try {
 			entity = requestDao.remove(id);
-		} catch (Exception e) {
+		} catch (ConstraintViolationException ce) {
+            // Handle bean validation issues
+            return createViolationResponse(ce.getConstraintViolations()).build();
+        } catch (ValidationException e) {
+            // Handle the unique constrain violation
+            //Map<String, String> responseObj = new HashMap<String, String>();
+            //responseObj.put("email", "Email taken");
+            return Response.status(Response.Status.CONFLICT).entity(entity).build();
+        } catch (Exception e) {
     		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
     	}
 		
@@ -207,11 +227,19 @@ public class RequestEndpoint {
 	public Response current()
 			throws IOException {
 
-		Request entity;
+		Request entity = null;
 
 		try {
 			entity = requestDao.current();
-		} catch (Exception e) {
+		} catch (ConstraintViolationException ce) {
+            // Handle bean validation issues
+            return createViolationResponse(ce.getConstraintViolations()).build();
+        } catch (ValidationException e) {
+            // Handle the unique constrain violation
+            //Map<String, String> responseObj = new HashMap<String, String>();
+            //responseObj.put("email", "Email taken");
+            return Response.status(Response.Status.CONFLICT).entity(entity).build();
+        } catch (Exception e) {
     		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
     	}
 		
@@ -385,6 +413,25 @@ public class RequestEndpoint {
                 System.out.println("Could not insert generated report in database.");
             }
         }
+    }
+    
+    /**
+     * Creates a JAX-RS "Bad Request" response including a map of all violation fields, and their message. This can then be used
+     * by clients to show violations.
+     * 
+     * @param violations A set of violations that needs to be reported
+     * @return JAX-RS response containing all violations
+     */
+    private Response.ResponseBuilder createViolationResponse(Set<ConstraintViolation<?>> violations) {
+        //log.fine("Validation completed. violations found: " + violations.size());
+
+        Map<String, String> responseObj = new HashMap<String, String>();
+
+        for (ConstraintViolation<?> violation : violations) {
+            responseObj.put(violation.getPropertyPath().toString(), violation.getMessage());
+        }
+
+        return Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
     }
 
 }

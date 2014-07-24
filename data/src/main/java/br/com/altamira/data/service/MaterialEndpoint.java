@@ -1,10 +1,16 @@
 package br.com.altamira.data.service;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.ValidationException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -76,10 +82,18 @@ public class MaterialEndpoint {
     @POST
     @Consumes("application/json")
     public Response create(Material entity) {
-    	
+
     	try {
     		entity = materialDao.create(entity);
-    	} catch (Exception e) {
+    	} catch (ConstraintViolationException ce) {
+            // Handle bean validation issues
+            return createViolationResponse(ce.getConstraintViolations()).build();
+        } catch (ValidationException e) {
+            // Handle the unique constrain violation
+            //Map<String, String> responseObj = new HashMap<String, String>();
+            //responseObj.put("email", "Email taken");
+            return Response.status(Response.Status.CONFLICT).entity(entity).build();
+        } catch (Exception e) {
     		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
     	}
 
@@ -91,7 +105,7 @@ public class MaterialEndpoint {
     }
 
     @PUT
-    @Path("/{id:[1-9]*}")
+    @Path("/{id:[0-9][0-9]*}")
     @Consumes("application/json")
     @Produces("application/json")
     public Response update(@PathParam("id") long id, Material entity) {
@@ -104,7 +118,15 @@ public class MaterialEndpoint {
     	
     	try {
     		entity = materialDao.update(entity);
-    	} catch (Exception e) {
+    	} catch (ConstraintViolationException ce) {
+            // Handle bean validation issues
+            return createViolationResponse(ce.getConstraintViolations()).build();
+        } catch (ValidationException e) {
+            // Handle the unique constrain violation
+            //Map<String, String> responseObj = new HashMap<String, String>();
+            //responseObj.put("email", "Email taken");
+            return Response.status(Response.Status.CONFLICT).entity(entity).build();
+        } catch (Exception e) {
     		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
     	}
 
@@ -119,12 +141,20 @@ public class MaterialEndpoint {
     }
 
     @DELETE
-    @Path("/{id:[1-9]*}")
+    @Path("/{id:[0-9][0-9]*}")
     public Response deleteById(@PathParam("id") long id) {
     	Material entity = null;
     	try {
     		entity = materialDao.remove(id);
-    	} catch (Exception e) {
+    	} catch (ConstraintViolationException ce) {
+            // Handle bean validation issues
+            return createViolationResponse(ce.getConstraintViolations()).build();
+        } catch (ValidationException e) {
+            // Handle the unique constrain violation
+            //Map<String, String> responseObj = new HashMap<String, String>();
+            //responseObj.put("email", "Email taken");
+            return Response.status(Response.Status.CONFLICT).entity(entity).build();
+        } catch (Exception e) {
     		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
     	}
     	
@@ -132,6 +162,25 @@ public class MaterialEndpoint {
 			return Response.noContent().status(Status.NOT_FOUND).build();
 		}
 		return Response.noContent().build();
+    }
+    
+    /**
+     * Creates a JAX-RS "Bad Request" response including a map of all violation fields, and their message. This can then be used
+     * by clients to show violations.
+     * 
+     * @param violations A set of violations that needs to be reported
+     * @return JAX-RS response containing all violations
+     */
+    private Response.ResponseBuilder createViolationResponse(Set<ConstraintViolation<?>> violations) {
+        //log.fine("Validation completed. violations found: " + violations.size());
+
+        Map<String, String> responseObj = new HashMap<String, String>();
+
+        for (ConstraintViolation<?> violation : violations) {
+            responseObj.put(violation.getPropertyPath().toString(), violation.getMessage());
+        }
+
+        return Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
     }
 
 }
