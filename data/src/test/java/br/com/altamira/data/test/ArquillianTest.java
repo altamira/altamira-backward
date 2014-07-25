@@ -243,6 +243,30 @@ public class ArquillianTest {
 		
 	}
 	
+	/**
+	 * This test case verify if MaterialDao.create handle correct with id, 
+	 * to avoid persistence detach object exception when id is not null.
+	 * The possible values to id is null or zero
+	 */
+	@Test
+	@InSequence(11)
+	public void MaterialDaoNonNullIdUseCaseTest() {
+		Material material = new Material();
+		
+		material.setId(0l); // test handling with persistence detatch exception
+		material.setLamination("LX");
+		material.setTreatment("LX");
+		material.setThickness(new BigDecimal(2.0));
+		material.setWidth(new BigDecimal(200.0));
+		material.setLength(new BigDecimal(1000.0));
+		material.setTax(new BigDecimal(4.5));
+		
+		Material entity = materialDao.create(material);
+		
+		assertNotNull(entity);
+		assertNotNull(entity.getId());
+	}
+	
 	@Test
 	@InSequence(20)
 	public void RequestDaoTest() throws Exception {
@@ -315,7 +339,28 @@ public class ArquillianTest {
 		
 		assertNull(exist);
 	}
-
+	
+	/**
+	 * This test case verify if RequestDao.create handle correct with id, 
+	 * to avoid persistence detach object exception when id is not null.
+	 * The possible values to id is null or zero
+	 */
+	@Test
+	@InSequence(21)
+	public void RequestDaoNonNullIdUseCaseTest() {
+		Request request = new Request();
+		
+		request.setId(0l); // test handling with persistence detatch exception
+		request.setCreated(new Date());
+		request.setCreator("RequestDaoTest");
+		request.setSent(null);
+		
+		Request entity = requestDao.create(request);
+		
+		assertNotNull(entity);
+		assertNotNull(entity.getId());
+	}
+	
 	@Test
 	@InSequence(30)
 	public void RequestItemDaoTest() throws Exception {
@@ -394,6 +439,51 @@ public class ArquillianTest {
 		
 	}
 	
+	/**
+	 * This test case verify if RequestDao.create handle correct with id, 
+	 * to avoid persistence detach object exception when id is not null.
+	 * The possible values to id is null or zero
+	 */
+	@Test
+	@InSequence(31)
+	public void RequestItemDaoNonNullIdUseCaseTest() {
+Request request = requestDao.current();
+		
+		if (request == null) {
+			request = new Request();
+			
+			request.setCreated(new Date());
+			request.setCreator("RequestDaoTest");
+			request.setSent(null);
+			
+			request = requestDao.create(request);
+		}
+		
+		assertNotNull(request.getId());
+		
+		Material material = new Material();
+		
+		material.setLamination("FT");
+		material.setTreatment("TR");
+		material.setThickness(new BigDecimal(2.0));
+		material.setWidth(new BigDecimal(200.0));
+		material.setLength(new BigDecimal(0));
+		material.setTax(new BigDecimal(4.5));
+		
+		RequestItem requestItem = new RequestItem();
+		
+		requestItem.setId(0l); // test handling with persistence detatch exception
+		requestItem.setRequest(request);
+		requestItem.setMaterial(material);
+		requestItem.setArrival(new Date());
+		requestItem.setWeight(new BigDecimal(1234.0));
+
+		RequestItem entity = requestItemDao.create(requestItem);
+		
+		// be sure that the item was stored correctly
+		assertNotNull(entity);
+		assertNotNull(entity.getId());
+	}	
 	@Test
 	@InSequence(40)
 	public void RequestEndpointGetCurrentTest() throws Exception {

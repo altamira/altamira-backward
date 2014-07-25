@@ -96,6 +96,7 @@ public class RequestItemDao {
 			
 		}
 		
+		entity.setId(null);
 		entity.setMaterial(material);
 		
 		entityManager.persist(entity);

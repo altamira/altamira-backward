@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 
 @Stateless
-@Path("request/{requestId:[0-9]*}/item")
+@Path("request/{requestId:[0-9][0-9]*}/item")
 public class RequestItemEndpoint {
 	
 	@Inject

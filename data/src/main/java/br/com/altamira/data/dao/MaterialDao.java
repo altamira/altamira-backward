@@ -82,6 +82,8 @@ public class MaterialDao {
 			throw new IllegalArgumentException("To create this entity, id must be null or zero.");
 		}
 		
+		entity.setId(null);
+		
 		entityManager.persist(entity);
 		entityManager.flush();
 		
