@@ -55,7 +55,7 @@ public class ArquillianTest {
 				.resolve().withTransitivity().asFile();
 
 		return ShrinkWrap
-				.create(WebArchive.class, "DataTest.war")
+				.create(WebArchive.class, "altamira-data-test.war")
 				// add needed dependencies
 				.addAsLibraries(libs)
 				// prepare as process application archive for camunda BPM

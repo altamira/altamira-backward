@@ -14,4 +14,6 @@ angular.module('1820e33145e64965a1432bda5b86f405')
       'AngularJS',
       'Karma'
     ];
+
+    $scope.treatments = ['Decapado', 'Oleado']
   });

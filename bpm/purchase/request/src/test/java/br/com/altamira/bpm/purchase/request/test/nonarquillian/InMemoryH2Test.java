@@ -1,4 +1,4 @@
-package br.com.altamira.altamira.bpm.purchase.request.nonarquillian;
+package br.com.altamira.bpm.purchase.request.test.nonarquillian;
 
 import org.camunda.bpm.engine.impl.util.LogUtil;
 import org.camunda.bpm.engine.test.ProcessEngineTestCase;
@@ -9,7 +9,7 @@ import org.camunda.bpm.engine.test.Deployment;
  */
 public class InMemoryH2Test extends ProcessEngineTestCase {
 
-  private static final String PROCESS_DEFINITION_KEY = "altamira-bpm-purchase-request";
+  private static final String PROCESS_DEFINITION_KEY = "altamira.bpm.purchase.request";
 
   // enable more detailed logging
   static {

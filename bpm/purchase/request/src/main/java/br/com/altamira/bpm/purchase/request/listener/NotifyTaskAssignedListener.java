@@ -1,4 +1,4 @@
-package br.com.altamira.altamira.bpm.purchase.request;
+package br.com.altamira.bpm.purchase.request.listener;
 
 import java.io.IOException;
 import java.util.Map;

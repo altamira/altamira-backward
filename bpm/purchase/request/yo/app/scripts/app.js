@@ -16,7 +16,8 @@ angular
     'ngRoute',
     'ngSanitize',
     'ngTouch',
-    'restangular'
+    'restangular',
+    'mobile-angular-ui'
   ])
   .config(function ($routeProvider, $httpProvider, RestangularProvider) {
     $routeProvider

@@ -1,132 +1,205 @@
-<div class="fixed-top" style="height:50px;"></div>
+<link rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.css" />
+<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
+<link rel="stylesheet" href="/bower_components/mobile-angular-ui/dist/css/mobile-angular-ui-hover.min.css" />
+<link rel="stylesheet" href="/bower_components/mobile-angular-ui/dist/css/mobile-angular-ui-base.min.css" />
+<link rel="stylesheet" href="/bower_components/mobile-angular-ui/dist/css/mobile-angular-ui-desktop.min.css" />
+<link rel="stylesheet" href="/styles/main.css">
 
-<nav class="navbar fixed-top">
+<div class="scrollable">
+ <div class="scrollable-content section">
 
-    <nav class="navbar-content ">
+    <div bs-panel title="Requisição de Aço">
 
-        <div class="element ">
-            <a href="#/" class="fg-white"><span class="icon-arrow-left"></span></a>
-        </div>
-        <item class="element-divider no-phone no-tablet-portrait"></item>
-        <div class="element no-phone no-tablet-portrait">
-            <a href="/bpm/purchase/request/" class="fg-white">&nbsp;Requisi&ccedil;&atilde;o&nbsp;de&nbsp;Compra&nbsp;de&nbsp;A&ccedil;o&nbsp;&nbsp;#{{request.id | leadingZero:4}}</a>
-        </div>
-        <item class="element-divider no-phone no-tablet-portrait"></item>
-        <a href="#/" class="fg-white">
-	        <div class="element">
-	            <span class="icon-checkmark"></span>
-	        </div>
+   <form action="" id="request_form">
+
+    </br>
+
+    <div class="btn-group justified nav-tabs">
+
+        <a class="btn btn-default "
+           href="#TabRolo"
+           toggle="on"
+           active-class="active">Rolo
         </a>
-        <a href="#/" class="fg-white">
-	        <div class="element">
-	            <span class="icon-cancel-2"></span>
-	        </div>
+
+        <a class="btn btn-default"
+           href="#TabChapa"
+           toggle="on"
+           active-class="active">Chapa
         </a>
 
-    </nav>
-</nav>
+    </div>
 
-<div class="container">
-	<!-- <form name="request_form" role="form" novalidate>
-	<fieldset> -->
+    <div class="tab-content">
 
-		<legend>{{modal.title}}</legend>
+        <div class="tab-pane" 
+            toggleable 
+            active-class="active" 
+            default="active" 
+            id="TabRolo" 
+            exclusion-group="FormatTabs">
 
-		<div class="input-control radio" data-role="input-control">
-			<input type="radio" name="tipo" id="tipoChapa" ng-model="modal.item.cut" value="C" ng-change="changedCut()"><span class="check"></span>Chapa
-    	</div>
+        </div>
 
-    	<div class="input-control radio" data-role="input-control">
-    		<input type="radio" name="tipo" id="tipoBobina" ng-model="modal.item.cut" value="B" ng-change="changedCut()"><span class="check"></span>Bobina
-    	</div>
-	
-		<div class="input-control radio" data-role="input-control">
-			<input type="radio" name="fina" id="finaQuente" ng-model="modal.item.material.lamination" value="FQ"><span class="check"></span>Fina Quente
-	  		<input type="radio" name="fina" id="finaFrio" ng-model="modal.item.material.lamination" value="FF"><span class="check"></span>Fina Frio
-		</div>
+        <div class="tab-pane" 
+            toggleable 
+            active-class="active" 
+            id="TabChapa"
+            exclusion-group="FormatTabs">
 
-		<label for="treatment">Tratamento</label>
-		<div class="input-control select">
-			<select id="treatment" class="form-control" ng-model="modal.item.material.treatment" ng-options="t.value as t.desc for t in modal.treatments"></select>
-		</div>
+    </div>
 
-		<label for="thickness">Espessura (mm)</label>
-		<div class="input-control select" ng-class="{'form-group' : true, 'has-error' : request_form.otherThicknesses.$dirty && request_form.otherThicknesses.$invalid}">
-			<select id="thickness" class="form-control" ng-model="modal.item.material.thickness" ng-options="t.value as t.desc for t in modal.thicknesses" ng-change="changedThickness()"></select>
-			<p class="input-control text" ng-show="modal.showOtherThickness">
-				<input type="number" class="form-control" id="otherThicknesses" name="otherThicknesses" ng-model="modal.item.otherThickness" placeholder="Nova espessura..." min='0.10' max='9.99' required>
-				<span class="help-block" ng-show="request_form.otherThicknesses.$dirty && request_form.otherThicknesses.$invalid">Valor inválido para "Espessura"!</span>
-			</p>
-		</div>
+    </br>
 
-		<label for="width">Largura (mm)</label>
-		<div class="input-control select" ng-class="{'form-group' : true, 'has-error' : request_form.otherWidth.$dirty && request_form.otherWidth.$invalid}">
-			<select id="width" class="form-control" ng-model="modal.item.material.width" ng-options="w for w in modal.widths" ng-change="changedWidth()"></select>
-			<p class="help-block" ng-show="modal.showOtherWidth">
-				<input type="number" class="form-control" id="otherWidth" name="otherWidth" ng-model="modal.item.otherWidth" placeholder="Nova largura..." min='20' max='3000' required>
-				<span class="help-block" ng-show="request_form.otherWidth.$dirty && request_form.otherWidth.$invalid">Valor inválido para "Largura"!</span>
-			</p>
-		</div>
+    <div class="btn-group justified nav-tabs">
 
-		<label for="length">Comprimento (mm)</label>
-		<div class="input-control select" ng-class="{'form-group' : true, 'has-error' : request_form.otherLength.$dirty && request_form.otherLength.$invalid}">
-			<select id="length" class="form-control" ng-model="modal.item.material.length" ng-options="l for l in modal.lengths" ng-change="changedLength()" ng-disabled="modal.item.cut === 'B'"></select>
-			<p class="help-block" ng-show="modal.showOtherLength">
-			<input type="number" class="form-control" id="otherLength" name="otherLength"
-				ng-model="modal.item.otherLength" placeholder="Novo comprimento..." min='0' max='3000'>
-				<span class="help-block" ng-show="request_form.otherLength.$dirty && request_form.otherLength.$invalid">Valor inválido para "Comprimento"!</span>
-			</p>
-		</div>
+        <a class="btn btn-default "
+           href="#TabFQ"
+           toggle="on"
+           active-class="active">Fina Quente
+        </a>
 
-		<label for="weight">Peso (Kg)</label>
-		<div class="input-control text" ng-class="{'form-group' : true, 'has-error' : request_form.weight.$dirty && request_form.weight.$invalid}">
-			<input id="weight" name="weight" type="number" class="form-control" ng-model="modal.item.weight" placeholder="Peso" min='1' integer required>
-			<span class="help-block" ng-show="request_form.weight.$dirty && request_form.weight.$invalid">Valor inválido para "Peso"!</span>
-		</div>
+        <a class="btn btn-default"
+           href="#TabFF"
+           toggle="on"
+           active-class="active">Fina Frio
+        </a>
 
-   		<label for="arrival">Data Entrega</label>
-		<div class="form-group" ng-class="{'form-group' : true, 'has-error' : request_form.arrival.$dirty && request_form.arrival.$invalid}">
-			<p class="input-group">
-      			<input name="arrival" type="text" class="form-control" datepicker-popup="dd/MM/yyyy" ng-model="modal.item.arrival" is-open="modal.opened"
-      				min="modal.minDate" max="'2015-06-22'" show-weeks="false" show-button-bar="false" required/>
-      			<span class="input-group-btn">
-        			<button class="btn btn-default" ng-click="openCalendar($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-      			</span>
-    		</p>
-			<span class="help-block" ng-show="request_form.arrival.$dirty && request_form.arrival.$invalid">Valor inválido para "Data Entrega"!</span>
-		</div>
+    </div>
 
-	  	<p>
-	        <button class="btn btn-primary" ng-disabled="request_form.$invalid" ng-click="ok()">OK</button>
-	        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
-	    </p>
+    <div class="tab-content">
 
-	<!-- </fieldset>
-	</form> -->
+        <div class="tab-pane" 
+            toggleable 
+            active-class="active" 
+            default="active" 
+            id="TabFQ" 
+            exclusion-group="LaminationTabs">
+
+            </br>
+
+            <div class="btn-group justified nav-tabs">
+
+                <a class="btn btn-default"
+                   href="#TabPR"
+                   toggle="on"
+                   active-class="active">Chapa Preta
+                </a>
+
+                <a class="btn btn-default"
+                   href="#TabDE"
+                   toggle="on"
+                   active-class="active">Decapado
+                </a>
+
+            </div>
+
+            <div class="tab-content">
+
+                <div class="tab-pane" 
+                    toggleable 
+                    active-class="active" 
+                    default="active" 
+                    id="TabPR" 
+                    exclusion-group="TreatmentTabs">
+
+
+                </div>
+
+                <div class="tab-pane" 
+                    toggleable 
+                    active-class="active" 
+                    id="TabDE"
+                    exclusion-group="TreatmentTabs">
+
+                  
+                </div>
+
+              </div>
+        </div>
+
+        <div class="tab-pane" 
+            toggleable 
+            active-class="active" 
+            id="TabFF"
+            exclusion-group="LaminationTabs">
+
+            <switch 
+            ng-model="request.treatment" 
+            label="Galvanizado" 
+            bs-form-control 
+            label-class="col-xs-6 col-sm-3 col-lg-3" 
+            class="col-xs-6 col-sm-9 col-lg-9" />
+            
+    </div>
+
+       <select
+        bs-form-control
+        
+        type="number" 
+        ng-model="invoice.customer"
+        label="Espessura (mm)" 
+        label-class="col-xs-6 col-sm-3 col-lg-3" 
+        class="col-xs-6 col-sm-9 col-lg-9"
+        placeholder="Espessura"
+        ng-model="modal.item.material.thickness"
+        ng-options="t.value as t.desc for t in modal.thicknesses" 
+        ng-change="changedThickness()"
+       />
+
+       <select
+        bs-form-control
+        
+        type="number" 
+        ng-model="request.material.width"
+        label="Largura (mm)" 
+        label-class="col-xs-6 col-sm-3 col-lg-3" 
+        class="col-xs-6 col-sm-9 col-lg-9"
+        placeholder="Largura mm"
+        ng-class="{'form-group' : true, 'has-error' : request_form.otherWidth.$dirty && request_form.otherWidth.$invalid}"
+        ng-options="w for w in modal.widths" 
+        ng-change="changedWidth()"
+       />
+
+       <select
+        bs-form-control
+        
+        ng-model="request.material.length"
+        label="Comprimento (mm)" 
+        label-class="col-xs-6 col-sm-3 col-lg-3" 
+        class="col-xs-6 col-sm-9 col-lg-9"
+        placeholder="Comprimento mm"
+        ng-class="{'form-group' : true, 'has-error' : request_form.otherLength.$dirty && request_form.otherLength.$invalid}"
+        ng-options="l for l in modal.lengths"
+        ng-change="changedLength()" 
+        ng-disabled="modal.item.cut === 'B'"
+       />
+
+       <input
+        bs-form-control
+        
+        type="number" 
+        min='100' max='30000' integer required
+        ng-model="request.weight"
+        label="Peso (Kg)" 
+        label-class="col-xs-6 col-sm-3 col-lg-3" 
+        class="col-xs-6 col-sm-9 col-lg-9"
+        ng-class="{'form-group' : true, 'has-error' : request_form.weight.$dirty && request_form.weight.$invalid}"
+        placeholder="Peso (Kg)"
+       />
+
+        <input
+        bs-form-control
+        type="date" 
+        ng-model="request.arrival"
+        label="Entrega"
+        label-class="col-xs-6 col-sm-3 col-lg-3" 
+        class="col-xs-6 col-sm-9 col-lg-9"
+        
+        />
+
+    </form>
+  </div>
+  </div>
 </div>
 
-<nav class="navbar fixed-bottom">
-
-    <nav class="navbar-content ">
-
-        <div class="element ">
-            <a href="#/" class="fg-white"><span class="icon-arrow-left"></span></a>
-        </div>
-        <item class="element-divider no-phone no-tablet-portrait"></item>
-        <div class="element no-phone no-tablet-portrait">
-            <a href="/bpm/purchase/request/" class="fg-white">&nbsp;Requisi&ccedil;&atilde;o&nbsp;de&nbsp;Compra&nbsp;de&nbsp;A&ccedil;o&nbsp;&nbsp;#{{request.id | leadingZero:4}}</a>
-        </div>
-        <item class="element-divider no-phone no-tablet-portrait"></item>
-        <a href="#/" class="fg-white">
-	        <div class="element">
-	            <span class="icon-checkmark"></span>
-	        </div>
-        </a>
-        <a href="#/" class="fg-white">
-	        <div class="element">
-	            <span class="icon-cancel-2"></span>
-	        </div>
-        </a>
-
-    </nav>
-</nav>

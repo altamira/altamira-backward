@@ -3,6 +3,9 @@
   <!-- TODO: check if you really want to use the process engine datasource. Note that the following is written for JBoss AS 7 -->
   <persistence-unit name="altamira-bpm-purchase-request-PU" transaction-type="JTA">
     <jta-data-source>java:jboss/datasources/ProcessEngine</jta-data-source>
+    <class>br.com.altamira.data.model.Request</class>
+    <class>br.com.altamira.data.model.RequestItem</class>
+    <class>br.com.altamira.data.model.Material</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="hibernate.hbm2ddl.auto" value="update" />

@@ -1,4 +1,4 @@
-package br.com.altamira.altamira.bpm.purchase.request;
+package br.com.altamira.bpm.purchase.request.delegate;
 
 import java.util.logging.Logger;
 

@@ -1,4 +1,4 @@
-package br.com.altamira.altamira.bpm.purchase.request;
+package br.com.altamira.bpm.purchase.request.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -56,7 +56,7 @@ import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 @RunWith(Arquillian.class)
 public class ArquillianTest {
 
-	private static final String PROCESS_DEFINITION_KEY = "altamira-bpm-purchase-request";
+	private static final String PROCESS_DEFINITION_KEY = "altamira.bpm.purchase.request";
 
 	@Deployment
 	public static WebArchive createDeployment() {
@@ -79,13 +79,12 @@ public class ArquillianTest {
 				.addAsResource("META-INF/test-persistence.xml",
 						"META-INF/persistence.xml")
 				// add your own classes (could be done one by one as well)
-				.addPackages(false,
-						"br.com.altamira.altamira.bpm.purchase.request") // not
-																			// recursive
-																			// to
-																			// skip
-																			// package
-																			// 'nonarquillian'
+				.addPackages(false, "br.com.altamira.bpm.purchase.request.delegate")	// not
+				.addPackages(false, "br.com.altamira.bpm.purchase.request.listener")	// recursive
+				.addPackages(false, "br.com.altamira.bpm.purchase.request.service")		// to
+				.addPackages(false, "br.com.altamira.bpm.purchase.request.test")		// skip
+																						// package
+																						// 'nonarquillian'
 				// add process definition
 				.addAsResource("process.bpmn")
 				// add process image for visualizations
@@ -265,6 +264,7 @@ public class ArquillianTest {
 	 * Tests that the process is executable and reaches its end.
 	 */
 	@Test
+	@InSequence(1)
 	public void testProcessExecution() throws Exception {
 		cleanUpRunningProcessInstances();
 
@@ -272,7 +272,7 @@ public class ArquillianTest {
 
 		entity.setCreated(new Date());
 		entity.setCreator("Arquillian");
-		entity.setSent(null);
+		entity.setSent(new Date());
 
 		requestDao.create(entity);
 
@@ -310,6 +310,31 @@ public class ArquillianTest {
 					"deleted to have a clean environment for Arquillian");
 		}
 	}
+	
+	/*@Test
+	@InSequence(2)
+	public void RequestServiceEndpointStartProcessUseCaseTest() throws Exception {
+
+		Request request = requestDao.current();
+		
+		assertNotNull(request);
+		
+		UriBuilder context = UriBuilder.fromUri("http://localhost:8080/bpm/purchase/request/service/start");
+
+		ClientRequest client = new ClientRequest(context
+				.path("/{id}")
+				.build(request.getId());
+		client.accept(MediaType.APPLICATION_JSON);
+		client.header("Content-Type", MediaType.APPLICATION_JSON);
+
+		ClientResponse<RequestItem> response = client.delete(RequestItem.class);
+
+		assertEquals(204, response.getStatus());
+
+		RequestItem entity = requestItemDao.find(item.getId());
+		assertNull(entity);
+
+	}*/
 
 	@Test
 	@InSequence(10)

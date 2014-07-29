@@ -1,4 +1,4 @@
-package br.com.altamira.altamira.bpm.purchase.request;
+package br.com.altamira.bpm.purchase.request.listener;
 
 import java.util.ArrayList;
 import java.util.Collection;
