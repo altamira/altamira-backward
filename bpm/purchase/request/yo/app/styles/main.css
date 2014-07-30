@@ -1,22 +1,4 @@
-/* Space out content a bit */
-
-@media screen and (max-width: 640px) {
-	.small_screen {
-	   display: inline;
-	}
-	.large_screen {
-       display: none;
-    }
-}
-
-@media screen and (min-width: 641px) {
-    .small_screen {
-       display: none;
-    }
-    .large_screen {
-       display: inline;
-    }
-}
+/* Define custom Metro-UI styles */
 
 .metro .listview-outlook .list .list-content {
 	padding-left: 5px;
@@ -36,7 +18,7 @@
 
 @media only screen and (max-width: 800px) {
     .navigation-bar, .navbar {
-		position: fixed !important;
+        position: fixed !important;
     }
     .metro .navigation-bar .navigation-bar-content .element, .metro .navbar .navigation-bar-content .element, .metro .navigation-bar .navbar-content .element, .metro .navbar .navbar-content .element, .metro .navigation-bar .navigation-bar-content .element-divider, .metro .navbar .navigation-bar-content .element-divider, .metro .navigation-bar .navbar-content .element-divider, .metro .navbar .navbar-content .element-divider {
         display: inline-block;
@@ -46,6 +28,64 @@
     }
 }
 
+@media only screen and (max-width: 340px) {
+    .control-label {
+        font-size: small;
+    }
+}
+
+
+@media screen and (max-width: 640px) {
+    .small_screen {
+       display: inline;
+    }
+    .large_screen {
+       display: none;
+    }
+}
+
+@media screen and (min-width: 641px) {
+    .small_screen {
+       display: none;
+    }
+    .large_screen {
+       display: inline;
+    }
+}
+
+/* Define custom Bootstrap styles */
+
+* {
+    border-collapse: initial;
+}
+
 .ng-dirty input.ng-invalid, input.ng-invalid, textarea.ng-invalid {
-border-color: #FF000A;
+    border-color: #FF000A;
+}
+
+.section {
+    padding-top: 0;
+}
+
+.form-control {
+    padding: 0px 5px 0px 5px;
+}
+
+.panel-heading-DE .panel-heading {
+    background-color: #1ba1e2;    
+}
+
+.panel-heading-PR .panel-heading {
+    background-color: #a4c400;
+}
+
+.panel-heading-GA .panel-heading {
+    background-color: #f0a30a;
+}
+
+.panel-heading-DE .panel-heading .panel-title,
+.panel-heading-PR .panel-heading .panel-title,
+.panel-heading-GA .panel-heading .panel-title
+{
+    color: white;
 }

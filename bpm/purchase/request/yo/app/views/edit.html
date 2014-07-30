@@ -1,29 +1,32 @@
-<link rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.css" />
+<!doctype html>
+<!-- <link rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.css" />
 <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
 <link rel="stylesheet" href="/bower_components/mobile-angular-ui/dist/css/mobile-angular-ui-hover.min.css" />
 <link rel="stylesheet" href="/bower_components/mobile-angular-ui/dist/css/mobile-angular-ui-base.min.css" />
 <link rel="stylesheet" href="/bower_components/mobile-angular-ui/dist/css/mobile-angular-ui-desktop.min.css" />
-<link rel="stylesheet" href="/styles/main.css">
+<link rel="stylesheet" href="/styles/main.css"> -->
 
 <div class="scrollable">
  <div class="scrollable-content section">
 
-    <div bs-panel title="Requisição de Aço">
+    <div bs-panel title="Requisição de Aço" class="panel-heading-{{modal.item.material.treatment}}">
 
    <form action="" id="request_form">
 
     </br>
 
-    <div class="btn-group justified nav-tabs">
+    <div class="btn-group justified nav-tabs form-group">
 
         <a class="btn btn-default "
            href="#TabRolo"
+           ng-click="Format('R')"
            toggle="on"
            active-class="active">Rolo
         </a>
 
         <a class="btn btn-default"
            href="#TabChapa"
+           ng-click="Format('C')"
            toggle="on"
            active-class="active">Chapa
         </a>
@@ -47,20 +50,25 @@
             id="TabChapa"
             exclusion-group="FormatTabs">
 
+        </div>
+
     </div>
 
     </br>
 
-    <div class="btn-group justified nav-tabs">
+    <div class="btn-group justified nav-tabs form-group">
 
         <a class="btn btn-default "
            href="#TabFQ"
+           ng-click="Lamination('FQ')"
            toggle="on"
            active-class="active">Fina Quente
+
         </a>
 
         <a class="btn btn-default"
            href="#TabFF"
+           ng-click="Lamination('FF')"
            toggle="on"
            active-class="active">Fina Frio
         </a>
@@ -78,16 +86,18 @@
 
             </br>
 
-            <div class="btn-group justified nav-tabs">
+            <div bs-form-control class="btn-group justified nav-tabs form-group">
 
                 <a class="btn btn-default"
                    href="#TabPR"
+                   ng-click="Treatment('PR')"
                    toggle="on"
                    active-class="active">Chapa Preta
                 </a>
 
                 <a class="btn btn-default"
                    href="#TabDE"
+                   ng-click="Treatment('DE')"
                    toggle="on"
                    active-class="active">Decapado
                 </a>
@@ -125,78 +135,70 @@
             exclusion-group="LaminationTabs">
 
             <switch 
-            ng-model="request.treatment" 
-            label="Galvanizado" 
             bs-form-control 
+            ng-model="modal.treatmentFF" 
+            label="Galvanizado" 
+            ng-click="Treatment('GA')"
             label-class="col-xs-6 col-sm-3 col-lg-3" 
-            class="col-xs-6 col-sm-9 col-lg-9" />
+            class="col-xs-6 col-sm-9 col-lg-9"></switch>
+
+        </div>
             
     </div>
 
-       <select
-        bs-form-control
-        
-        type="number" 
-        ng-model="invoice.customer"
-        label="Espessura (mm)" 
-        label-class="col-xs-6 col-sm-3 col-lg-3" 
-        class="col-xs-6 col-sm-9 col-lg-9"
-        placeholder="Espessura"
-        ng-model="modal.item.material.thickness"
-        ng-options="t.value as t.desc for t in modal.thicknesses" 
-        ng-change="changedThickness()"
-       />
+    <select
+      bs-form-control
+      required
+      label="Espessura (mm)" 
+      label-class="col-xs-6 col-sm-3 col-lg-3" 
+      class="col-xs-6 col-sm-9 col-lg-9"
+      placeholder="Espessura"
+      ng-model="modal.item.material.thickness"
+      ng-options="t.value as t.desc for t in modal.thicknesses" 
+    ></select>
 
-       <select
-        bs-form-control
-        
-        type="number" 
-        ng-model="request.material.width"
-        label="Largura (mm)" 
-        label-class="col-xs-6 col-sm-3 col-lg-3" 
-        class="col-xs-6 col-sm-9 col-lg-9"
-        placeholder="Largura mm"
-        ng-class="{'form-group' : true, 'has-error' : request_form.otherWidth.$dirty && request_form.otherWidth.$invalid}"
-        ng-options="w for w in modal.widths" 
-        ng-change="changedWidth()"
-       />
+    <select 
+      bs-form-control 
+      label="Largura (mm)" 
+      label-class="col-xs-6 col-sm-3 col-lg-3" 
+      class="col-xs-6 col-sm-9 col-lg-9" 
+      placeholder="Largura mm" 
+      ng-model="modal.item.material.width" 
+      ng-options="l for l in modal.widths"
+    ></select>
 
-       <select
-        bs-form-control
-        
-        ng-model="request.material.length"
-        label="Comprimento (mm)" 
-        label-class="col-xs-6 col-sm-3 col-lg-3" 
-        class="col-xs-6 col-sm-9 col-lg-9"
-        placeholder="Comprimento mm"
-        ng-class="{'form-group' : true, 'has-error' : request_form.otherLength.$dirty && request_form.otherLength.$invalid}"
-        ng-options="l for l in modal.lengths"
-        ng-change="changedLength()" 
-        ng-disabled="modal.item.cut === 'B'"
-       />
+    <select
+      bs-form-control
+      label="Comprimento (mm)" 
+      label-class="col-xs-6 col-sm-3 col-lg-3" 
+      class="col-xs-6 col-sm-9 col-lg-9"
+      placeholder="Comprimento mm"
+      ng-model="modal.item.material.length"
+      ng-options="l for l in modal.lengths"
+      ng-disabled="modal.format === 'R'"
+    ></select>
 
-       <input
-        bs-form-control
-        
-        type="number" 
-        min='100' max='30000' integer required
-        ng-model="request.weight"
-        label="Peso (Kg)" 
-        label-class="col-xs-6 col-sm-3 col-lg-3" 
-        class="col-xs-6 col-sm-9 col-lg-9"
-        ng-class="{'form-group' : true, 'has-error' : request_form.weight.$dirty && request_form.weight.$invalid}"
-        placeholder="Peso (Kg)"
-       />
+    <input
+      bs-form-control
+      integer required
+      type="number" 
+      min='100' max='30000' 
+      label="Peso (Kg)" 
+      label-class="col-xs-6 col-sm-3 col-lg-3" 
+      class="col-xs-6 col-sm-9 col-lg-9"
+      ng-model="modal.item.weight"
+      ng-class="{'form-group' : true, 'has-error' : request_form.weight.$dirty && request_form.weight.$invalid}"
+      placeholder="Peso (Kg)"
+    />
 
-        <input
-        bs-form-control
-        type="date" 
-        ng-model="request.arrival"
-        label="Entrega"
-        label-class="col-xs-6 col-sm-3 col-lg-3" 
-        class="col-xs-6 col-sm-9 col-lg-9"
-        
-        />
+    <input
+      bs-form-control
+      type="date" 
+      label="Entrega"
+      label-class="col-xs-6 col-sm-3 col-lg-3" 
+      class="col-xs-6 col-sm-9 col-lg-9"
+      ng-model="modal.item.arrival"
+    />
 
     </form>
   </div>
