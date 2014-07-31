@@ -55,7 +55,12 @@
 
 /* Define custom Bootstrap styles */
 
-* {
+.form-group {
+  padding: 5px 0;
+}
+
+.nav-tabs,
+.tab-content  {
     border-collapse: initial;
 }
 
@@ -88,4 +93,16 @@
 .panel-heading-GA .panel-heading .panel-title
 {
     color: white;
+}
+
+/*body {
+    background:#fff url("../images/head2.png") 0 -20px repeat-x;
+}*/
+
+/*.panel-body {
+    background-color: black;
+}*/
+
+a:hover {
+    text-decoration: none;
 }

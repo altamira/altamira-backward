@@ -23,7 +23,7 @@ angular.module('1820e33145e64965a1432bda5b86f405')
 
     var widths = [80, 90, 100, 120, 200, 240, 260, 300, 320, 330, 350, 400, 450];
 
-    var lengths = [100, 200, 500, 800, 900, 950, 1000, 1100, 1200, 1500, 1750, 1900, 2000, 2100, 2200, 2400, 3000, 3200];
+    var lengths = [0, 100, 200, 500, 800, 900, 950, 1000, 1100, 1200, 1500, 1750, 1900, 2000, 2100, 2200, 2400, 3000, 3200];
 
     // var thicknesses = [0.60, 0.75, 0.85, 1.80, 2.00];
     // $scope.widths = [100.00, 132.00, 165.00, 200.00, 240.00, 330.00, 367.00, 420.00, 915.00, 990.00];
@@ -56,9 +56,9 @@ angular.module('1820e33145e64965a1432bda5b86f405')
 	lengths.push('Outro...');
 
 	item.otherLength = item.material.length;
-	/*if(!_.contains(lengths, item.material.length)) {
+	if(!_.contains(lengths, item.material.length)) {
 	 item.material.length = lengths[lengths.length - 1];
-	}*/
+	}
 
 	// Converte o valor para o tipo Date usado na modal.
 	item.arrival = new Date(item.arrival);
@@ -84,16 +84,40 @@ angular.module('1820e33145e64965a1432bda5b86f405')
 		treatmentFQ : 'PR'
 	};
 
-	$scope.Format = function(f) {
-		if (f == 'R') {
-			$scope.modal.item.material.length = 0;
-		} else {
-			$scope.modal.item.material.length = lengths[0];
+	$scope.save = function () {
+		// Tradução do valor para casos de escolha da uma opção alternativa.
+		if (_.isNaN(parseFloat(item.material.thickness))) {
+		  item.material.thickness = item.otherThickness;
 		}
+		delete item.otherThickness;
+
+		if (_.isNaN(parseFloat(item.material.width))) {
+		  item.material.width = item.otherWidth;
+		}
+		delete item.otherWidth;
+
+		if (_.isNaN(parseFloat(item.material.length))) {
+		  item.material.length = item.otherLength;
+		}
+		delete item.otherLength;
+
+		// Trunc no dia da data escolhida.
+		item.arrival.setHours(0, 0, 0, 0);
+
+		// Transforma a data para o formato trocado com o servidor.
+		item.arrival = item.arrival.getTime();
+
+		// Retorna fornecendo o ítem.
+		//$modalInstance.close(item);
+	};
+
+	$scope.format = function(f) {
+		$scope.modal.item.material.length = lengths[0];
 		$scope.modal.format = f;
+		$scope.changedLength();
 	}
 
-	$scope.Lamination = function(l) {
+	$scope.lamination = function(l) {
 		if (l == 'FQ') {
 			$scope.modal.treatmentFF = false;
 			$scope.modal.item.material.treatment = $scope.modal.treatmentFQ;
@@ -103,7 +127,7 @@ angular.module('1820e33145e64965a1432bda5b86f405')
 		$scope.modal.item.material.lamination = l;
 	}
 
-	$scope.Treatment = function(t) {
+	$scope.treatment = function(t) {
 		if (t == 'GA') {
 			$scope.modal.item.material.treatment = $scope.modal.treatmentFF ? 'GA' : '';	
 		} else {
@@ -111,5 +135,17 @@ angular.module('1820e33145e64965a1432bda5b86f405')
 			$scope.modal.item.material.treatment = t;
 		}
 	}
+
+	$scope.changedThickness = function () {
+    	$scope.modal.showOtherThickness = _.isNaN(parseFloat($scope.modal.item.material.thickness));
+	};
+
+	$scope.changedWidth = function () {
+		$scope.modal.showOtherWidth = _.isNaN(parseFloat($scope.modal.item.material.width));
+	};
+
+	$scope.changedLength = function () {
+		$scope.modal.showOtherLength = _.isNaN(parseFloat($scope.modal.item.material.length));
+	};
 
   });

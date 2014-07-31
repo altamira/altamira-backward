@@ -9,7 +9,7 @@
 <div class="scrollable">
  <div class="scrollable-content section">
 
-    <div bs-panel title="Requisição de Aço" class="panel-heading-{{modal.item.material.treatment}}">
+  <div bs-panel title="Requisição de Aço" class="panel-heading-{{modal.item.material.treatment}}">
 
    <form action="" id="request_form">
 
@@ -19,14 +19,14 @@
 
         <a class="btn btn-default "
            href="#TabRolo"
-           ng-click="Format('R')"
+           ng-click="format('R')"
            toggle="on"
            active-class="active">Rolo
         </a>
 
         <a class="btn btn-default"
            href="#TabChapa"
-           ng-click="Format('C')"
+           ng-click="format('C')"
            toggle="on"
            active-class="active">Chapa
         </a>
@@ -54,13 +54,11 @@
 
     </div>
 
-    </br>
-
     <div class="btn-group justified nav-tabs form-group">
 
         <a class="btn btn-default "
            href="#TabFQ"
-           ng-click="Lamination('FQ')"
+           ng-click="lamination('FQ')"
            toggle="on"
            active-class="active">Fina Quente
 
@@ -68,7 +66,7 @@
 
         <a class="btn btn-default"
            href="#TabFF"
-           ng-click="Lamination('FF')"
+           ng-click="lamination('FF')"
            toggle="on"
            active-class="active">Fina Frio
         </a>
@@ -84,20 +82,18 @@
             id="TabFQ" 
             exclusion-group="LaminationTabs">
 
-            </br>
-
-            <div bs-form-control class="btn-group justified nav-tabs form-group">
+            <div class="btn-group justified nav-tabs form-group">
 
                 <a class="btn btn-default"
                    href="#TabPR"
-                   ng-click="Treatment('PR')"
+                   ng-click="treatment('PR')"
                    toggle="on"
                    active-class="active">Chapa Preta
                 </a>
 
                 <a class="btn btn-default"
                    href="#TabDE"
-                   ng-click="Treatment('DE')"
+                   ng-click="treatment('DE')"
                    toggle="on"
                    active-class="active">Decapado
                 </a>
@@ -138,7 +134,7 @@
             bs-form-control 
             ng-model="modal.treatmentFF" 
             label="Galvanizado" 
-            ng-click="Treatment('GA')"
+            ng-click="treatment('GA')"
             label-class="col-xs-6 col-sm-3 col-lg-3" 
             class="col-xs-6 col-sm-9 col-lg-9"></switch>
 
@@ -155,7 +151,22 @@
       placeholder="Espessura"
       ng-model="modal.item.material.thickness"
       ng-options="t.value as t.desc for t in modal.thicknesses" 
+      ng-change="changedThickness()"
     ></select>
+
+    <input
+      bs-form-control
+      required
+      type="number"
+      id="otherThicknesses" 
+      name="otherThicknesses"
+      label="" 
+      label-class="col-xs-6 col-sm-3 col-lg-3" 
+      class="col-xs-6 col-sm-9 col-lg-9"
+      placeholder="Nova espessura..." 
+      ng-show="modal.showOtherThickness"
+      ng-model="modal.item.otherThickness" 
+      min='0.10' max='9.99'>
 
     <select 
       bs-form-control 
@@ -165,7 +176,22 @@
       placeholder="Largura mm" 
       ng-model="modal.item.material.width" 
       ng-options="l for l in modal.widths"
+      ng-change="changedWidth()"
     ></select>
+
+    <input
+      bs-form-control
+      required
+      type="number"
+      id="otherWidth" 
+      name="otherWidth"
+      label="" 
+      label-class="col-xs-6 col-sm-3 col-lg-3" 
+      class="col-xs-6 col-sm-9 col-lg-9"
+      placeholder="Nova largura..." 
+      ng-show="modal.showOtherWidth"
+      ng-model="modal.item.otherWidth" 
+      min='20' max='3000'>
 
     <select
       bs-form-control
@@ -176,7 +202,22 @@
       ng-model="modal.item.material.length"
       ng-options="l for l in modal.lengths"
       ng-disabled="modal.format === 'R'"
+      ng-change="changedLength()"
     ></select>
+
+    <input
+      bs-form-control
+      required
+      type="number"
+      id="otherLength" 
+      name="otherLength"
+      label="" 
+      label-class="col-xs-6 col-sm-3 col-lg-3" 
+      class="col-xs-6 col-sm-9 col-lg-9"
+      placeholder="Novo comprimento..." 
+      ng-show="modal.showOtherLength"
+      ng-model="modal.item.otherLength" 
+      min='100' max='3000'>
 
     <input
       bs-form-control
@@ -199,6 +240,11 @@
       class="col-xs-6 col-sm-9 col-lg-9"
       ng-model="modal.item.arrival"
     />
+
+    <div class="form-group">
+      
+      <a href="#/" class="btn btn-primary" ng-disabled="request_form.$invalid" ng-click="save()"><span class="fa fa-check"></span> Gravar</a>&nbsp;&nbsp;<a href="#/" class="btn btn-primary" class="btn btn-primary"><span class="fa fa-times"></span> Fechar</a>
+    </div>
 
     </form>
   </div>
