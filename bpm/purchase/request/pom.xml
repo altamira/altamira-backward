@@ -5,7 +5,7 @@
 
 	<groupId>br.com.altamira</groupId>
 	<artifactId>altamira-bpm-purchase-request</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.4-SNAPSHOT</version>
 
 	<packaging>war</packaging>
 
@@ -164,24 +164,24 @@
 			<version>1.2.12</version>
 		</dependency>
 
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxrs</artifactId>
-            <version>2.3.6.Final</version>
-            <!-- filter out unwanted jars -->
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-httpclient</groupId>
-                    <artifactId>jackson-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>servlet-api</artifactId>
-                </exclusion>
-            </exclusions>
-            <scope>test</scope>
-        </dependency>
-        
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-jaxrs</artifactId>
+			<version>2.3.6.Final</version>
+			<!-- filter out unwanted jars -->
+			<exclusions>
+				<exclusion>
+					<groupId>commons-httpclient</groupId>
+					<artifactId>jackson-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>servlet-api</artifactId>
+				</exclusion>
+			</exclusions>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>br.com.altamira</groupId>
 			<artifactId>altamira-data</artifactId>
@@ -204,6 +204,17 @@
 		</repository>
 	</repositories>
 
+	<pluginRepositories>
+		<pluginRepository>
+			<id>autoincrement-versions-maven-plugin</id>
+			<name>autoincrement-versions-maven-plugin</name>
+			<url>http://autoincrement-versions-maven-plugin.googlecode.com/svn/repo</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
 	<build>
 		<finalName>${project.artifactId}-${project.version}</finalName>
 		<plugins>
@@ -222,11 +233,29 @@
 					<!-- A web.xml is no longer required. -->
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 					<webResources>
-                        <resource>
-                            <directory>yo/dist</directory>
-                        </resource>
-                    </webResources>
+						<resource>
+							<directory>yo/dist</directory>
+						</resource>
+					</webResources>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>autoincrement-versions-maven-plugin</artifactId>
+				<version>2.0-SNAPSHOT</version>
+				<executions>
+					<execution>
+						<id>update-pom-versions</id>
+						<goals>
+							<goal>increment</goal>
+							<goal>commit</goal>
+						</goals>
+						<phase>compile</phase>
+						<configuration>
+							<autoIncrementVersion>true</autoIncrementVersion>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
