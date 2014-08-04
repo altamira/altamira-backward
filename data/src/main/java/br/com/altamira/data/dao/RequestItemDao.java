@@ -135,14 +135,14 @@ public class RequestItemDao {
 		
 		Material material = materialDao.find(entity.getMaterial());
 		
-		if (entity.getMaterial().getId() != null && entity.getMaterial().getId() != 0l) {
+		/*if (entity.getMaterial().getId() != null && entity.getMaterial().getId() != 0l) {
 			if (material == null) {
 				throw new IllegalArgumentException("Material id doesn't match with properties.");
 			}
 			if (entity.getMaterial().getId() != material.getId()) {
 				throw new IllegalArgumentException("Material id doesn't match with properties. Material id is " + entity.getMaterial().getId() + ", expected id is " + material.getId());
 			}
-		}
+		}*/
 		
 		if (material == null) {
 			//Create a fresh copy with null id of material

@@ -319,7 +319,7 @@ public class ArquillianTest {
 		
 		assertNotNull(request);
 		
-		UriBuilder context = UriBuilder.fromUri("http://localhost:8080/bpm/purchase/request/service/start");
+		//UriBuilder context = UriBuilder.fromUri(url);
 
 		ClientRequest client = new ClientRequest(context
 				.path("/{id}")

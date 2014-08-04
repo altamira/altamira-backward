@@ -25,14 +25,33 @@ angular
         templateUrl: 'views/main.html',
         controller: 'RequestCtrl'
       })
-      .when('/edit', {
+      .when('/new', {
         templateUrl: 'views/edit.html',
-        controller: 'EditCtrl'
+        controller: 'EditCtrl',
+        resolve: {
+          item: function() {
+            var arrival = new Date();
+            arrival.setHours(0,0,0,0);
+            return {"id": 0, "weight": 100.00, "arrival": arrival.getTime(), "material": {"id": 0, "lamination": "FQ", "treatment": "PR", "thickness": 2.00, "width": 240.00, "length": 0.00}};
+          }
+        }
+      })
+      .when('/edit/:id', {
+        templateUrl: 'views/edit.html',
+        controller: 'EditCtrl',
+        resolve: {
+                    item: function (Restangular, $route) {
+                        return Restangular.one('request', 0).one('item', $route.current.params.id).get();
+                    }}
+      })
+      .when('/aggregateTest', {
+        templateUrl: 'views/aggregatetest.html',
+        controller: 'AggregatetestCtrl'
       })
       .otherwise({
         redirectTo: '/'
       });
 
-    RestangularProvider.setBaseUrl('/data/rest');
+    RestangularProvider.setBaseUrl('/bpm/purchase/request/rest');
   });
 

@@ -29,7 +29,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlTransient;
 
-import br.com.altamira.data.serialize.DateSerializer;
 import br.com.altamira.data.serialize.JSonViews;
 import br.com.altamira.data.serialize.NullCollectionSerializer;
 

@@ -9,7 +9,7 @@ import java.util.Set;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
+//import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -25,6 +25,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriBuilderException;
+
+import org.hibernate.exception.ConstraintViolationException;
 
 import br.com.altamira.data.dao.RequestDao;
 import br.com.altamira.data.dao.RequestItemDao;
@@ -105,7 +107,8 @@ public class RequestItemEndpoint {
 			request = requestDao.current();
 		} catch (ConstraintViolationException ce) {
             // Handle bean validation issues
-            return createViolationResponse(ce.getConstraintViolations()).build();
+            //return createViolationResponse(ce.getConstraintViolations()).build();
+			return Response.status(Response.Status.BAD_REQUEST).entity(ce.getMessage()).build();
         } catch (ValidationException e) {
             // Handle the unique constrain violation
             //Map<String, String> responseObj = new HashMap<String, String>();
@@ -115,17 +118,19 @@ public class RequestItemEndpoint {
     		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
     	}
 	
-		if (Long.compare(request.getId().longValue(), requestId) != 0) {
+		/*if (Long.compare(request.getId().longValue(), requestId) != 0) {
 			return Response.status(Status.CONFLICT)
 					.entity("Request id doesn't match with resource path id")
 					.build();
-		}
+		}*/
 		
 		try {
+			entity.setRequest(request);
 			requestItemDao.create(entity);
 		} catch (ConstraintViolationException ce) {
             // Handle bean validation issues
-            return createViolationResponse(ce.getConstraintViolations()).build();
+            //return createViolationResponse(ce.getConstraintViolations()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(ce.getMessage()).build();
         } catch (ValidationException e) {
             // Handle the unique constrain violation
             //Map<String, String> responseObj = new HashMap<String, String>();
@@ -172,7 +177,8 @@ public class RequestItemEndpoint {
 			request = requestDao.current();
 		} catch (ConstraintViolationException ce) {
             // Handle bean validation issues
-            return createViolationResponse(ce.getConstraintViolations()).build();
+            //return createViolationResponse(ce.getConstraintViolations()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(ce.getMessage()).build();
         } catch (ValidationException e) {
             // Handle the unique constrain violation
             //Map<String, String> responseObj = new HashMap<String, String>();
@@ -182,17 +188,19 @@ public class RequestItemEndpoint {
     		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
     	}
 		
-		if (Long.compare(request.getId().longValue(), requestId) != 0) {
+		/*if (Long.compare(request.getId().longValue(), requestId) != 0) {
 			return Response.status(Status.CONFLICT)
 					.entity("Request id doesn't match with resource path id")
 					.build();
-		}
+		}*/
 		
 		try {
+			entity.setRequest(request);
 			entity = requestItemDao.update(entity);
-		} catch (ConstraintViolationException ce) {
+		} catch (org.hibernate.exception.ConstraintViolationException ce) {
             // Handle bean validation issues
-            return createViolationResponse(ce.getConstraintViolations()).build();
+            //return createViolationResponse(ce.getConstraintViolations()).build();
+			return Response.status(Response.Status.BAD_REQUEST).entity(ce.getMessage()).build();
         } catch (ValidationException e) {
             // Handle the unique constrain violation
             //Map<String, String> responseObj = new HashMap<String, String>();
@@ -225,7 +233,8 @@ public class RequestItemEndpoint {
 			entity = requestItemDao.remove(id);
 		} catch (ConstraintViolationException ce) {
             // Handle bean validation issues
-            return createViolationResponse(ce.getConstraintViolations()).build();
+            //return createViolationResponse(ce.getConstraintViolations()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(ce.getMessage()).build();
         } catch (ValidationException e) {
             // Handle the unique constrain violation
             //Map<String, String> responseObj = new HashMap<String, String>();

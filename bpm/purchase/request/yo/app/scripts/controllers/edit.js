@@ -8,14 +8,14 @@
  * Controller of the 1820e33145e64965a1432bda5b86f405
  */
 angular.module('1820e33145e64965a1432bda5b86f405')
-  .controller('EditCtrl', function ($scope) {
+  .controller('EditCtrl', function ($scope, $location, Restangular, item) {
     $scope.awesomeThings = [
       'HTML5 Boilerplate',
       'AngularJS',
       'Karma'
     ];
 
-    var item = {"id": 0, "weight": 3450.00, "arrival": 1406214963580, "material": {"id": 0, "lamination": "FQ", "treatment": "GA", "thickness": 2.00, "width": 200.00, "length": 0}}
+    //var item = {"id": 0, "weight": 3450.00, "arrival": 1406214963580, "material": {"id": 0, "lamination": "FQ", "treatment": "GA", "thickness": 2.00, "width": 200.00, "length": 0}}
 
     var treatments = [{ desc : 'Chapa Preta', value : 'PR' }, { desc : 'Decapado', value : 'DE' }, { desc : 'Galvanizado', value : 'GA' }];
 
@@ -108,7 +108,14 @@ angular.module('1820e33145e64965a1432bda5b86f405')
 		item.arrival = item.arrival.getTime();
 
 		// Retorna fornecendo o ítem.
-		//$modalInstance.close(item);
+		if (item.id === 0) {
+			Restangular.one('request', 0).post('item', item).then(function (data) {});
+		} else {
+			item.put().then(function (data) {});
+		}
+        
+        $location.path('/#');
+        
 	};
 
 	$scope.format = function(f) {

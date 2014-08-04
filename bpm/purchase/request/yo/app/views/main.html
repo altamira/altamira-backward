@@ -5,8 +5,6 @@
 <link rel="stylesheet" href="/styles/main.css"> -->
 
 <div class="metro cloud">
-<div class="fixed-top" style="height:50px;"></div>
-
 <nav class="navbar fixed-top">
 
     <nav class="navbar-content ">
@@ -23,7 +21,7 @@
 	        </div>
         </a>
         <item class="element-divider no-phone no-tablet-portrait"></item>
-        <a href="#/edit" class="fg-white">
+        <a href="#/new" class="fg-white">
 	        <div class="element">
 	            <span class="icon-plus-2"></span>
 	        </div>
@@ -39,12 +37,21 @@
 
     </nav>
 </nav>
+<div class="scrollable">
+ <div class="scrollable-content section">
+<div class="container">
+ <div class="fixed-top" style="height:50px;"></div>
 
-<div class="listview-outlook" data-role="listview">
-	<div class="list-group" ng-repeat="(key, group) in groups">
-		<a href="" class="group-title">{{key|date:'dd/MM/yyyy'}}</a>
-		<div class="group-content">
-			<a href="#/edit" class="list" ng-repeat="item in group">
+<div class="panel-group" id="accordion">
+
+  <div class="panel panel-default" ng-repeat="group in groups">
+    <div class="panel-heading" toggle target="collapse{{$index}}">
+      <h5 class="panel-title">{{group.arrival|date:'dd/MM/yyyy'}}<i style="display:block;float:right;">&nbsp;&nbsp;{{group.total|number:0}}&nbsp;Kg</i></h5>
+    </div>
+    <div id="collapse{{$index}}" toggleable active-class="in" exclusion-group="accordion{{$index}}" default="active" class="panel-collapse collapse">
+      <div class="panel-body">
+        <div class="listview-outlook">
+			<a href="#/edit/{{item.id}}" class="list" ng-repeat="item in group.items">
 				<div class="list-content">
 					<div class="tile half tile-{{item.material.treatment}}">
 						<h2 class="text-center fg-white">{{item.material.treatment}}</h2>
@@ -68,8 +75,79 @@
 				</div>
 			</a>
 		</div>
-	</div>
+		<!-- <div>
+			<p class="text-right" style="margin-right: 5px;">{{group.total|number:0}}&nbsp;Kg</p>
+		</div> -->
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+  <div class="panel-heading" >
+	<h5 class="panel-title text-right" style="margin-right: 5px;">Peso&nbsp;Total:&nbsp;{{total|number:0}}&nbsp;Kg</h5>
+  </div>
+  </div>
+  <!-- <div class="panel panel-default">
+    <div class="panel-heading" toggle target="collapseTwo">
+      <h4 class="panel-title">
+          Collapsible Group Item #2
+      </h4>
+    </div>
+    <div id="collapseTwo" toggleable active-class="in" exclusion-group="accordion1" class="panel-collapse collapse">
+      <div class="panel-body">
+        
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" toggle target="collapseThree">
+      <h4 class="panel-title">
+          Collapsible Group Item #3
+      </h4>
+    </div>
+    <div id="collapseThree" toggleable active-class="in" exclusion-group="accordion1" class="panel-collapse collapse">
+      <div class="panel-body">
+        
+      </div>
+    </div>
+  </div> -->
 </div>
 
+<!-- <div class="listview-outlook" data-role="listview">
+	<div class="list-group" ng-repeat="group in groups">
+		<a href="" class="group-title">{{group.arrival|date:'dd/MM/yyyy'}}</a>
+		<div class="group-content">
+			<a href="#/edit/{{item.id}}" class="list" ng-repeat="item in group.items">
+				<div class="list-content">
+					<div class="tile half tile-{{item.material.treatment}}">
+						<h2 class="text-center fg-white">{{item.material.treatment}}</h2>
+					</div>
+					<div class="data">
+						<span class="list-title"><span
+							ng-show="item.material.length">Chapa</span><span
+							ng-show="!item.material.length">Rolo</span><span
+							ng-show="item.material.lamination == 'FF'">&nbsp;Fina Frio</span><span
+							ng-show="item.material.lamination == 'FQ'">&nbsp;Fina
+								Quente</span></span> <span class="list-remark"><div class="large_screen">
+								<b>Espessura:</b>
+							</div>&nbsp;{{item.material.thickness|number:2}}mm<div class="large_screen">
+								<b>Largura:</b>
+							</div>&nbsp;{{item.material.width|number:0}}mm <i
+							class="icon-tab-2 small_screen" ng-show="item.material.length"></i>
+							<div class="large_screen" ng-show="item.material.length">
+								<b>Comprimento:</b>
+							</div><span ng-show="item.material.length">&nbsp;{{item.material.length|number:0}}mm</span></span>{{item.weight}}Kg
+					</div>
+				</div>
+			</a>
+		</div>
+		<div>
+			<p class="text-right" style="margin-right: 5px;">{{group.total|number:0}}&nbsp;Kg</p>
+		</div>
+	</div>
+</div> -->
+
+</div>
+</div>
+</div>
 </div>
 

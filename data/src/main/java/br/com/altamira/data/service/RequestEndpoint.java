@@ -18,7 +18,7 @@ import javax.ejb.Stateless;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
+//import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -33,6 +33,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriBuilderException;
+
+import org.hibernate.exception.ConstraintViolationException;
 
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -165,7 +167,8 @@ public class RequestEndpoint {
 			entity = requestDao.update(entity);
 		} catch (ConstraintViolationException ce) {
             // Handle bean validation issues
-            return createViolationResponse(ce.getConstraintViolations()).build();
+            //return createViolationResponse(ce.getConstraintViolations()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(ce.getMessage()).build();
         } catch (ValidationException e) {
             // Handle the unique constrain violation
             //Map<String, String> responseObj = new HashMap<String, String>();
@@ -200,7 +203,8 @@ public class RequestEndpoint {
 			entity = requestDao.remove(id);
 		} catch (ConstraintViolationException ce) {
             // Handle bean validation issues
-            return createViolationResponse(ce.getConstraintViolations()).build();
+            //return createViolationResponse(ce.getConstraintViolations()).build();
+			return Response.status(Response.Status.BAD_REQUEST).entity(ce.getMessage()).build();
         } catch (ValidationException e) {
             // Handle the unique constrain violation
             //Map<String, String> responseObj = new HashMap<String, String>();
@@ -233,7 +237,8 @@ public class RequestEndpoint {
 			entity = requestDao.current();
 		} catch (ConstraintViolationException ce) {
             // Handle bean validation issues
-            return createViolationResponse(ce.getConstraintViolations()).build();
+            //return createViolationResponse(ce.getConstraintViolations()).build();
+			return Response.status(Response.Status.BAD_REQUEST).entity(ce.getMessage()).build();
         } catch (ValidationException e) {
             // Handle the unique constrain violation
             //Map<String, String> responseObj = new HashMap<String, String>();

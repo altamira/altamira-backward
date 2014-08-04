@@ -37,10 +37,10 @@ angular.module('1820e33145e64965a1432bda5b86f405')
 		    return lengths;
 		  },
 		  getCurrent: function () {
-		    return request.get('current');
+		    return request.get('0');
 		  },
 		  save : function(requestToSave) {
-		    return request.customPUT(requestToSave);
+		    return request.customPOST(requestToSave);
 		  },
 		  sendCurrent: function () {
 		    return request.customPOST();

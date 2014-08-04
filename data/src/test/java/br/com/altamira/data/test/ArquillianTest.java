@@ -447,7 +447,7 @@ public class ArquillianTest {
 	@Test
 	@InSequence(31)
 	public void RequestItemDaoNonNullIdUseCaseTest() {
-Request request = requestDao.current();
+		Request request = requestDao.current();
 		
 		if (request == null) {
 			request = new Request();
