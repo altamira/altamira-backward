@@ -19,11 +19,11 @@ angular
     'restangular',
     'mobile-angular-ui'
   ])
-  .config(function ($routeProvider, $httpProvider, RestangularProvider) {
+  .config(['$routeProvider', '$httpProvider', 'RestangularProvider', function ($routeProvider, $httpProvider, RestangularProvider) {
     $routeProvider
       .when('/', {
         templateUrl: 'views/main.html',
-        controller: 'RequestCtrl'
+        controller: 'MainCtrl'
       })
       .when('/new', {
         templateUrl: 'views/edit.html',
@@ -32,7 +32,7 @@ angular
           item: function() {
             var arrival = new Date();
             arrival.setHours(0,0,0,0);
-            return {"id": 0, "weight": 100.00, "arrival": arrival.getTime(), "material": {"id": 0, "lamination": "FQ", "treatment": "PR", "thickness": 2.00, "width": 240.00, "length": 0.00}};
+            return {'id': 0, 'weight': 100.00, 'arrival': arrival.getTime(), 'material': {'id': 0, 'lamination': 'FQ', 'treatment': 'PR', 'thickness': 2.00, 'width': 240.00, 'length': 0.00}};
           }
         }
       })
@@ -40,18 +40,45 @@ angular
         templateUrl: 'views/edit.html',
         controller: 'EditCtrl',
         resolve: {
+                    item: ['Restangular', '$route', function (Restangular, $route) {
+                        return Restangular.one('request', 0).one('item', $route.current.params.id).get();
+                    }]}
+      })
+      /*.when('/tabtest', {
+        templateUrl: 'views/tabtest.html',
+        controller: 'TabTestCtrl',
+        resolve: {
                     item: function (Restangular, $route) {
                         return Restangular.one('request', 0).one('item', $route.current.params.id).get();
                     }}
-      })
-      .when('/aggregateTest', {
-        templateUrl: 'views/aggregatetest.html',
-        controller: 'AggregatetestCtrl'
-      })
+      })*/
       .otherwise({
         redirectTo: '/'
       });
 
     RestangularProvider.setBaseUrl('/bpm/purchase/request/rest');
-  });
+  }]);
 
+
+angular.module('1820e33145e64965a1432bda5b86f405')
+ .directive('myDatepicker', function () {
+    return {
+        require : 'ngModel',
+        link : function (scope, element, attrs, ngModelCtrl) {
+            $(function(){
+                element.datepicker({
+                    showOn:"both",
+                    changeYear:true,
+                    changeMonth:true,
+                    dateFormat:'yy-mm-dd',
+                    maxDate: new Date(),
+                    yearRange: '1920:2012',
+                    onSelect:function (dateText, inst) {
+                        ngModelCtrl.$setViewValue(dateText);
+                        scope.$apply();
+                    }
+                });
+            });
+        }
+    }
+});

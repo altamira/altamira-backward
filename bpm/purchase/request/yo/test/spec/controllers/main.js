@@ -1,9 +1,9 @@
 'use strict';
 
-describe('Controller: RequestCtrl', function () {
+describe('Controller: MainCtrl', function () {
 
   // load the controller's module
-  beforeEach(module('steelApp'));
+  beforeEach(module('1820e33145e64965a1432bda5b86f405'));
 
   var RequestCtrl,
     scope;
@@ -11,7 +11,7 @@ describe('Controller: RequestCtrl', function () {
   // Initialize the controller and a mock scope
   beforeEach(inject(function ($controller, $rootScope) {
     scope = $rootScope.$new();
-    RequestCtrl = $controller('RequestCtrl', {
+    RequestCtrl = $controller('MainCtrl', {
       $scope: scope
     });
   }));

@@ -3,13 +3,13 @@
 describe('Controller: EditCtrl', function () {
 
   // load the controller's module
-  beforeEach(module('1820e33145e64965a1432bda5b86f405App'));
+  beforeEach(module('1820e33145e64965a1432bda5b86f405'));
 
   var EditCtrl,
     scope;
 
   // Initialize the controller and a mock scope
-  beforeEach(inject(function ($controller, $rootScope) {
+  beforeEach(inject(function ($controller, $rootScope, Restangular, item) {
     scope = $rootScope.$new();
     EditCtrl = $controller('EditCtrl', {
       $scope: scope

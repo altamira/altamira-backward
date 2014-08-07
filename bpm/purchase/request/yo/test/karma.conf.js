@@ -16,6 +16,10 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      'bower_components/jquery/dist/jquery.js',
+      'bower_components/jquery-mousewheel/jquery.mousewheel.js',
+      'bower_components/jquery-ui/jquery-ui.js',
+      'bower_components/json3/lib/json3.js',
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
       'bower_components/angular-animate/angular-animate.js',
@@ -24,6 +28,13 @@ module.exports = function(config) {
       'bower_components/angular-route/angular-route.js',
       'bower_components/angular-sanitize/angular-sanitize.js',
       'bower_components/angular-touch/angular-touch.js',
+      'bower_components/restangular/dist/restangular.js',
+      'bower_components/momentjs/moment.js',
+      'bower_components/underscore/underscore.js',
+      'bower_components/bootstrap/dist/js/bootstrap.js',
+      'bower_components/fastclick/lib/fastclick.js',
+      'bower_components/overthrow/dist/overthrow.js',
+      'bower_components/mobile-angular-ui/dist/js/mobile-angular-ui.min.js',   
       'app/scripts/**/*.js',
       //'test/mock/**/*.js',
       'test/spec/**/*.js'
@@ -65,7 +76,7 @@ module.exports = function(config) {
 
     // Uncomment the following lines if you are using grunt's server to run the tests
     proxies: {
-      '/': 'http://localhost:9002/'
+      '/': 'http://localhost:9000/'
     },
     // URL root prevent conflicts with the site root
     urlRoot: '_karma_'

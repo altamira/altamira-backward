@@ -8,15 +8,12 @@
  * Controller of the 1820e33145e64965a1432bda5b86f405
  */
 angular.module('1820e33145e64965a1432bda5b86f405')
-  .controller('EditCtrl', function ($scope, $location, Restangular, item) {
+  .controller('EditCtrl', function ($rootScope, $scope, $location, Restangular, item) {
     $scope.awesomeThings = [
       'HTML5 Boilerplate',
       'AngularJS',
       'Karma'
     ];
-
-    //var item = {"id": 0, "weight": 3450.00, "arrival": 1406214963580, "material": {"id": 0, "lamination": "FQ", "treatment": "GA", "thickness": 2.00, "width": 200.00, "length": 0}}
-
     var treatments = [{ desc : 'Chapa Preta', value : 'PR' }, { desc : 'Decapado', value : 'DE' }, { desc : 'Galvanizado', value : 'GA' }];
 
     var thicknesses = [0.65, 0.85, 0.90, 1.20, 1.40, 2.00, 2.20];
@@ -84,6 +81,9 @@ angular.module('1820e33145e64965a1432bda5b86f405')
 		treatmentFQ : 'PR'
 	};
 
+	$scope.formatChapa = false;
+	$scope.formatRolo = false;
+
 	$scope.save = function () {
 		// Tradução do valor para casos de escolha da uma opção alternativa.
 		if (_.isNaN(parseFloat(item.material.thickness))) {
@@ -109,9 +109,9 @@ angular.module('1820e33145e64965a1432bda5b86f405')
 
 		// Retorna fornecendo o ítem.
 		if (item.id === 0) {
-			Restangular.one('request', 0).post('item', item).then(function (data) {});
+			Restangular.one('request', 0).post('item', item).then(function () {});
 		} else {
-			item.put().then(function (data) {});
+			item.put().then(function () {});
 		}
         
         $location.path('/#');
@@ -122,26 +122,26 @@ angular.module('1820e33145e64965a1432bda5b86f405')
 		$scope.modal.item.material.length = lengths[0];
 		$scope.modal.format = f;
 		$scope.changedLength();
-	}
+	};
 
 	$scope.lamination = function(l) {
-		if (l == 'FQ') {
+		if (l === 'FQ') {
 			$scope.modal.treatmentFF = false;
 			$scope.modal.item.material.treatment = $scope.modal.treatmentFQ;
 		} else {
 			$scope.modal.item.material.treatment = '';
 		}
 		$scope.modal.item.material.lamination = l;
-	}
+	};
 
 	$scope.treatment = function(t) {
-		if (t == 'GA') {
+		if (t === 'GA') {
 			$scope.modal.item.material.treatment = $scope.modal.treatmentFF ? 'GA' : '';	
 		} else {
 			$scope.modal.treatmentFQ = t;
 			$scope.modal.item.material.treatment = t;
 		}
-	}
+	};
 
 	$scope.changedThickness = function () {
     	$scope.modal.showOtherThickness = _.isNaN(parseFloat($scope.modal.item.material.thickness));
@@ -155,4 +155,29 @@ angular.module('1820e33145e64965a1432bda5b86f405')
 		$scope.modal.showOtherLength = _.isNaN(parseFloat($scope.modal.item.material.length));
 	};
 
+	$scope.$watch('modal.item', function (it, oldItem) {
+		if (!it) return;
+
+		if (it.material.length > 0) {
+			$rootScope.toggle('TabChapa', 'on'); 	
+			$scope.modal.format = 'C';
+		} else {
+			$rootScope.toggle('TabRolo', 'on');
+		}
+		if (it.material.lamination === 'FF') {
+			$rootScope.toggle('TabFF', 'on');
+			if (it.material.treatment === 'GA') {
+				$scope.modal.treatmentFF = true;
+			}
+		} else {
+			$rootScope.toggle('TabFQ', 'on');
+			if (it.material.treatment === 'DE') {
+				$rootScope.toggle('TabDE', 'on');
+				$scope.modal.treatmentFQ = 'DE';
+			} else {
+				$rootScope.toggle('TabPR', 'on');
+			}
+		}
+        
+    });
   });

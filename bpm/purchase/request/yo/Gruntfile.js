@@ -26,6 +26,9 @@ module.exports = function (grunt) {
   // Define the configuration for all the tasks
   grunt.initConfig({
 
+    // Package settings
+    pkg: grunt.file.readJSON("package.json"),
+
     // Project settings
     yeoman: appConfig,
 
@@ -118,7 +121,18 @@ module.exports = function (grunt) {
       dist: {
         options: {
           open: true,
-          base: '<%= yeoman.dist %>'
+          base: '<%= yeoman.dist %>',
+          middleware: function (connect) {
+            return [
+              proxySnippet,
+              connect.static('.tmp'),
+              connect().use(
+                '/bower_components',
+                connect.static('./bower_components')
+              ),
+              connect.static(appConfig.app)
+            ];
+          }
         }
       }
     },
@@ -239,9 +253,13 @@ module.exports = function (grunt) {
     // },
     // uglify: {
     //   dist: {
+    //     options: {
+    //       sourceMap: true,
+    //       sourceMapName: '<%= yeoman.dist %>/<%= pkg.name %>-<%= pkg.version %>.map'
+    //     },
     //     files: {
-    //       '<%= yeoman.dist %>/scripts/scripts.js': [
-    //         '<%= yeoman.dist %>/scripts/scripts.js'
+    //       '.tmp/concat/scripts': [
+    //         '<%= yeoman.app %>/scripts/{,*/}*.js'
     //       ]
     //     }
     //   }
@@ -337,6 +355,11 @@ module.exports = function (grunt) {
             cwd: 'bower_components/metro-ui',
             src: 'fonts/*',
             dest: '<%= yeoman.dist %>'
+        }, {
+            expand: true,
+            cwd: 'bower_components/font-awesome',
+            src: 'fonts/*',
+            dest: '<%= yeoman.dist %>'
         }]
       },
       styles: {
@@ -374,7 +397,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
     if (target === 'dist') {
-      return grunt.task.run(['build', 'connect:dist:keepalive']);
+      return grunt.task.run(['build', 'configureProxies', 'connect:dist:keepalive']);
     }
 
     grunt.task.run([

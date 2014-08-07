@@ -16,6 +16,6 @@ angular.module('1820e33145e64965a1432bda5b86f405')
 		    input = input + '';
 		    var zeros = new Array(minNumberOfDigits - input.length + 1).join('0');
 		    return zeros + input;
-		};
+		}
 	};
   });

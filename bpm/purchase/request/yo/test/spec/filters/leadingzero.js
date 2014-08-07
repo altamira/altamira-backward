@@ -3,7 +3,7 @@
 describe('Filter: leadingZero', function () {
 
   // load the filter's module
-  beforeEach(module('bpmPurchaseRequestSteelAppApp'));
+  beforeEach(module('1820e33145e64965a1432bda5b86f405'));
 
   // initialize a new instance of the filter before each test
   var leadingZero;
@@ -12,8 +12,7 @@ describe('Filter: leadingZero', function () {
   }));
 
   it('should return the input prefixed with "leadingZero filter:"', function () {
-    var text = 'angularjs';
-    expect(leadingZero(text)).toBe('leadingZero filter: ' + text);
+    expect(leadingZero(1234, 6)).toBe('001234');
   });
 
 });
