@@ -27,7 +27,7 @@ module.exports = function (grunt) {
   grunt.initConfig({
 
     // Package settings
-    pkg: grunt.file.readJSON("package.json"),
+    pkg: grunt.file.readJSON('package.json'),
 
     // Project settings
     yeoman: appConfig,

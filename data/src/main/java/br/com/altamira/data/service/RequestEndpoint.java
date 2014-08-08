@@ -286,7 +286,7 @@ public class RequestEndpoint {
             byte[] pdf = null;
 
             //ByteArrayInputStream reportStream = new ByteArrayInputStream(requestReportJasper);
-            InputStream reportStream = RequestEndpoint.class.getResourceAsStream("/report.jasper");
+            InputStream reportStream = RequestEndpoint.class.getResourceAsStream("/request.jasper");
             
             Map<String, Object> parameters = new HashMap<String, Object>();
 

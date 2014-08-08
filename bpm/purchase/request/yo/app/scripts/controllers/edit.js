@@ -109,12 +109,16 @@ angular.module('1820e33145e64965a1432bda5b86f405')
 
 		// Retorna fornecendo o ítem.
 		if (item.id === 0) {
-			Restangular.one('request', 0).post('item', item).then(function () {});
+			Restangular.one('request', 0).post('item', item).then(function () {
+				$location.path('/#');
+			});
 		} else {
-			item.put().then(function () {});
+			item.put().then(function () {
+				$location.path('/#');
+			});
 		}
         
-        $location.path('/#');
+        
         
 	};
 
@@ -155,8 +159,8 @@ angular.module('1820e33145e64965a1432bda5b86f405')
 		$scope.modal.showOtherLength = _.isNaN(parseFloat($scope.modal.item.material.length));
 	};
 
-	$scope.$watch('modal.item', function (it, oldItem) {
-		if (!it) return;
+	$scope.$watch('modal.item', function (it) {
+		if (!it) { return; }
 
 		if (it.material.length > 0) {
 			$rootScope.toggle('TabChapa', 'on'); 	

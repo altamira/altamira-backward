@@ -24,9 +24,9 @@ angular.module('1820e33145e64965a1432bda5b86f405')
               arrival: key,
               items: group,
               total: _.reduce(
-                  _.map(group, function(o, x) { return o.weight; }), 
-                  function(t, v) { return t + v; }, 0)
-        }}).value();
+                  _.map(group, function(o) { return o.weight; }), 
+                  function(t, v) { return t + v; }, 0)};
+        }).value();
 
       $scope.total = _.reduce($scope.groups, function(t, g) { return t + g.total; }, 0);
 
