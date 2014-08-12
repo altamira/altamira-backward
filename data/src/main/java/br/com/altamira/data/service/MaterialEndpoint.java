@@ -1,14 +1,9 @@
 package br.com.altamira.data.service;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.validation.ConstraintViolation;
 //import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
 import javax.ws.rs.Consumes;
@@ -176,7 +171,7 @@ public class MaterialEndpoint {
      * @param violations A set of violations that needs to be reported
      * @return JAX-RS response containing all violations
      */
-    private Response.ResponseBuilder createViolationResponse(Set<ConstraintViolation<?>> violations) {
+    /*private Response.ResponseBuilder createViolationResponse(Set<ConstraintViolation<?>> violations) {
         //log.fine("Validation completed. violations found: " + violations.size());
 
         Map<String, String> responseObj = new HashMap<String, String>();
@@ -186,6 +181,6 @@ public class MaterialEndpoint {
         }
 
         return Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
-    }
+    }*/
 
 }

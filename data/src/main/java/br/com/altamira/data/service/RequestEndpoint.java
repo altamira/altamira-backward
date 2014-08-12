@@ -12,12 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-
 import javax.ejb.Stateless;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
-import javax.validation.ConstraintViolation;
 //import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
 import javax.ws.rs.Consumes;
@@ -260,7 +257,7 @@ public class RequestEndpoint {
                 .entity(writer.writeValueAsString(entity))
                 .build();
 	}
-	
+
     @GET
     @Path("{id:[0-9][0-9]*}/report")
     @Produces("application/pdf")
@@ -277,8 +274,12 @@ public class RequestEndpoint {
     	}
         
         if (entity == null) {
-			return Response.status(Status.NOT_FOUND).build();
+			return Response.status(Status.NOT_FOUND).entity("A Requisição não foi encontrada.").build();
 		}
+        
+        if (entity.getItems().size() == 0) {
+        	return Response.status(Status.BAD_REQUEST).entity("A Requisição não tem itens.").build();
+        }
         
         try {
             //byte[] requestReportJasper = requestDao.getRequestReportJasperFile();
@@ -286,17 +287,41 @@ public class RequestEndpoint {
             byte[] pdf = null;
 
             //ByteArrayInputStream reportStream = new ByteArrayInputStream(requestReportJasper);
-            InputStream reportStream = RequestEndpoint.class.getResourceAsStream("/request.jasper");
+            InputStream reportStream = Request.class.getResourceAsStream("/request.jasper");
+            
+            if (reportStream == null) {
+            	reportStream = Request.class.getResourceAsStream("request.jasper");
+            }
+            
+            if (reportStream == null) {
+            	reportStream = this.getClass().getResourceAsStream("/request.jasper");
+            }
+            
+            if (reportStream == null) {
+            	reportStream = this.getClass().getResourceAsStream("request.jasper");
+            }
+            
+            if (reportStream == null) {
+            	reportStream = Thread.currentThread().getClass().getResourceAsStream("/request.jasper");
+            }
+            
+            if (reportStream == null) {
+            	reportStream = Thread.currentThread().getClass().getResourceAsStream("request.jasper");
+            }
+           
+            if (reportStream == null) {
+            	return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Não foi possivel carregar o relatorio !").build();
+            }
             
             Map<String, Object> parameters = new HashMap<String, Object>();
 
-            List<Object[]> list = requestDao.selectRequestReportDataById(id);
+            //List<Object[]> list = requestDao.selectRequestReportDataById(id);
 
             //Vector requestReportList = new Vector();
-            ArrayList requestReportList = new ArrayList();
+            ArrayList<RequestReportData> requestReportList = new ArrayList<RequestReportData>();
             List<Date> dateList = new ArrayList<Date>();
 
-            BigDecimal lastMaterialId = new BigDecimal(0);
+            Long lastMaterialId = new Long(0);
             int count = 0;
             BigDecimal sumRequestWeight = new BigDecimal(0);
             BigDecimal totalWeight = new BigDecimal(0);
@@ -313,40 +338,49 @@ public class RequestEndpoint {
 
             requestReportList.add(r);
 
-            for (Object[] rs : list) {
+            /* 
+				0 = M.ID
+	            1 = M.LAMINATION
+	            2 = M.TREATMENT
+	            3 = M.THICKNESS
+	            4 = M.WIDTH
+	            5 = M.LENGTH
+	            6 = RT.WEIGHT
+	            7 = RT.ARRIVAL_DATE
+            */
+            for (RequestItem item : entity.getItems()) {
                 RequestReportData rr = new RequestReportData();
 
-                BigDecimal currentMaterialId = new BigDecimal(rs[0].toString());
+                Long currentMaterialId = item.getMaterial().getId();
 
                 if (lastMaterialId.compareTo(currentMaterialId) == 0) {
-                    rr.setWeight(new BigDecimal(rs[6].toString()));
-                    rr.setArrivalDate((Date) rs[7]);
+                    rr.setWeight(item.getWeight());
+                    rr.setArrivalDate(item.getArrival());
 
                     // copy REQUEST_DATE into dateList
-                    dateList.add((Date) rs[7]);
+                    dateList.add(item.getArrival());
 
-                    System.out.println(new BigDecimal(rs[6].toString()));
-                    totalWeight = totalWeight.add(new BigDecimal(rs[6].toString()));
-                    sumRequestWeight = sumRequestWeight.add(new BigDecimal(rs[6].toString()));
+                    totalWeight = totalWeight.add(item.getWeight());
+                    sumRequestWeight = sumRequestWeight.add(item.getWeight());
                     count++;
                 } else {
-                    rr.setId(new BigDecimal(rs[0].toString()));
-                    rr.setLamination((String) rs[1]);
-                    rr.setTreatment((String) rs[2]);
-                    rr.setThickness(new BigDecimal(rs[3].toString()));
-                    rr.setWidth(new BigDecimal(rs[4].toString()));
+                    rr.setId(entity.getId());
+                    rr.setLamination(item.getMaterial().getLamination());
+                    rr.setTreatment(item.getMaterial().getTreatment());
+                    rr.setThickness(item.getMaterial().getThickness());
+                    rr.setWidth(item.getMaterial().getWidth());
 
-                    if (rs[5] != null) {
-                        rr.setLength(new BigDecimal(rs[5].toString()));
+                    if (item.getMaterial().getLength() != null) {
+                        rr.setLength(item.getMaterial().getLength());
                     }
 
-                    rr.setWeight(new BigDecimal(rs[6].toString()));
-                    rr.setArrivalDate((Date) rs[7]);
+                    rr.setWeight(item.getWeight());
+                    rr.setArrivalDate(item.getArrival());
 
                     // copy ARRIVAL_DATE into dateList
-                    dateList.add((Date) rs[7]);
+                    dateList.add(item.getArrival());
 
-                    totalWeight = totalWeight.add(new BigDecimal(rs[6].toString()));
+                    totalWeight = totalWeight.add(item.getWeight());
                     lastMaterialId = currentMaterialId;
 
                     if (count != 0) {
@@ -356,7 +390,7 @@ public class RequestEndpoint {
                         requestReportList.add(addition);
                     }
 
-                    sumRequestWeight = new BigDecimal(rs[6].toString());
+                    sumRequestWeight = item.getWeight();
                     count = 0;
                 }
 
@@ -427,7 +461,7 @@ public class RequestEndpoint {
      * @param violations A set of violations that needs to be reported
      * @return JAX-RS response containing all violations
      */
-    private Response.ResponseBuilder createViolationResponse(Set<ConstraintViolation<?>> violations) {
+    /*private Response.ResponseBuilder createViolationResponse(Set<ConstraintViolation<?>> violations) {
         //log.fine("Validation completed. violations found: " + violations.size());
 
         Map<String, String> responseObj = new HashMap<String, String>();
@@ -437,6 +471,6 @@ public class RequestEndpoint {
         }
 
         return Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
-    }
+    }*/
 
 }

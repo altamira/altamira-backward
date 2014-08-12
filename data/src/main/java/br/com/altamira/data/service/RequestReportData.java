@@ -13,7 +13,7 @@ import java.util.Date;
  */
 public class RequestReportData {
     
-    private BigDecimal id;//0
+    private Long id;//0
     private String lamination;//1
     private String treatment;//2
     private BigDecimal thickness;//3
@@ -22,11 +22,11 @@ public class RequestReportData {
     private BigDecimal weight;//6
     private Date arrivalDate;//7
 
-    public BigDecimal getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(BigDecimal id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

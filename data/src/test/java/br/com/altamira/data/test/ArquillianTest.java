@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.transaction.UserTransaction;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -929,5 +930,44 @@ public class ArquillianTest {
 		Request entity = requestDao.find(request.getId());
 		assertNull(entity);
 		
+	}	
+	
+	@Test
+	@InSequence(80)
+	public void RequestEndpointReportTest() throws Exception {
+		
+		Request request = requestDao.current();
+		
+		assertNotNull(request.getId());
+		
+		Material material = new Material();
+		
+		material.setLamination("QQ");
+		material.setTreatment("PQ");
+		material.setThickness(new BigDecimal(2.0));
+		material.setWidth(new BigDecimal(200.0));
+		material.setLength(new BigDecimal(0));
+		material.setTax(new BigDecimal(4.5));
+		
+		RequestItem entity = new RequestItem();
+		
+		entity.setRequest(request);
+		entity.setMaterial(material);
+		entity.setArrival(new Date());
+		entity.setWeight(new BigDecimal(1234.0));
+
+		requestItemDao.create(entity);
+		
+		assertNotNull(request);
+		
+		UriBuilder context = UriBuilder.fromUri(url);
+		
+		ClientRequest client = new ClientRequest(context.path("/{id}/report").build(request.getId()).toString());
+		client.accept("application/pdf");
+
+		Response response = client.get();
+
+		assertEquals(200, response.getStatus());
+
 	}	
 }
